@@ -1,0 +1,46 @@
+<div class="gradient-custom min-vh-100 p-4">
+  <div class="background-glass p-4">
+    <h2 class="system-title mb-4">Gerenciar Funcionário</h2>
+
+    <form>
+      <div class="mb-3">
+        <label for="cpf" class="form-label">CPF:</label>
+        <input id="cpf" type="text" class="form-control" [(ngModel)]="funcionario.cpf" name="cpf">
+      </div>
+
+      <div class="mb-3">
+        <label for="nomeCompleto" class="form-label">NOME COMPLETO</label>
+        <input id="nomeCompleto" type="text" class="form-control" [(ngModel)]="funcionario.nome" name="nome">
+      </div>
+
+      <div class="mb-3">
+        <label for="dataNascimento" class="form-label">DATA DE NASCIMENTO</label>
+        <input id="dataNascimento" type="date" class="form-control" [(ngModel)]="funcionario.dataNascimento" name="dataNascimento">
+      </div>
+
+      <div class="mb-3">
+        <label for="matricula" class="form-label">MATRÍCULA</label>
+        <input id="matricula" type="text" class="form-control" [(ngModel)]="funcionario.matricula" name="matricula">
+      </div>
+
+      <div class="mb-3">
+        <label for="setor" class="form-label">SETOR</label>
+        <input id="setor" type="text" class="form-control" [(ngModel)]="funcionario.setor" name="setor">
+      </div>
+
+      <div class="mb-4">
+        <label for="biometria" class="form-label">BIOMETRIA</label>
+        <div class="d-flex gap-2">
+          <input id="biometria" type="text" class="form-control" [(ngModel)]="funcionario.biometriaHash" name="biometria">
+          <button type="button" class="btn btn-primary btn-sm" (click)="obterBiometria()">Obter biometria</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="actions-container">
+      <button class="btn btn-primary btn-sm" (click)="cadastrarFuncionario()">Cadastrar</button>
+      <button class="btn btn-primary btn-sm" (click)="editarFuncionario()">Editar</button>
+      <button class="btn btn-primary btn-sm" (click)="remover()">Remover</button>
+    </div>
+  </div>
+</div>

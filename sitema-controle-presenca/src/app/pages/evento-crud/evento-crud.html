@@ -1,0 +1,54 @@
+<div class="gradient-custom min-vh-100 p-4">
+  <div class="background-glass p-4">
+    <h2 class="system-title mb-4">Gerenciar Evento</h2>
+
+    <form>
+      <div class="mb-3">
+        <label for="id" class="form-label">ID:</label>
+        <input id="id" type="text" class="form-control" [(ngModel)]="evento.id" name="id">
+      </div>
+
+      <div class="mb-3">
+        <label for="nome" class="form-label">NOME</label>
+        <input id="nome" type="text" class="form-control" [(ngModel)]="evento.nome" name="nome">
+      </div>
+
+      <div class="mb-3">
+        <label for="data" class="form-label">DATA</label>
+        <input id="data" type="date" class="form-control" [(ngModel)]="evento.data" name="data">
+      </div>
+
+      <div class="mb-3">
+        <label for="descricao" class="form-label">DESCRIÇÃO</label>
+        <textarea id="descricao" class="form-control" rows="3" [(ngModel)]="evento.descricao" name="descricao"></textarea>
+      </div>
+
+      <div class="mb-4">
+        <label for="categoria" class="form-label">CATEGORIA</label>
+        <input id="categoria" type="text" class="form-control" [(ngModel)]="evento.categoria" name="categoria">
+      </div>
+    </form>
+
+    <div class="actions-container">
+
+      <button *ngIf="evento.status === ''"
+              class="btn btn-primary btn-sm"
+              (click)="cadastrarOuEditar()">Cadastrar</button>
+
+      <ng-container *ngIf="evento.status === 'pendente'">
+        <button class="btn btn-primary btn-sm" (click)="cadastrarOuEditar()">Editar</button>
+        <button class="btn btn-primary btn-sm" (click)="removerEvento()">Remover Evento</button>
+        <button class="btn btn-primary btn-sm" (click)="iniciarEvento()">Iniciar Evento</button>
+      </ng-container>
+
+      <ng-container *ngIf="evento.status === 'finalizado'">
+        <button class="btn btn-primary btn-sm" (click)="gerarRelatorio()">Gerar Relatório</button>
+        <button class="btn btn-primary btn-sm" (click)="gerarCertificados()">Gerar Certificados</button>
+      </ng-container>
+
+      <ng-container *ngIf="evento.status === 'iniciado'">
+        <button class="btn btn-primary btn-sm" (click)="finalizarEvento()">Finalizar Evento</button>
+      </ng-container>
+    </div>
+  </div>
+</div>
