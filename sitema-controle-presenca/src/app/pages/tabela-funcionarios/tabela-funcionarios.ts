@@ -9,6 +9,9 @@ import { CommonModule } from '@angular/common';
   styleUrl: './tabela-funcionarios.css'
 })
 export class TabelaFuncionarios {
+visualizarFuncionario(_t16: { matricula: string; setor: string; nome: string; tipo: string; }) {
+throw new Error('Method not implemented.');
+}
 
     funcionarios = [
     { matricula: '00007', setor: 'Almoxarifado', nome: 'João Souza dos Santos', tipo: 'padrão' },

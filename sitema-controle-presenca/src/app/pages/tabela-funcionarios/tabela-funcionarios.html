@@ -10,7 +10,7 @@
             <th>Setor</th>
             <th>Nome do Funcionário</th>
             <th>Tipo</th>
-            <th></th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -20,19 +20,29 @@
             <td>{{ f.nome }}</td>
             <td>{{ f.tipo }}</td>
             <td class="actions">
-              <div class="actions-container">
-                <button class="btn btn-primary btn-sm" (click)="editarFuncionario(f)">Editar</button>
-                <button class="btn btn-primary btn-sm" (click)="removerFuncionario(f)">Remover</button>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-info btn-sm rounded-pill shadow-sm flex-fill"
+                  (click)="visualizarFuncionario(f)">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm flex-fill"
+                  (click)="editarFuncionario(f)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-outline-danger btn-sm rounded-pill shadow-sm flex-fill"
+                  (click)="removerFuncionario(f)">
+                  <i class="bi bi-trash"></i>
+                </button>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-
-    <!-- Botão de cadastrar -->
     <div class="text-center mt-3">
-      <button class="btn btn-primary btn-sm" (click)="cadastrarFuncionario()">Cadastrar</button>
+      <button class="btn btn-primary btn-sm rounded-pill shadow-sm" (click)="cadastrarFuncionario()">
+        <i class="bi bi-person-plus"></i> Cadastrar
+      </button>
     </div>
   </div>
 </div>

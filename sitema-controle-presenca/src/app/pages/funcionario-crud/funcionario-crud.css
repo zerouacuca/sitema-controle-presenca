@@ -65,3 +65,7 @@ button.btn-primary:hover {
     margin-bottom: 5px;
   }
 }
+
+.btn-biotoken {
+  min-width: 180px;
+}

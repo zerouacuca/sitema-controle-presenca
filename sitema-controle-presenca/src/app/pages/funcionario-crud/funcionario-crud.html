@@ -1,26 +1,29 @@
-<div class="gradient-custom min-vh-100 p-4">
+<div class="gradient-custom min-vh-100 p-4 mt-5">
   <div class="background-glass p-4">
     <h2 class="system-title mb-4">Gerenciar Funcionário</h2>
 
-    <form>
+    <form (ngSubmit)="cadastrarFuncionario()">
       <div class="mb-3">
         <label for="cpf" class="form-label">CPF:</label>
-        <input id="cpf" type="text" class="form-control" [(ngModel)]="funcionario.cpf" name="cpf">
+        <input id="cpf" type="text" class="form-control" [(ngModel)]="funcionario.cpf" name="cpf" mask="000.000.000-00"
+          required autocomplete="off">
       </div>
 
       <div class="mb-3">
         <label for="nomeCompleto" class="form-label">NOME COMPLETO</label>
-        <input id="nomeCompleto" type="text" class="form-control" [(ngModel)]="funcionario.nome" name="nome">
+        <input id="nomeCompleto" type="text" class="form-control" [(ngModel)]="funcionario.nome" name="nome" required>
       </div>
 
       <div class="mb-3">
         <label for="dataNascimento" class="form-label">DATA DE NASCIMENTO</label>
-        <input id="dataNascimento" type="date" class="form-control" [(ngModel)]="funcionario.dataNascimento" name="dataNascimento">
+        <input id="dataNascimento" type="date" class="form-control" [(ngModel)]="funcionario.dataNascimento"
+          name="dataNascimento" required>
       </div>
 
       <div class="mb-3">
         <label for="matricula" class="form-label">MATRÍCULA</label>
-        <input id="matricula" type="text" class="form-control" [(ngModel)]="funcionario.matricula" name="matricula">
+        <input id="matricula" type="text" class="form-control" [(ngModel)]="funcionario.matricula" name="matricula"
+          required>
       </div>
 
       <div class="mb-3">
@@ -31,16 +34,31 @@
       <div class="mb-4">
         <label for="biometria" class="form-label">BIOMETRIA</label>
         <div class="d-flex gap-2">
-          <input id="biometria" type="text" class="form-control" [(ngModel)]="funcionario.biometriaHash" name="biometria">
-          <button type="button" class="btn btn-primary btn-sm" (click)="obterBiometria()">Obter biometria</button>
+          <input id="biometria" type="text" class="form-control shadow-sm border-0"
+            [(ngModel)]="funcionario.biometriaHash" name="biometria" readonly autocomplete="off"
+            placeholder="Hash da biometria">
+          <button type="button" class="btn btn-outline-primary btn-sm rounded-pill shadow-sm flex-fill btn-biotoken"
+            (click)="obterBiometria()">
+            <i class="bi bi-fingerprint"></i> Obter biometria
+          </button>
         </div>
       </div>
-    </form>
 
-    <div class="actions-container">
-      <button class="btn btn-primary btn-sm" (click)="cadastrarFuncionario()">Cadastrar</button>
-      <button class="btn btn-primary btn-sm" (click)="editarFuncionario()">Editar</button>
-      <button class="btn btn-primary btn-sm" (click)="remover()">Remover</button>
-    </div>
+
+      <div class="actions-container d-flex gap-2">
+        <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill shadow-sm flex-fill">
+          <i class="bi bi-person-plus"></i> Cadastrar
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm flex-fill"
+          (click)="editarFuncionario()">
+          <i class="bi bi-pencil"></i> Editar
+        </button>
+        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill shadow-sm flex-fill"
+          (click)="remover()">
+          <i class="bi bi-trash"></i> Remover
+        </button>
+      </div>
+
+    </form>
   </div>
 </div>
