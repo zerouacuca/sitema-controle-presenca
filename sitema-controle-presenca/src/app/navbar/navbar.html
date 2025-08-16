@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand mx-4" href="#">
+    <img src="logo_svg.svg" width="21" height="21" alt="">
+    Pontu
+  </a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown mx-2">
+        <a class="nav-link dropdown-toggle" href="#" id="eventoDropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Eventos
+        </a>
+        <div class="dropdown-menu" aria-labelledby="eventoDropdownMenuLink">
+          <a class="dropdown-item" href="#">Novo evento</a>
+          <a class="dropdown-item" href="#">Gerenciar eventos</a>
+          <a class="dropdown-item" href="#">Buscar evento</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown mx-2">
+        <a class="nav-link dropdown-toggle" href="#" id="usuarioDropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Usuários
+        </a>
+        <div class="dropdown-menu" aria-labelledby="usuarioDropdownMenuLink">
+          <a class="dropdown-item" href="#">Novo usuário</a>
+          <a class="dropdown-item" href="#">Gerenciar usuários</a>
+          <a class="dropdown-item" href="#">Buscar usuário</a>
+        </div>
+      </li>
+      <li class="nav-item mx-2">
+        <a class="nav-link" href="#">Relatórios</a>
+      </li>
+      <li class="nav-item mx-2">
+        <a class="nav-link" href="#">Certificados</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav ms-auto">
+        <li class="nav-item mx-4">
+        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">
+            <i class="bi bi-box-arrow-right"></i> Sair
+        </a>
+    </li>
+    </ul>
+  </div>
+</nav>
+<app-modal-logout></app-modal-logout>
