@@ -72,6 +72,14 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.34</version> <!-- versão estável atual em 2025 -->
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
