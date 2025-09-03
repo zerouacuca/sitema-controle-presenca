@@ -29,14 +29,15 @@ public class EventoService {
     public void deleteById(Long id) {
         eventoRepository.deleteById(id);
     }
-
+    
     public Optional<Evento> update(Long id, Evento evento) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
-    }
-
-    public boolean delete(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        return eventoRepository.findById(id).map(existingEvento -> {
+            existingEvento.setTitulo(evento.getTitulo());
+            existingEvento.setDescricao(evento.getDescricao());
+            existingEvento.setDataHora(evento.getDataHora());
+            existingEvento.setCategoria(evento.getCategoria());
+            existingEvento.setCargaHoraria(evento.getCargaHoraria());
+            return eventoRepository.save(existingEvento);
+        });
     }
 }

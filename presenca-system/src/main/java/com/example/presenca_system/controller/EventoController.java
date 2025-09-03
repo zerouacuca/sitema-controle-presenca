@@ -41,9 +41,7 @@ public class EventoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvento(@PathVariable Long id) {
-        if (eventoService.delete(id)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        eventoService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 } 
