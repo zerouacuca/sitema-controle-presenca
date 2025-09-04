@@ -1,0 +1,51 @@
+@startuml
+
+package com.example.presenca_system.model {
+    class Usuario {
+        - String cpf
+        - String nome
+        - String matricula
+        - String setor
+        - byte[] hashBiometria
+    }
+}
+
+package com.example.presenca_system.repository {
+    interface UsuarioRepository extends JpaRepository<Usuario, String> {
+    }
+}
+
+package com.example.presenca_system.service {
+    class UsuarioService {
+        - UsuarioRepository usuarioRepository
+        + UsuarioService(UsuarioRepository usuarioRepository)
+        + Usuario salvarUsuario(Usuario usuario)
+        + List<Usuario> buscarTodos()
+        + Optional<Usuario> buscarPorCpf(String cpf)
+        + void deletarUsuario(String cpf)
+        + Optional<Usuario> validarBiometria(byte[] hashParaValidar)
+    }
+}
+
+package com.example.presenca_system.controller {
+    class UsuarioController {
+        - UsuarioService usuarioService
+        + UsuarioController(UsuarioService usuarioService)
+        + ResponseEntity<Usuario> cadastrarUsuario(Usuario usuario)
+        + ResponseEntity<List<Usuario>> buscarTodos()
+        + ResponseEntity<Usuario> buscarPorCpf(String cpf)
+        + ResponseEntity<Usuario> atualizarUsuario(String cpf, Usuario usuarioDetalhes)
+        + ResponseEntity<Void> deletarUsuario(String cpf)
+        + ResponseEntity<Usuario> validarBiometria(byte[] hashBiometrico)
+    }
+}
+
+' Relacionamentos
+UsuarioController --> UsuarioService
+UsuarioService --> UsuarioRepository
+UsuarioController ..> Usuario
+
+UsuarioRepository "1" -- "1" Usuario : "gerencia"
+UsuarioService ..> Usuario
+
+@enduml
