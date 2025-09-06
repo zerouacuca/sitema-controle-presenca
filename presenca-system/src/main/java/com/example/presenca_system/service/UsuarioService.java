@@ -2,7 +2,6 @@ package com.example.presenca_system.service;
 
 import com.example.presenca_system.model.Usuario;
 import com.example.presenca_system.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
