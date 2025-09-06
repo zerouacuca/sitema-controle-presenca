@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Certificado de Participação</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f0f0f0;
+        }
+        .certificado {
+            border: 10px solid gold;
+            padding: 20px;
+            background-color: white;
+        }
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+        }
+        p {
+            font-size: 1.2em;
+        }
+        .nome {
+            font-size: 2em;
+            color: #007bff;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificado">
+        <h1>Certificado de Participação</h1>
+        <p>Certificamos que</p>
+        <p class="nome">${nomeParticipante}</p>
+        <p>participou do evento</p>
+        <p class="evento">${nomeEvento}</p>
+        <p>em ${dataEvento}.</p>
+    </div>
+</body>
+</html>
