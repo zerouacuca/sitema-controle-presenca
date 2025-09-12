@@ -1,0 +1,107 @@
+<section class="vh-100 gradient-custom">
+  <div class="container py-5 h-100">
+    <div class="row d-flex align-items-center h-100">
+
+      <!-- Coluna esquerda: frase + logo (desktop e tablet) -->
+      <div
+        class="col-12 col-md-6 d-none d-md-flex flex-column align-items-center justify-content-center text-white"
+      >
+        <p class="text-white-65 fst-italic mb-4 sistema-titulo">
+          Sistema de Controle de Presença
+          via Biometria
+        </p>
+        <img src="logoufpr.png" alt="Logo da UFPR" class="logo" />
+      </div>
+
+      <!-- Coluna direita: card de login -->
+      <div class="col-12 col-md-6 d-flex justify-content-center">
+        <div
+          class="card background-glass text-white"
+          style="border-radius: 1rem; width: 100%; max-width: 400px;"
+        >
+          <div class="card-body p-5">
+
+            <!-- Frase + logo para mobile (aparece só em telas pequenas) -->
+            <div class="d-block d-md-none mb-3 text-center">
+              <p class="text-white-65 fst-italic mb-2 sistema-titulo">
+                Sistema de Controle de Presença via Biometria
+              </p>
+              <img src="logoufpr.png" alt="Logo da UFPR" class="logo" />
+            </div>
+
+            <h2 class="fw-bold mb-2 text-uppercase text-center">Login</h2>
+            <p class="text-white-50 mb-4 text-center">
+              Entre com seu e-mail e senha!
+            </p>
+
+            <form #formLogin="ngForm">
+              <div
+                data-mdb-input-init
+                class="form-outline form-white mb-2 d-flex flex-column justify-content-start"
+              >
+                <label class="form-label text-left" for="typeEmail">E-mail</label>
+                <input
+                  email
+                  type="email"
+                  id="typeEmail"
+                  name="email"
+                  class="form-control form-control-lg"
+                  [(ngModel)]="login.email"
+                  #email="ngModel"
+                  required
+                />
+                <div
+                  *ngIf="email.errors && (email.dirty || email.touched)"
+                  class="mt-1"
+                >
+                  <p class="text-danger" [hidden]="!email.errors['required']">
+                    Digite seu email.
+                  </p>
+                  <p class="text-danger" [hidden]="!email.errors['email']">
+                    E-mail inválido.
+                  </p>
+                </div>
+              </div>
+
+              <div data-mdb-input-init class="form-outline form-white mb-1">
+                <label class="form-label" for="typePasswordX">Senha</label>
+                <input
+                  name="senha"
+                  type="password"
+                  id="typePasswordX"
+                  [(ngModel)]="login.senha"
+                  #senha="ngModel"
+                  class="form-control form-control-lg"
+                  required
+                />
+                <div
+                  *ngIf="senha.errors && (senha.dirty || senha.touched)"
+                  class="mt-1"
+                >
+                  <p class="text-danger" [hidden]="!senha.errors['required']">
+                    Digite sua senha.
+                  </p>
+                </div>
+              </div>
+
+              <p class="small mb-3 pb-lg-2">
+                <a class="text-white-50" href="#!">Esqueceu sua senha?</a>
+              </p>
+
+              <button
+                data-mdb-button-init
+                data-mdb-ripple-init
+                class="btn btn-outline-light btn-lg px-5 w-100"
+                type="submit"
+                (click)="onSubmit()"
+              >
+                Login
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

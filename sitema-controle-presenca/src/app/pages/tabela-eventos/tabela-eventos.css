@@ -1,0 +1,87 @@
+.gradient-custom {
+  background: -moz-linear-gradient(
+    270deg,
+    hsla(210, 100%, 70%, 1) 0%,
+    hsla(210, 100%, 20%, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    270deg,
+    hsla(210, 100%, 70%, 1) 0%,
+    hsla(210, 100%, 20%, 1) 100%
+  );
+  background: linear-gradient(
+    270deg,
+    hsla(210, 100%, 70%, 1) 0%,
+    hsla(210, 100%, 20%, 1) 100%
+  );
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+
+}
+
+.background-glass {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  width: 70%;
+  margin: auto;
+}
+
+.table-responsive {
+  margin: auto;
+}
+
+table.table td, table.table th {
+  vertical-align: middle;
+}
+
+.system-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.actions-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+button.btn-primary {
+  width: 100px;
+  background-color: #3399ff;
+  border-color: #3399ff;
+}
+
+button.btn-primary:hover {
+  background-color: #267acc;
+  border-color: #267acc;
+}
+
+@media (max-width: 1000px) {
+  .actions {
+    flex-wrap: wrap;
+  }
+
+  .btn-sm {
+    margin-bottom: 5px;
+  }
+
+  .actions-container {
+    flex-direction: column; /* botões um embaixo do outro */
+  }
+
+}
+
