@@ -37,7 +37,8 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
     public Superusuario alterarSuperusuario(String cpf, Superusuario superusuarioAtualizado) {
         return superusuarioRepository.findById(cpf)
                 .map(superusuarioExistente -> {
-                    superusuarioExistente.setNome(superusuarioAtualizado.getNome());
+                    
+                    //superusuarioExistente.setNome(superusuarioAtualizado.getNome());
                     superusuarioExistente.setEmail(superusuarioAtualizado.getEmail());
                     // Criptografa a nova senha se ela for diferente
                     if (superusuarioAtualizado.getSenha() != null && !superusuarioAtualizado.getSenha().isEmpty()) {

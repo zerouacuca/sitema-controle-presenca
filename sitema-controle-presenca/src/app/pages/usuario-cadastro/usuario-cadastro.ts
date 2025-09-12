@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { Navbar } from "../../componentes/navbar/navbar";
-import { FuncionarioCrud } from "../funcionario-crud/funcionario-crud";
+import { UsuarioCrud } from "../usuario-crud/usuario-crud";
 
 @Component({
   selector: 'app-usuario-cadastro',
-  imports: [Navbar, FuncionarioCrud],
+  imports: [Navbar, UsuarioCrud],
   templateUrl: './usuario-cadastro.html',
   styleUrl: './usuario-cadastro.css'
 })
