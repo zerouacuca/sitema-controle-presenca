@@ -30,4 +30,14 @@ public class Superusuario {
     @JoinColumn(name = "usuario_cpf", referencedColumnName = "cpf")
     private Usuario usuario;
 
+    public Object getNome() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getNome'");
+    }
+
+	public void setNome(Object nome) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'setNome'");
+	}
+
 }
