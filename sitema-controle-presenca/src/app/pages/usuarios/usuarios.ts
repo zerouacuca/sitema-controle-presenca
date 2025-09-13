@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { TabelaFuncionarios } from '../tabela-funcionarios/tabela-funcionarios';
+import { TabelaUsuarios } from '../tabela-usuarios/tabela-usuarios';
 import { Navbar } from '../../componentes/navbar/navbar';
 
 @Component({
   selector: 'app-usuarios',
   imports: [
-    TabelaFuncionarios,
+    TabelaUsuarios,
     Navbar
   ],
   templateUrl: './usuarios.html',

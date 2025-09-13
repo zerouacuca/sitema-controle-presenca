@@ -1,6 +1,6 @@
 <div class="gradient-custom min-vh-100 p-4">
   <div class="background-glass p-4">
-    <h2 class="system-title mb-4">Funcionários</h2>
+    <h2 class="system-title mb-4">Usuários</h2>
 
     <div class="table-responsive">
       <table class="table table-hover">
@@ -8,13 +8,13 @@
           <tr>
             <th>Matrícula</th>
             <th>Setor</th>
-            <th>Nome do Funcionário</th>
+            <th>Nome do Usuário</th>
             <th>Tipo</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let f of funcionarios">
+          <tr *ngFor="let f of usuarios">
             <td>{{ f.matricula }}</td>
             <td>{{ f.setor }}</td>
             <td>{{ f.nome }}</td>
@@ -22,15 +22,15 @@
             <td class="actions">
               <div class="d-flex gap-2">
                 <button class="btn btn-outline-info btn-sm rounded-pill shadow-sm flex-fill"
-                  (click)="visualizarFuncionario(f)">
+                  (click)="visualizarUsuario(f)">
                   <i class="bi bi-eye"></i>
                 </button>
                 <button class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm flex-fill"
-                  (click)="editarFuncionario(f)">
+                  (click)="editarUsuario(f)">
                   <i class="bi bi-pencil"></i>
                 </button>
                 <button class="btn btn-outline-danger btn-sm rounded-pill shadow-sm flex-fill"
-                  (click)="removerFuncionario(f)">
+                  (click)="removerUsuario(f)">
                   <i class="bi bi-trash"></i>
                 </button>
               </div>
@@ -40,7 +40,7 @@
       </table>
     </div>
     <div class="text-center mt-3">
-      <button class="btn btn-primary btn-sm rounded-pill shadow-sm" (click)="cadastrarFuncionario()">
+      <button class="btn btn-primary btn-sm rounded-pill shadow-sm" (click)="cadastrarUsuario()">
         <i class="bi bi-person-plus"></i> Cadastrar
       </button>
     </div>

@@ -58,7 +58,7 @@ export class UsuarioCrud implements OnInit {
     }
   }
 
-  salvarFuncionario() {
+  salvarUsuario() {
     if (!this.cpfValidator.validarCPF(this.usuario.cpf)) {
       console.error('CPF inválido:', this.usuario.cpf);
       return;
