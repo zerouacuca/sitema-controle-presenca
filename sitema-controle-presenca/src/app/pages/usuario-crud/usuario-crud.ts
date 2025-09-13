@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { CpfValidatorService } from '../../servicos/cpf-validator';
 import { UsuarioService } from '../../servicos/usuario-service';
+import { Usuario } from '../../models/usuario.model'; 
 
 @Component({
   selector: 'app-usuario-crud',
@@ -13,25 +14,15 @@ import { UsuarioService } from '../../servicos/usuario-service';
   imports: [
     CommonModule,
     FormsModule,
-    NgxMaskDirective 
+    NgxMaskDirective
   ],
   templateUrl: './usuario-crud.html',
   styleUrls: ['./usuario-crud.css']
 })
 export class UsuarioCrud implements OnInit {
-  // Modelo de dados do usuário, inicializado com valores vazios
-  usuario = {
-    cpf: '',
-    matricula: '',
-    nome: '',
-    setor: '',
-    tipo: 'padrão',
-    dataNascimento: '',
-    biometriaHash: ''
-  };
-
+  usuario: Usuario = new Usuario();
   isEditMode: boolean = false;
-  
+
   constructor(
     private cpfValidator: CpfValidatorService,
     private usuarioService: UsuarioService,
@@ -39,7 +30,6 @@ export class UsuarioCrud implements OnInit {
     private router: Router
   ) {}
 
-  // Este método é chamado automaticamente pelo Angular quando o componente é inicializado.
   ngOnInit(): void {
     const cpf = this.route.snapshot.paramMap.get('cpf');
 
@@ -47,83 +37,93 @@ export class UsuarioCrud implements OnInit {
       this.isEditMode = true;
       this.usuarioService.buscarPorCpf(cpf).subscribe({
         next: (data) => {
-          this.usuario = data;
+          // Garante que o biometriaHash é uma string, mesmo que null do backend
+          const biometriaHash = data.biometriaHash || '';
+          this.usuario = new Usuario(
+            data.cpf,
+            data.nome,
+            data.matricula,
+            data.setor,
+            data.tipo,
+            biometriaHash,
+            data.dataNascimento
+          );
           console.log('Dados do usuário carregados para edição:', this.usuario);
         },
         error: (err) => {
           console.error('Erro ao buscar usuário:', err);
-          alert('Usuário não encontrado!');
           this.router.navigate(['/']);
         }
       });
     }
   }
 
-  // Método unificado para cadastrar ou editar um usuário
   salvarFuncionario() {
     if (!this.cpfValidator.validarCPF(this.usuario.cpf)) {
       console.error('CPF inválido:', this.usuario.cpf);
-      alert('Por favor, insira um CPF válido.');
+      return;
+    }
+
+    if (!this.isEditMode) {
+      const biometriaMockString = "mock-biometric-hash-for-new-user-123";
+      this.usuario.biometriaHash = this.usuarioService.stringToBase64(biometriaMockString);
+    }
+    
+    if (this.usuario.biometriaHash === null || this.usuario.biometriaHash === undefined) {
+      console.error('Erro: biometriaHash não pode ser nulo.');
       return;
     }
 
     if (this.isEditMode) {
-      // Chama o método de atualização se estiver em modo de edição
       this.usuarioService.atualizarUsuario(this.usuario.cpf, this.usuario).subscribe({
-        next: (response) => {
-          console.log('Usuário atualizado com sucesso!', response);
-          alert('Usuário atualizado com sucesso!');
+        next: () => {
+          console.log('Usuário atualizado com sucesso!');
+          this.router.navigate(['/']);
         },
         error: (err) => {
           console.error('Erro ao atualizar usuário:', err);
-          alert('Erro ao atualizar usuário.');
         }
       });
     } else {
-      // Chama o método de cadastro se for um novo usuário
+      // Adiciona uma mensagem de log para exibir os dados antes de enviá-los
+      console.log('Enviando dados do novo usuário:', this.usuario);
       this.usuarioService.cadastrarUsuario(this.usuario).subscribe({
-        next: (response) => {
-          console.log('Usuário cadastrado com sucesso!', response);
-          alert('Usuário cadastrado com sucesso!');
+        next: () => {
+          console.log('Usuário cadastrado com sucesso!');
+          this.router.navigate(['/']);
         },
         error: (err) => {
           console.error('Erro ao cadastrar usuário:', err);
-          alert('Erro ao cadastrar usuário.');
         }
       });
     }
   }
 
-  // Método para remover um usuário
   remover() {
     if (this.usuario.cpf) {
       this.usuarioService.deletarUsuario(this.usuario.cpf).subscribe({
         next: () => {
           console.log('Usuário removido com sucesso!');
-          alert('Usuário removido com sucesso!');
           this.router.navigate(['/']);
         },
         error: (err) => {
           console.error('Erro ao remover usuário:', err);
-          alert('Erro ao remover usuário.');
         }
       });
     }
   }
 
-  // Método para simular a obtenção de biometria e validar
   obterBiometria() {
-    const biometriaMock = 'hash-biometrico-do-leitor'; 
+    const biometriaBase64 = "mock-biometric-hash-for-new-user-123";
+    const biometriaBytes = this.usuarioService.base64ToUint8Array(biometriaBase64);
 
-    this.usuarioService.validarBiometria(biometriaMock).subscribe({
-        next: (usuario) => {
-            console.log('Biometria validada com sucesso para:', usuario.nome);
-            alert(`Bem-vindo, ${usuario.nome}!`);
-        },
-        error: (err) => {
-            console.error('Erro ao validar biometria:', err);
-            alert('Biometria não reconhecida.');
-        }
+    this.usuarioService.validarBiometria(biometriaBytes).subscribe({
+      next: (usuario) => {
+        console.log('Biometria validada com sucesso para:', usuario.nome);
+      },
+      error: (err) => {
+        console.error('Erro ao validar biometria:', err);
+      }
     });
   }
 }

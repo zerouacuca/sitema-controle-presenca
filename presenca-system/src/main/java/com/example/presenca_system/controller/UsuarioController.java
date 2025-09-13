@@ -1,11 +1,12 @@
 package com.example.presenca_system.controller;
 
+import com.example.presenca_system.dto.UsuarioDTO;
+import java.util.Base64;
 import com.example.presenca_system.model.Usuario;
 import com.example.presenca_system.service.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -20,24 +21,25 @@ public class UsuarioController {
 
     // Endpoint para criar um novo usuário (Operação CREATE)
     @PostMapping
-    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuario) {
-        Usuario novoUsuario = usuarioService.salvarUsuario(usuario);
-        return new ResponseEntity<>(novoUsuario, HttpStatus.CREATED);
-    }
+    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody UsuarioDTO usuarioDto) {
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setCpf(usuarioDto.getCpf());
+        novoUsuario.setNome(usuarioDto.getNome());
+        novoUsuario.setMatricula(usuarioDto.getMatricula());
+        novoUsuario.setSetor(usuarioDto.getSetor());
+        //novoUsuario.setDataNascimento(usuarioDto.getDataNascimento());
 
-    // Endpoint para buscar todos os usuários (Operação READ)
-    @GetMapping
-    public ResponseEntity<List<Usuario>> buscarTodos() {
-        List<Usuario> usuarios = usuarioService.buscarTodos();
-        return new ResponseEntity<>(usuarios, HttpStatus.OK);
-    }
+        try {
+            // Converte a string Base64 para um array de bytes
+            byte[] biometriaBytes = Base64.getDecoder().decode(usuarioDto.getHashBiometria());
+            novoUsuario.setHashBiometria(biometriaBytes);
+        } catch (IllegalArgumentException e) {
+            // Se a string Base64 for inválida, retorna erro
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
-    // Endpoint para buscar um usuário por CPF (Operação READ)
-    @GetMapping("/{cpf}")
-    public ResponseEntity<Usuario> buscarPorCpf(@PathVariable String cpf) {
-        Optional<Usuario> usuario = usuarioService.buscarPorCpf(cpf);
-        return usuario.map(ResponseEntity::ok)
-                      .orElseGet(() -> ResponseEntity.notFound().build());
+        Usuario usuarioSalvo = usuarioService.salvarUsuario(novoUsuario);
+        return new ResponseEntity<>(usuarioSalvo, HttpStatus.CREATED);
     }
 
     // Endpoint para atualizar um usuário (Operação UPDATE)
@@ -49,10 +51,13 @@ public class UsuarioController {
             usuarioExistente.setNome(usuarioDetalhes.getNome());
             usuarioExistente.setMatricula(usuarioDetalhes.getMatricula());
             usuarioExistente.setSetor(usuarioDetalhes.getSetor());
+            usuarioExistente.setDataNascimento(usuarioDetalhes.getDataNascimento());
+            // Atenção: a biometria não é atualizada neste endpoint, pois você está passando um 'Usuario'
             
-            // Note: A biometria não é atualizada aqui, é um processo separado
-            Usuario usuarioAtualizado = usuarioService.salvarUsuario(usuarioExistente);
-            return new ResponseEntity<>(usuarioAtualizado, HttpStatus.OK);
+            // Para evitar erro de tipo, o DTO é o ideal para este endpoint também
+            // Usuario usuarioAtualizado = usuarioService.salvarUsuario(usuarioExistente);
+            // return new ResponseEntity<>(usuarioAtualizado, HttpStatus.OK);
+            return new ResponseEntity<>(usuarioExistente, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

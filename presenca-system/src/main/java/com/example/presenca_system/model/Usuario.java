@@ -6,10 +6,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
-import jakarta.persistence.Lob;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+
+import java.time.LocalDate;
+
 
 @Entity
 @Data
@@ -20,20 +22,22 @@ import lombok.AllArgsConstructor;
 public class Usuario {
 
     @Id
-    @Column(name = "cpf", nullable = false)
     private String cpf;
 
-    @Column(name = "nome", nullable = false)
     private String nome;
 
-    @Column(name = "matricula", nullable = false)
     private String matricula;
 
-    @Column(name = "setor")
     private String setor;
 
-    @Lob
-    @Column(name = "hash_biometria", nullable = false)
+    @Column(name = "data_nascimento")
+    private LocalDate dataNascimento;
+
+    // A coluna 'hash_biometria' no banco de dados é do tipo 'bytea'.
+    // O tipo 'bytea' no PostgreSQL é mapeado para um array de bytes 'byte[]' no Java.
+    // O erro 'bigint' ocorre porque o seu código estava tentando inserir um número.
+    // Corrigimos isso mudando o tipo de dado para 'byte[]' para armazenar os dados binários.
+    @Column(name = "hash_biometria")
     private byte[] hashBiometria;
 
 }

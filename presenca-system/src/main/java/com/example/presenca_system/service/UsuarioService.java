@@ -16,6 +16,7 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    // Este método agora recebe a entidade completa, sem a necessidade de conversão
     public Usuario salvarUsuario(Usuario usuario) {
         // Você pode adicionar lógicas de validação de negócio aqui antes de salvar
         return usuarioRepository.save(usuario);
