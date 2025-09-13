@@ -3,13 +3,16 @@
     <h2 class="system-title mb-4">Usuários</h2>
 
     <div class="table-responsive">
-      <table class="table table-hover">
+      <div *ngIf="isLoading" class="text-center mt-4">
+        <p>Carregando usuários...</p>
+      </div>
+
+      <table class="table table-hover" *ngIf="!isLoading && usuarios.length > 0">
         <thead>
           <tr>
             <th>Matrícula</th>
             <th>Setor</th>
             <th>Nome do Usuário</th>
-            <th>Tipo</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -18,7 +21,6 @@
             <td>{{ f.matricula }}</td>
             <td>{{ f.setor }}</td>
             <td>{{ f.nome }}</td>
-            <td>{{ f.tipo }}</td>
             <td class="actions">
               <div class="d-flex gap-2">
                 <button class="btn btn-outline-info btn-sm rounded-pill shadow-sm flex-fill"
@@ -38,6 +40,10 @@
           </tr>
         </tbody>
       </table>
+
+      <div *ngIf="!isLoading && usuarios.length === 0" class="text-center mt-4">
+        <p>Nenhum usuário cadastrado.</p>
+      </div>
     </div>
     <div class="text-center mt-3">
       <button class="btn btn-primary btn-sm rounded-pill shadow-sm" (click)="cadastrarUsuario()">

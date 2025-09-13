@@ -15,13 +15,13 @@ export const routes: Routes = [
   { path: 'tabela-eventos', component: TabelaEventos },
   { path: 'evento-crud', component: EventoCrud },
   { path: 'tabela-usuarios', component: TabelaUsuarios },
-  { path: 'usuario-crud', component: UsuarioCrud },
+  { path: 'editar-usuario', component: UsuarioCrud },
   { path: 'navbar', component: Navbar },
   { path: 'usuarios', component: Usuarios },
-  { path: 'usuario-cadastro', component: UsuarioCadastro },
+  { path: 'cadastrar-usuario', component: UsuarioCadastro },
   
   // Rotas de edição de usuário com parâmetro CPF
-  { path: 'usuario-crud/:cpf', component: UsuarioCrud },
+  { path: 'editar-usuario/:cpf', component: UsuarioCrud },
 
   // A rota de redirecionamento ou wildcard deve sempre vir por último
   { path: '', redirectTo: '/login', pathMatch: 'full' },

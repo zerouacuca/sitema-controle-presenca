@@ -1,12 +1,15 @@
 package com.example.presenca_system.controller;
 
 import com.example.presenca_system.dto.UsuarioDTO;
-import java.util.Base64;
+import com.example.presenca_system.dto.UsuarioListDTO;
+import com.example.presenca_system.dto.UsuarioTemplateDTO;
 import com.example.presenca_system.model.Usuario;
 import com.example.presenca_system.service.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -42,6 +45,20 @@ public class UsuarioController {
         return new ResponseEntity<>(usuarioSalvo, HttpStatus.CREATED);
     }
 
+    // Endpoint para listar todos os usuários (Operação READ)
+    @GetMapping
+    public ResponseEntity<List<UsuarioListDTO>> listarTodosOsUsuarios() {
+        List<UsuarioListDTO> usuarios = usuarioService.listarUsuarios();
+        return new ResponseEntity<>(usuarios, HttpStatus.OK);
+    }
+
+    // Endpoint para listar apenas o CPF e o template
+    @GetMapping("/templates")
+    public ResponseEntity<List<UsuarioTemplateDTO>> listarTemplates() {
+        List<UsuarioTemplateDTO> templates = usuarioService.listarTemplatesParaValidacao();
+        return new ResponseEntity<>(templates, HttpStatus.OK);
+    }
+
     // Endpoint para atualizar um usuário (Operação UPDATE)
     @PutMapping("/{cpf}")
     public ResponseEntity<Usuario> atualizarUsuario(@PathVariable String cpf, @RequestBody Usuario usuarioDetalhes) {
@@ -53,7 +70,7 @@ public class UsuarioController {
             usuarioExistente.setSetor(usuarioDetalhes.getSetor());
             usuarioExistente.setDataNascimento(usuarioDetalhes.getDataNascimento());
             // Atenção: a biometria não é atualizada neste endpoint, pois você está passando um 'Usuario'
-            
+
             // Para evitar erro de tipo, o DTO é o ideal para este endpoint também
             // Usuario usuarioAtualizado = usuarioService.salvarUsuario(usuarioExistente);
             // return new ResponseEntity<>(usuarioAtualizado, HttpStatus.OK);

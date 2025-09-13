@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Usuario, UsuarioListDTO } from '../models/usuario.model';
 import { environment } from '../environments/environment';
-import { Usuario } from '../models/usuario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -32,8 +32,8 @@ export class UsuarioService {
   }
 
   // READ: Buscar todos os usuários
-  buscarTodosUsuarios(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(this.apiUrl);
+  buscarTodosUsuarios(): Observable<UsuarioListDTO[]> {
+    return this.http.get<UsuarioListDTO[]>(this.apiUrl);
   }
 
   // READ: Buscar um usuário por CPF

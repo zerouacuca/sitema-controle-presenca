@@ -1,11 +1,14 @@
 package com.example.presenca_system.service;
 
+import com.example.presenca_system.dto.UsuarioListDTO;
+import com.example.presenca_system.dto.UsuarioTemplateDTO;
 import com.example.presenca_system.model.Usuario;
 import com.example.presenca_system.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -16,25 +19,34 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    // Este método agora recebe a entidade completa, sem a necessidade de conversão
+    // Métodos CRUD
     public Usuario salvarUsuario(Usuario usuario) {
-        // Você pode adicionar lógicas de validação de negócio aqui antes de salvar
         return usuarioRepository.save(usuario);
     }
 
-    // Método para buscar todos os usuários
-    public List<Usuario> buscarTodos() {
-        return usuarioRepository.findAll();
-    }
-
-    // Método para buscar um usuário por CPF
     public Optional<Usuario> buscarPorCpf(String cpf) {
         return usuarioRepository.findById(cpf);
     }
 
-    // Método para deletar um usuário por CPF
+    public List<Usuario> buscarTodos() {
+        return usuarioRepository.findAll();
+    }
+
     public void deletarUsuario(String cpf) {
         usuarioRepository.deleteById(cpf);
+    }
+
+    // Métodos para listagem e validação
+    public List<UsuarioListDTO> listarUsuarios() {
+        return usuarioRepository.findAll().stream()
+                .map(this::converterParaUsuarioListDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<UsuarioTemplateDTO> listarTemplatesParaValidacao() {
+        return usuarioRepository.findAll().stream()
+                .map(this::converterParaUsuarioTemplateDTO)
+                .collect(Collectors.toList());
     }
 
     public Optional<Usuario> validarBiometria(byte[] hashParaValidar) {
@@ -42,9 +54,27 @@ public class UsuarioService {
 
         for (Usuario usuario : todosUsuarios) {
             if (Arrays.equals(usuario.getTemplate(), hashParaValidar)) {
-                return Optional.of(usuario); // Retorna o usuário encontrado
+                return Optional.of(usuario);
             }
         }
-        return Optional.empty(); // Retorna vazio se nenhum usuário corresponder
+        return Optional.empty();
+    }
+
+    // Métodos de conversão DTO
+    private UsuarioListDTO converterParaUsuarioListDTO(Usuario usuario) {
+        UsuarioListDTO dto = new UsuarioListDTO();
+        dto.setCpf(usuario.getCpf());
+        dto.setNome(usuario.getNome());
+        dto.setMatricula(usuario.getMatricula());
+        dto.setSetor(usuario.getSetor());
+        dto.setDataNascimento(usuario.getDataNascimento());
+        return dto;
+    }
+
+    private UsuarioTemplateDTO converterParaUsuarioTemplateDTO(Usuario usuario) {
+        UsuarioTemplateDTO dto = new UsuarioTemplateDTO();
+        dto.setId(usuario.getCpf());
+        dto.setTemplate(usuario.getTemplate());
+        return dto;
     }
 }

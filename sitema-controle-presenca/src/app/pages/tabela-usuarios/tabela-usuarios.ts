@@ -1,35 +1,78 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { UsuarioListDTO } from '../../models/usuario.model';
+import { UsuarioService } from '../../servicos/usuario-service';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tabela-usuarios',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './tabela-usuarios.html',
   styleUrl: './tabela-usuarios.css'
 })
-export class TabelaUsuarios {
-visualizarUsuario(_t16: { matricula: string; setor: string; nome: string; tipo: string; }) {
-throw new Error('Method not implemented.');
-}
+export class TabelaUsuarios implements OnInit, OnDestroy {
 
-    usuarios = [
-    { matricula: '00007', setor: 'Almoxarifado', nome: 'João Souza dos Santos', tipo: 'padrão' },
-    { matricula: '00006', setor: 'EHS', nome: 'Aruni Serena Van Amstel', tipo: 'EHS' },
-    { matricula: '00005', setor: 'Financeiro', nome: 'Pedro Albuquerque de Oliveira', tipo: 'padrão' },
+  usuarios: UsuarioListDTO[] = [];
+  isLoading: boolean = true;
+  private routerSubscription!: Subscription;
 
-  ];
+  constructor(
+    private usuarioService: UsuarioService,
+    private router: Router,
+    private cd: ChangeDetectorRef // 👈 Injete o ChangeDetectorRef
+  ) { }
 
- editarUsuario(usuario: any) {
-    console.log('Editar:', usuario);
+  ngOnInit(): void {
+    this.carregarUsuarios();
+
+    this.routerSubscription = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      if (event.url === '/') {
+        this.carregarUsuarios();
+      }
+    });
   }
 
-  removerUsuario(usuario: any) {
+  ngOnDestroy(): void {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+  }
+
+  carregarUsuarios() {
+    this.isLoading = true;
+    this.usuarioService.buscarTodosUsuarios().subscribe(
+      (data) => {
+        this.usuarios = data;
+        this.isLoading = false;
+        this.cd.detectChanges(); // Força o Angular a atualizar o template
+      },
+      (error) => {
+        console.error('Erro ao carregar usuários:', error);
+        this.isLoading = false;
+        this.cd.detectChanges(); // Força a atualização mesmo em caso de erro
+      }
+    );
+  }
+
+  visualizarUsuario(usuario: UsuarioListDTO) {
+    console.log('Visualizar:', usuario);
+  }
+
+  editarUsuario(usuario: UsuarioListDTO) {
+    this.router.navigate(['/editar-usuario', usuario.cpf]);
+  }
+
+  removerUsuario(usuario: UsuarioListDTO) {
     console.log('Remover:', usuario);
   }
 
   cadastrarUsuario() {
-    console.log('Cadastrar novo usuário');
+    this.router.navigate(['/cadastrar-usuario']);
   }
-
 }

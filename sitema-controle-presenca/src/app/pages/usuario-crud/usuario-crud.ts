@@ -44,7 +44,6 @@ export class UsuarioCrud implements OnInit {
             data.nome,
             data.matricula,
             data.setor,
-            data.tipo,
             template,
             data.dataNascimento
           );
