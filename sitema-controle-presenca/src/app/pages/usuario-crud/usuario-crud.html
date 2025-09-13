@@ -1,3 +1,4 @@
+<app-navbar></app-navbar>
 <div class="gradient-custom min-vh-100 p-4 mt-5">
     <div class="background-glass p-4">
         <h2 class="system-title mb-4">Gerenciar Usuário</h2>
@@ -46,12 +47,10 @@
             </div>
 
             <div class="actions-container d-flex gap-2">
-                <!-- O botão de submit agora exibe "Atualizar" ou "Cadastrar" dependendo do modo -->
-                <button type="submit" class="btn btn-primary btn-sm rounded-pill shadow-sm flex-fill">
+                                <button type="submit" class="btn btn-primary btn-sm rounded-pill shadow-sm flex-fill">
                     <i class="bi bi-person-plus"></i> {{ isEditMode ? 'Atualizar' : 'Cadastrar' }}
                 </button>
-                <!-- O botão de remover é exibido apenas no modo de edição -->
-                <button *ngIf="isEditMode" type="button"
+                                <button *ngIf="isEditMode" type="button"
                     class="btn btn-danger btn-sm rounded-pill shadow-sm flex-fill" (click)="remover()">
                     <i class="bi bi-trash"></i> Remover
                 </button>

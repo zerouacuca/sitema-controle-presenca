@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 👈 Adicione ChangeDetectorRef
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgxMaskDirective } from 'ngx-mask';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Navbar } from '../../componentes/navbar/navbar';
 
 import { CpfValidatorService } from '../../servicos/cpf-validator';
 import { UsuarioService } from '../../servicos/usuario-service';
@@ -14,7 +15,8 @@ import { Usuario } from '../../models/usuario.model';
   imports: [
     CommonModule,
     FormsModule,
-    NgxMaskDirective
+    NgxMaskDirective,
+    Navbar
   ],
   templateUrl: './usuario-crud.html',
   styleUrls: ['./usuario-crud.css']
@@ -27,7 +29,8 @@ export class UsuarioCrud implements OnInit {
     private cpfValidator: CpfValidatorService,
     private usuarioService: UsuarioService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -48,6 +51,7 @@ export class UsuarioCrud implements OnInit {
             data.dataNascimento
           );
           console.log('Dados do usuário carregados para edição:', this.usuario);
+          this.cd.detectChanges();
         },
         error: (err) => {
           console.error('Erro ao buscar usuário:', err);
@@ -77,19 +81,18 @@ export class UsuarioCrud implements OnInit {
       this.usuarioService.atualizarUsuario(this.usuario.cpf, this.usuario).subscribe({
         next: () => {
           console.log('Usuário atualizado com sucesso!');
-          this.router.navigate(['/']);
+          this.router.navigate(['/usuarios']);
         },
         error: (err) => {
           console.error('Erro ao atualizar usuário:', err);
         }
       });
     } else {
-      // Adiciona uma mensagem de log para exibir os dados antes de enviá-los
       console.log('Enviando dados do novo usuário:', this.usuario);
       this.usuarioService.cadastrarUsuario(this.usuario).subscribe({
         next: () => {
           console.log('Usuário cadastrado com sucesso!');
-          this.router.navigate(['/']);
+          this.router.navigate(['/usuarios']);
         },
         error: (err) => {
           console.error('Erro ao cadastrar usuário:', err);
@@ -103,7 +106,7 @@ export class UsuarioCrud implements OnInit {
       this.usuarioService.deletarUsuario(this.usuario.cpf).subscribe({
         next: () => {
           console.log('Usuário removido com sucesso!');
-          this.router.navigate(['/']);
+          this.router.navigate(['/usuarios']);
         },
         error: (err) => {
           console.error('Erro ao remover usuário:', err);

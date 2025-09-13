@@ -70,6 +70,7 @@ public class UsuarioController {
             usuarioExistente.setSetor(usuarioDetalhes.getSetor());
             usuarioExistente.setDataNascimento(usuarioDetalhes.getDataNascimento());
             // Atenção: a biometria não é atualizada neste endpoint, pois você está passando um 'Usuario'
+            Usuario usuarioAtualizado = usuarioService.salvarUsuario(usuarioExistente);
 
             // Para evitar erro de tipo, o DTO é o ideal para este endpoint também
             // Usuario usuarioAtualizado = usuarioService.salvarUsuario(usuarioExistente);
@@ -85,6 +86,14 @@ public class UsuarioController {
     public ResponseEntity<Void> deletarUsuario(@PathVariable String cpf) {
         usuarioService.deletarUsuario(cpf);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // Endpoint para buscar um usuário por CPF
+    @GetMapping("/{cpf}")
+    public ResponseEntity<Usuario> buscarPorCpf(@PathVariable String cpf) {
+        Optional<Usuario> usuario = usuarioService.buscarPorCpf(cpf);
+        return usuario.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                      .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     // Endpoint para validar a biometria para o check-in
