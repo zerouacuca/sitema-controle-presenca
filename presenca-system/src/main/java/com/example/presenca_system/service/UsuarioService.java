@@ -41,7 +41,7 @@ public class UsuarioService {
         List<Usuario> todosUsuarios = usuarioRepository.findAll();
 
         for (Usuario usuario : todosUsuarios) {
-            if (Arrays.equals(usuario.getHashBiometria(), hashParaValidar)) {
+            if (Arrays.equals(usuario.getTemplate(), hashParaValidar)) {
                 return Optional.of(usuario); // Retorna o usuário encontrado
             }
         }

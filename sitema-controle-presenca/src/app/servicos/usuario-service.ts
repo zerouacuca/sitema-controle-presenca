@@ -52,7 +52,7 @@ export class UsuarioService {
   }
 
   // Validação de biometria
-  validarBiometria(biometriaHash: Uint8Array): Observable<Usuario> {
-    return this.http.post<Usuario>(`${this.apiUrl}/validar-biometria`, biometriaHash);
+  validarBiometria(template: Uint8Array): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.apiUrl}/validar-biometria`, template);
   }
 }

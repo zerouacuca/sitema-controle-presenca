@@ -36,7 +36,7 @@
                 <label for="biometria" class="form-label">BIOMETRIA</label>
                 <div class="d-flex gap-2">
                     <input id="biometria" type="text" class="form-control shadow-sm border-0"
-                        [(ngModel)]="usuario.biometriaHash" name="biometria" readonly autocomplete="off"
+                        [(ngModel)]="usuario.template" name="biometria" readonly autocomplete="off"
                         placeholder="Hash da biometria">
                     <button type="button" class="btn btn-primary btn-sm rounded-pill shadow-sm flex-fill btn-biotoken"
                         (click)="obterBiometria()">

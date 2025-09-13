@@ -6,7 +6,7 @@ package com.example.presenca_system.model {
         - String nome
         - String matricula
         - String setor
-        - byte[] hashBiometria
+        - byte[] template
     }
 }
 

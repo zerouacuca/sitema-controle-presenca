@@ -11,9 +11,9 @@ public class UsuarioDTO {
     private String matricula;
     private String setor;
     
-    // Mapeia o campo "biometriaHash" do JSON para o atributo hashBiometria do Java
-    @JsonProperty("biometriaHash")
-    private String hashBiometria;
+    // Mapeia o campo "template" do JSON para o atributo template do Java
+    @JsonProperty("template")
+    private String template;
 
     // Mapeia o campo "dataNascimento" do JSON para o atributo dataNascimento do Java
     @JsonProperty("dataNascimento")

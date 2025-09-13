@@ -33,11 +33,7 @@ public class Usuario {
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
 
-    // A coluna 'hash_biometria' no banco de dados é do tipo 'bytea'.
-    // O tipo 'bytea' no PostgreSQL é mapeado para um array de bytes 'byte[]' no Java.
-    // O erro 'bigint' ocorre porque o seu código estava tentando inserir um número.
-    // Corrigimos isso mudando o tipo de dado para 'byte[]' para armazenar os dados binários.
-    @Column(name = "hash_biometria")
-    private byte[] hashBiometria;
+    @Column(name = "template")
+    private byte[] template;
 
 }

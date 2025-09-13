@@ -37,15 +37,15 @@ export class UsuarioCrud implements OnInit {
       this.isEditMode = true;
       this.usuarioService.buscarPorCpf(cpf).subscribe({
         next: (data) => {
-          // Garante que o biometriaHash é uma string, mesmo que null do backend
-          const biometriaHash = data.biometriaHash || '';
+          // Garante que o template é uma string, mesmo que null do backend
+          const template = data.template || '';
           this.usuario = new Usuario(
             data.cpf,
             data.nome,
             data.matricula,
             data.setor,
             data.tipo,
-            biometriaHash,
+            template,
             data.dataNascimento
           );
           console.log('Dados do usuário carregados para edição:', this.usuario);
@@ -66,11 +66,11 @@ export class UsuarioCrud implements OnInit {
 
     if (!this.isEditMode) {
       const biometriaMockString = "mock-biometric-hash-for-new-user-123";
-      this.usuario.biometriaHash = this.usuarioService.stringToBase64(biometriaMockString);
+      this.usuario.template = this.usuarioService.stringToBase64(biometriaMockString);
     }
     
-    if (this.usuario.biometriaHash === null || this.usuario.biometriaHash === undefined) {
-      console.error('Erro: biometriaHash não pode ser nulo.');
+    if (this.usuario.template === null || this.usuario.template === undefined) {
+      console.error('Erro: template não pode ser nulo.');
       return;
     }
 

@@ -31,8 +31,8 @@ public class UsuarioController {
 
         try {
             // Converte a string Base64 para um array de bytes
-            byte[] biometriaBytes = Base64.getDecoder().decode(usuarioDto.getHashBiometria());
-            novoUsuario.setHashBiometria(biometriaBytes);
+            byte[] biometriaBytes = Base64.getDecoder().decode(usuarioDto.getTemplate());
+            novoUsuario.setTemplate(biometriaBytes);
         } catch (IllegalArgumentException e) {
             // Se a string Base64 for inválida, retorna erro
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
