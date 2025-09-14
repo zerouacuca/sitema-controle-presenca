@@ -1,24 +1,25 @@
 package com.example.presenca_system.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import java.util.Date;
+import java.util.Set; // Importe a classe Set
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Evento {
- 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long eventoId;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "superusuario_cpf", referencedColumnName = "cpf")
+    private Superusuario superusuario;
 
     @Column(name = "titulo", nullable = false)
     private String titulo;
@@ -34,4 +35,7 @@ public class Evento {
 
     @Column(name = "cargaHoraria", nullable = false)
     private double cargaHoraria;
+
+    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL)
+    private Set<CheckIn> checkIns;
 }

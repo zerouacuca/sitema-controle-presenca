@@ -1,17 +1,11 @@
 package com.example.presenca_system.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-
 import java.time.LocalDate;
-
+import java.util.Set;
 
 @Entity
 @Data
@@ -36,4 +30,6 @@ public class Usuario {
     @Column(name = "template")
     private byte[] template;
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private Set<CheckIn> checkIns;
 }

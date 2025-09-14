@@ -1,9 +1,11 @@
-package com.example.presenca_system.service;
+package com.example.presenca_system.service.impl;
 
 import com.example.presenca_system.model.Superusuario;
 import com.example.presenca_system.repository.SuperusuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.presenca_system.security.JwtService;
+import com.example.presenca_system.service.SuperusuarioService;
+
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;

@@ -69,12 +69,9 @@ public class UsuarioController {
             usuarioExistente.setMatricula(usuarioDetalhes.getMatricula());
             usuarioExistente.setSetor(usuarioDetalhes.getSetor());
             usuarioExistente.setDataNascimento(usuarioDetalhes.getDataNascimento());
-            // Atenção: a biometria não é atualizada neste endpoint, pois você está passando um 'Usuario'
+            // Atenção: a biometria não é atualizada neste endpoint, pois está passando um 'Usuario'
             Usuario usuarioAtualizado = usuarioService.salvarUsuario(usuarioExistente);
 
-            // Para evitar erro de tipo, o DTO é o ideal para este endpoint também
-            // Usuario usuarioAtualizado = usuarioService.salvarUsuario(usuarioExistente);
-            // return new ResponseEntity<>(usuarioAtualizado, HttpStatus.OK);
             return new ResponseEntity<>(usuarioExistente, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

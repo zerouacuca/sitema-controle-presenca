@@ -7,6 +7,7 @@ import java.util.Optional;
 
 @Repository
 public interface SuperusuarioRepository extends JpaRepository<Superusuario, String> {
-
+    
     Optional<Superusuario> findByEmail(String email);
+
 }
