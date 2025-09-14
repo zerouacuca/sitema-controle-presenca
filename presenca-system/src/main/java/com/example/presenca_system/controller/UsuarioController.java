@@ -70,7 +70,7 @@ public class UsuarioController {
             usuarioExistente.setSetor(usuarioDetalhes.getSetor());
             usuarioExistente.setDataNascimento(usuarioDetalhes.getDataNascimento());
             // Atenção: a biometria não é atualizada neste endpoint, pois está passando um 'Usuario'
-            Usuario usuarioAtualizado = usuarioService.salvarUsuario(usuarioExistente);
+            // Usuario usuarioAtualizado = usuarioService.salvarUsuario(usuarioExistente);
 
             return new ResponseEntity<>(usuarioExistente, HttpStatus.OK);
         } else {

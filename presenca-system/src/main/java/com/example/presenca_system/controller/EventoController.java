@@ -1,6 +1,8 @@
 package com.example.presenca_system.controller;
 
 import com.example.presenca_system.model.Evento;
+import com.example.presenca_system.repository.EventoRepository;
+import com.example.presenca_system.service.CertificadoService;
 import com.example.presenca_system.service.EventoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,12 @@ public class EventoController {
 
     @Autowired
     private EventoService eventoService;
+
+    @Autowired
+    private EventoRepository eventoRepository;
+
+    @Autowired
+    private CertificadoService certificadoService;
 
     @GetMapping
     public List<Evento> getAllEventos() {
@@ -43,5 +51,17 @@ public class EventoController {
     public ResponseEntity<Void> deleteEvento(@PathVariable Long id) {
         eventoService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{eventoId}/encerrar")
+    public ResponseEntity<String> encerrarEventoEGerarCertificados(@PathVariable Long eventoId) {
+        // 1. Encontra o evento pelo ID
+        return eventoRepository.findById(eventoId)
+            .map(evento -> {
+                // 2. Chama o serviço para gerar os certificados
+                certificadoService.gerarCertificadosParaEvento(evento);
+                return ResponseEntity.ok("Certificados gerados com sucesso para o evento " + evento.getTitulo() + "!");
+            })
+            .orElse(ResponseEntity.notFound().build());
     }
 } 
