@@ -1,113 +1,52 @@
+// src/main/java/com/example/presenca_system/service/CertificadoService.java
 package com.example.presenca_system.service;
 
 import com.example.presenca_system.model.Certificado;
-import com.example.presenca_system.model.CheckIn;
 import com.example.presenca_system.model.Evento;
-import com.example.presenca_system.model.Usuario;
-import com.example.presenca_system.repository.CertificadoRepository;
-import com.example.presenca_system.repository.CheckInRepository;
 import com.lowagie.text.DocumentException;
-import java.util.UUID;
+import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.xhtmlrenderer.pdf.ITextRenderer;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+public interface CertificadoService {
 
-@Service
-public class CertificadoService {
+    /**
+     * Gera certificados para todos os participantes de um evento que
+     * tenham o status de check-in igual a PRESENTE.
+     * * A função busca todos os check-ins de um evento, itera sobre eles e,
+     * para cada check-in com status "PRESENTE", cria uma nova entidade Certificado.
+     * Os dados são populados a partir das entidades relacionadas (Usuário, Evento, Superusuario)
+     * e um código de validação único é gerado. A entidade Certificado é então
+     * persistida no banco de dados.
+     *
+     * @param evento A entidade Evento para a qual os certificados serão gerados.
+     */
+    void gerarCertificadosParaEvento(Evento evento);
 
-    @Autowired
-    private CheckInRepository checkInRepository;
-
-
-    @Autowired
-    private CertificadoRepository certificadoRepository;
-
-
-    public void gerarCertificadosParaEvento(Evento evento) {
-        List<CheckIn> checkIns = checkInRepository.findByEvento(evento);
-
-        if (checkIns.isEmpty()) {
-            return;
-        }
-        String nomeSuperusuario = evento.getSuperusuario().getUsuario().getNome();
-
-        for (CheckIn checkIn : checkIns) {
-            Usuario usuario = checkIn.getUsuario();
-
-            Certificado novoCertificado = new Certificado();
-            novoCertificado.setUsuario(usuario);
-            novoCertificado.setEvento(evento);
-            novoCertificado.setSuperusuario(evento.getSuperusuario());
-            novoCertificado.setNomeUsuario(usuario.getNome());
-            novoCertificado.setCpfUsuario(usuario.getCpf());
-            novoCertificado.setNomeSuperusuario(nomeSuperusuario);
-            novoCertificado.setDataEmissao(LocalDate.now());
-            novoCertificado.setCodigoValidacao(UUID.randomUUID().toString());
-            String textoCertificado = String.format(
-                "Certificamos que %s, portador do CPF %s, participou do evento '%s' com carga horária de %.1f horas, realizado em %s. Certificado emitido por %s.",
-                usuario.getNome(),
-                usuario.getCpf(),
-                evento.getTitulo(),
-                evento.getCargaHoraria(),
-                evento.getDataHora(),
-                nomeSuperusuario
-            );
-            novoCertificado.setTexto(textoCertificado);
-
-            certificadoRepository.save(novoCertificado);
-        }
-    }
-
-    public byte[] gerarCertificadoPDF(Certificado certificado) throws IOException, DocumentException {
-        // Mapeia os dados do objeto Certificado para o formato esperado pelo template
-        Map<String, String> dados = new HashMap<>();
-        dados.put("nomeUsuario", certificado.getNomeUsuario());
-        dados.put("cpfUsuario", certificado.getCpfUsuario());
-        dados.put("nomeEvento", certificado.getEvento().getTitulo());
-        dados.put("cargaHoraria", String.valueOf(certificado.getEvento().getCargaHoraria()));
-        dados.put("nomeSuperusuario", certificado.getNomeSuperusuario());
-        dados.put("codigoValidacao", certificado.getCodigoValidacao());
-        dados.put("dataEmissao", certificado.getDataEmissao().toString());
-        dados.put("textoCertificado", certificado.getTexto());
-
-        String htmlTemplate = lerTemplateHTML("certificado.html");
-        String htmlPreenchido = preencherTemplate(htmlTemplate, dados);
-
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-            ITextRenderer renderer = new ITextRenderer();
-            renderer.setDocumentFromString(htmlPreenchido);
-            renderer.layout();
-            renderer.createPDF(os);
-            return os.toByteArray();
-        }
-    }
-
-    private String lerTemplateHTML(String nomeArquivo) throws IOException {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("templates/" + nomeArquivo)) {
-            if (inputStream == null) {
-                throw new FileNotFoundException("Template não encontrado: " + nomeArquivo);
-            }
-            try (Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-                return new BufferedReader(reader)
-                        .lines()
-                        .collect(Collectors.joining("\n"));
-            }
-        }
-    }
-
-    private String preencherTemplate(String template, Map<String, String> dados) {
-        String html = template;
-        for (Map.Entry<String, String> entry : dados.entrySet()) {
-            html = html.replace("${" + entry.getKey() + "}", entry.getValue());
-        }
-        return html;
-    }
+    /**
+     * Gera um único arquivo PDF para um certificado específico.
+     * * A função recebe uma entidade Certificado, extrai seus dados e os mapeia para um
+     * HashMap. Em seguida, lê um template HTML, substitui as variáveis de placeholder
+     * pelos dados do certificado e, finalmente, utiliza a biblioteca Flying Saucer
+     * para renderizar o HTML preenchido em um documento PDF. O resultado é retornado
+     * como um array de bytes.
+     *
+     * @param certificado A entidade Certificado contendo os dados a serem impressos no PDF.
+     * @return Um array de bytes representando o arquivo PDF gerado.
+     * @throws IOException Se houver um erro de leitura do template HTML.
+     * @throws DocumentException Se houver um erro na criação do documento PDF.
+     */
+    byte[] gerarCertificadoPDF(Certificado certificado) throws IOException, DocumentException;
+    
+    /**
+     * Gera um único arquivo PDF consolidado com todos os certificados de um evento.
+     * * A função busca todos os certificados associados a um evento no banco de dados.
+     * Em seguida, utiliza um loop para gerar o PDF de cada certificado individualmente
+     * e os anexa a um único documento PDF, combinando-os em uma única saída.
+     * Retorna um array de bytes com o documento consolidado.
+     *
+     * @param eventoId O ID do evento cujos certificados serão consolidados.
+     * @return Um array de bytes do arquivo PDF consolidado.
+     * @throws IOException Se houver um erro de leitura/escrita de arquivos.
+     * @throws DocumentException Se houver um erro na criação do documento PDF.
+     */
+    byte[] gerarPDFConsolidadoPorEvento(Long eventoId) throws IOException, DocumentException;
 }

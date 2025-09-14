@@ -1,4 +1,3 @@
-// src/main/java/com/example/presenca_system/controller/CertificadoController.java
 package com.example.presenca_system.controller;
 
 import com.example.presenca_system.repository.CertificadoRepository;
@@ -26,17 +25,13 @@ public class CertificadoController {
     @Autowired
     private CertificadoRepository certificadoRepository;
 
-    // Código corrigido para evitar o erro de tipo
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> getCertificadoPDF(@PathVariable Long id) {
-        // 1. Busca o certificado no banco de dados pelo ID
         return certificadoRepository.findById(id)
                 .map(certificado -> {
                     try {
-                        // 2. Chama o serviço para gerar o PDF a partir do objeto Certificado
                         byte[] pdfBytes = certificadoService.gerarCertificadoPDF(certificado);
 
-                        // 3. Configura a resposta HTTP para um arquivo PDF
                         HttpHeaders headers = new HttpHeaders();
                         headers.setContentType(MediaType.APPLICATION_PDF);
                         String filename = "certificado_" + certificado.getUsuario().getCpf() + ".pdf";
@@ -50,7 +45,55 @@ public class CertificadoController {
                         return new ResponseEntity<byte[]>(HttpStatus.INTERNAL_SERVER_ERROR);
                     }
                 })
-                // O retorno de orElseGet() foi ajustado para corresponder ao tipo esperado
-                .orElseGet(() -> new ResponseEntity<byte[]>(HttpStatus.NOT_FOUND)); 
-}
+                .orElseGet(() -> new ResponseEntity<byte[]>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/por-cpf/evento/{eventoId}/usuario/{cpf}")
+    public ResponseEntity<byte[]> getCertificadoPDFPorCpf(
+        @PathVariable String cpf,
+        @PathVariable Long eventoId) {
+
+        return certificadoRepository.findByUsuarioCpfAndEventoEventoId(cpf, eventoId)
+            .map(certificado -> {
+                try {
+                    byte[] pdfBytes = certificadoService.gerarCertificadoPDF(certificado);
+
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.APPLICATION_PDF);
+                    String filename = "certificado_" + cpf + ".pdf";
+                    headers.setContentDispositionFormData(filename, filename);
+                    headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+                    return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+
+                } catch (IOException | DocumentException e) {
+                    e.printStackTrace();
+                    return new ResponseEntity<byte[]>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            })
+            .orElseGet(() -> new ResponseEntity<byte[]>(HttpStatus.NOT_FOUND));
+    }
+
+    // Novo endpoint para gerar todos os certificados de um evento em um único PDF
+    @GetMapping("/evento/{eventoId}/pdf-all")
+    public ResponseEntity<byte[]> getCertificadosEventoPDF(@PathVariable Long eventoId) {
+        try {
+            byte[] pdfBytes = certificadoService.gerarPDFConsolidadoPorEvento(eventoId);
+
+            if (pdfBytes.length == 0) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            String filename = "certificados_evento_" + eventoId + ".pdf";
+            headers.setContentDispositionFormData(filename, filename);
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (IOException | DocumentException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
