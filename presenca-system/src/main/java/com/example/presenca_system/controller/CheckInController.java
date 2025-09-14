@@ -1,6 +1,6 @@
 package com.example.presenca_system.controller;
 
-import com.example.presenca_system.dto.CheckInRequestDTO; // Importe a classe DTO
+import com.example.presenca_system.model.dto.CheckInRequestDTO;
 import com.example.presenca_system.service.CheckInService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

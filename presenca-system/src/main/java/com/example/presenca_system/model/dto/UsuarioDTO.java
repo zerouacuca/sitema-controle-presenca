@@ -1,4 +1,4 @@
-package com.example.presenca_system.dto;
+package com.example.presenca_system.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

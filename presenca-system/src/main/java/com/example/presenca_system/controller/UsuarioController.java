@@ -1,9 +1,9 @@
 package com.example.presenca_system.controller;
 
-import com.example.presenca_system.dto.UsuarioDTO;
-import com.example.presenca_system.dto.UsuarioListDTO;
-import com.example.presenca_system.dto.UsuarioTemplateDTO;
 import com.example.presenca_system.model.Usuario;
+import com.example.presenca_system.model.dto.UsuarioDTO;
+import com.example.presenca_system.model.dto.UsuarioListDTO;
+import com.example.presenca_system.model.dto.UsuarioTemplateDTO;
 import com.example.presenca_system.service.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

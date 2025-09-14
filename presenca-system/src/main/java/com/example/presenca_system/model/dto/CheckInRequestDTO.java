@@ -1,4 +1,4 @@
-package com.example.presenca_system.dto;
+package com.example.presenca_system.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

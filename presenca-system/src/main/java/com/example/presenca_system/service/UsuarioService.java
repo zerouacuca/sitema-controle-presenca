@@ -1,8 +1,8 @@
 package com.example.presenca_system.service;
 
-import com.example.presenca_system.dto.UsuarioListDTO;
-import com.example.presenca_system.dto.UsuarioTemplateDTO;
 import com.example.presenca_system.model.Usuario;
+import com.example.presenca_system.model.dto.UsuarioListDTO;
+import com.example.presenca_system.model.dto.UsuarioTemplateDTO;
 
 import java.util.List;
 import java.util.Optional;
