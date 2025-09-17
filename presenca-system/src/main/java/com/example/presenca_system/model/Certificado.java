@@ -48,7 +48,6 @@ public class Certificado {
     @Column(name = "data_emissao", nullable = false)
     private LocalDate dataEmissao;
 
-    @Lob // Para textos longos
     @Column(name = "texto_certificado", nullable = false)
     private String texto;
 }
