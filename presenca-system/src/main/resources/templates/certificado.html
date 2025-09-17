@@ -1,43 +1,143 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8" />
-    <title>Certificado de Participação</title>
+    <meta charset="UTF-8">
+    <title>Certificado de Treinamento</title>
     <style>
+        @page {
+            size: A4 landscape; /* Define o formato A4 em paisagem */
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            height: 210mm;
+            width: 297mm;
+        }
+
+        .background-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url('plano_de_fundo_certificado.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        
+        /* Estilos do conteúdo */
+        .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             text-align: center;
-            padding: 50px;
-            background-color: #f0f0f0;
+            padding: 20mm;
+            box-sizing: border-box;
+            color: #000;
         }
-        .certificado {
-            border: 10px solid gold;
-            padding: 20px;
-            background-color: white;
-        }
-        h1 {
-            color: #333;
-            font-size: 2.5em;
-        }
-        p {
-            font-size: 1.2em;
-        }
-        .nome {
-            font-size: 2em;
-            color: #007bff;
+
+        /* Estrutura do texto */
+        .title {
+            font-size: 38pt;
             font-weight: bold;
-            margin: 20px 0;
+            margin-top: 25mm;
+        }
+
+        .subtitle {
+            font-size: 15pt;
+            margin-top: 10mm;
+        }
+        
+        .participant-name {
+            font-family: serif; /* Usa uma fonte com serifa para um estilo elegante */
+            font-size: 28pt;
+            margin-top: 2mm;
+            border-bottom: 2px solid #000;
+            display: inline-block;
+            padding: 0 5mm;
+        }
+        
+        .course-description {
+            font-size: 15pt;
+            margin-top: 15mm;
+        }
+        
+        .course-name {
+            font-size: 23pt;
+            font-weight: bold;
+            margin-top: 2mm;
+        }
+        
+        .course-complement {
+            font-size: 13pt;
+            margin-top: 15mm;
+        }
+        
+        /* Assinatura e informações de rodapé */
+        .footer {
+            position: absolute;
+            bottom: 20mm;
+            width: calc(100% - 40mm);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        
+        .instructor-info, .certificate-details {
+            font-size: 11pt;
+            line-height: 1.4;
+            text-align: left;
+        }
+        
+        .certificate-details {
+            text-align: right;
+        }
+
+        .certificate-details .label {
+            color: #000;
+        }
+
+        .certificate-details .value {
+            color: #00f; /* Azul para a data e o número */
         }
     </style>
 </head>
 <body>
-    <div class="certificado">
-        <h1>Certificado de Participação</h1>
-        <p>Certificamos que</p>
-        <p class="nome">${nomeParticipante}</p>
-        <p>participou do evento</p>
-        <p class="evento">${nomeEvento}</p>
-        <p>em ${dataEvento}.</p>
+    <div class="background-container"></div>
+    
+    <div class="content">
+        <h1 class="title">Certificate of Training</h1>
+        <p class="subtitle">Concedido a</p>
+        <h2 class="participant-name">${nomeUsuario}</h2>
+        
+        <p class="course-description">Por completar com sucesso ${cargaHoraria} horas de</p>
+        <h3 class="course-name">${nomeEvento}</h3>
+        <p class="course-complement">${textoCertificado}</p>
+
+        <div class="footer">
+            <div class="instructor-info">
+                <p><strong>${nomeSuperusuario}</strong></p>
+                <p>Instructor</p>
+            </div>
+            <div class="certificate-details">
+                <p>
+                    <span class="label">Data de emissão: </span>
+                    <span class="value">${dataEmissao}</span>
+                </p>
+                <p>
+                    <span class="label">Certificado nº: </span>
+                    <span class="value">${codigoValidacao}</span>
+                </p>
+            </div>
+        </div>
     </div>
 </body>
 </html>
