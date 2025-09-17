@@ -1,5 +1,6 @@
 package com.example.presenca_system.controller;
 
+import com.example.presenca_system.model.dto.EventoDTO;
 import com.example.presenca_system.model.Evento;
 import com.example.presenca_system.repository.EventoRepository;
 import com.example.presenca_system.service.CertificadoService;
@@ -23,14 +24,15 @@ public class EventoController {
     @Autowired
     private CertificadoService certificadoService;
 
+    // Use DTO para evitar problemas de serialização
     @GetMapping
-    public List<Evento> getAllEventos() {
-        return eventoService.findAll();
+    public List<EventoDTO> getAllEventos() {
+        return eventoService.findAllDTO();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Evento> getEventoById(@PathVariable Long id) {
-        return eventoService.findById(id)
+    public ResponseEntity<EventoDTO> getEventoById(@PathVariable Long id) {
+        return eventoService.findByIdDTO(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -55,13 +57,12 @@ public class EventoController {
 
     @PostMapping("/{eventoId}/encerrar")
     public ResponseEntity<String> encerrarEventoEGerarCertificados(@PathVariable Long eventoId) {
-        // 1. Encontra o evento pelo ID
+        // Use o repositório diretamente para operações que precisam da entidade completa
         return eventoRepository.findById(eventoId)
             .map(evento -> {
-                // 2. Chama o serviço para gerar os certificados
                 certificadoService.gerarCertificadosParaEvento(evento);
                 return ResponseEntity.ok("Certificados gerados com sucesso para o evento " + evento.getTitulo() + "!");
             })
             .orElse(ResponseEntity.notFound().build());
     }
-} 
+}

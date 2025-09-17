@@ -12,8 +12,8 @@ import { UsuarioCadastro } from './pages/usuario-cadastro/usuario-cadastro';
 export const routes: Routes = [
   // Rotas específicas devem vir primeiro
   { path: 'login', component: LoginComponent },
-  { path: 'tabela-eventos', component: TabelaEventos },
-  { path: 'evento-crud', component: EventoCrud },
+  { path: 'eventos', component: TabelaEventos },
+  { path: 'cadastrar-evento', component: EventoCrud },
   { path: 'tabela-usuarios', component: TabelaUsuarios },
   { path: 'editar-usuario', component: UsuarioCrud },
   { path: 'navbar', component: Navbar },

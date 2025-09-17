@@ -1,10 +1,9 @@
-export class Evento {
-  constructor(
-    public id: number,
-    public descricao: string = "",
-    public data: Date = new Date(),
-    public status: string = ""
-  ) {
-
-  }
+export interface Evento {
+  eventoId?: number;
+  titulo: string;
+  descricao: string;
+  dataHora: Date | string;
+  categoria: string;
+  cargaHoraria: number;
+  status?: string; // Agora virá do backend
 }

@@ -1,43 +1,92 @@
+<app-navbar></app-navbar>
 <div class="gradient-custom min-vh-100 p-4">
   <div class="background-glass p-4">
     <h2 class="system-title mb-4">Todos os eventos</h2>
 
-    <div class="filtro-data mb-4 d-flex align-items-center gap-2">
-      <input type="date" [(ngModel)]="dataInicioFiltro" class="form-control" style="max-width: 200px;" placeholder="Data inicial">
-      <input type="date" [(ngModel)]="dataFimFiltro" class="form-control" style="max-width: 200px;" placeholder="Data final">
-      <button class="btn btn-primary btn-sm" (click)="filtrarEventos()">Filtrar</button>
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Carregando...</span>
+      </div>
+      <p class="mt-2">Carregando eventos...</p>
     </div>
 
-    <div class="table-responsive">
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Data</th>
-            <th>Descrição</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let evento of eventos">
-            <td>{{ evento.id }}</td>
-            <td>{{ evento.data}}</td>
-            <td>{{ evento.descricao }}</td>
-            <td>
-                {{ evento.status }}
-            </td>
-          <td class="actions">
-            <div class="actions-container">
-              <button class="btn btn-primary btn-sm">Cadastrar</button>
-              <button class="btn btn-primary btn-sm">Editar</button>
-              <button class="btn btn-primary btn-sm">Remover</button>
-              <button class="btn btn-primary btn-sm">Download</button>
-            </div>
-          </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Conteúdo principal -->
+    <div *ngIf="!isLoading">
+      <!-- Filtros e botão de cadastro -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="filtro-data d-flex align-items-center gap-2">
+          <input type="date" [(ngModel)]="dataInicioFiltro" class="form-control" style="max-width: 200px;" placeholder="Data inicial">
+          <input type="date" [(ngModel)]="dataFimFiltro" class="form-control" style="max-width: 200px;" placeholder="Data final">
+          <button class="btn btn-primary btn-sm" (click)="filtrarEventos()">Filtrar</button>
+        </div>
+        <button class="btn btn-success" (click)="cadastrarEvento()">
+          <i class="fas fa-plus me-1"></i> Novo Evento
+        </button>
+      </div>
+
+      <!-- Tabela de eventos -->
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Data</th>
+              <th>Título</th>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th>Carga Horária</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let evento of eventosFiltrados" [class.table-warning]="evento.status === 'em andamento'" 
+                [class.table-success]="evento.status === 'finalizada'" [class.table-danger]="evento.status === 'cancelada'"
+                [class.table-info]="evento.status === 'agendado'">
+              <td>{{ evento.eventoId }}</td>
+              <td>{{ formatarData(evento.dataHora) }}</td>
+              <td>{{ evento.titulo }}</td>
+              <td>{{ evento.descricao }}</td>
+              <td>{{ evento.categoria }}</td>
+              <td>{{ evento.cargaHoraria }}h</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'bg-warning': evento.status === 'em andamento',
+                  'bg-success': evento.status === 'finalizada',
+                  'bg-danger': evento.status === 'cancelada',
+                  'bg-info': evento.status === 'agendado',
+                  'bg-secondary': !evento.status
+                }">
+                  {{ evento.status || 'Não definido' }}
+                </span>
+              </td>
+              <td class="actions">
+                <div class="btn-group" role="group">
+                  <button class="btn btn-outline-primary btn-sm" (click)="editarEvento(evento)" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" (click)="removerEvento(evento)" title="Remover">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                  <button class="btn btn-outline-info btn-sm" (click)="baixarRelatorio(evento)" title="Download Relatório">
+                    <i class="fas fa-download"></i>
+                  </button>
+                  <button class="btn btn-outline-success btn-sm" (click)="encerrarEvento(evento)" 
+                          *ngIf="evento.status !== 'finalizada' && evento.status !== 'cancelada'" title="Encerrar Evento">
+                    <i class="fas fa-flag-checkered"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="eventosFiltrados.length === 0">
+              <td colspan="8" class="text-center py-4">
+                Nenhum evento encontrado.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
