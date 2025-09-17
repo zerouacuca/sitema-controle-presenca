@@ -41,7 +41,7 @@ public class CertificadoServiceImpl implements CertificadoService {
             return;
         }
 
-        String nomeSuperusuario = evento.getSuperusuario().getUsuario().getNome();
+        String nomeSuperusuario = evento.getSuperusuario().getNome();
 
         for (CheckIn checkIn : checkIns) {
             if (checkIn.getStatus() == StatusCheckIn.PRESENTE) {

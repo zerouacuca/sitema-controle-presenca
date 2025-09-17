@@ -16,12 +16,19 @@ import java.util.Set;
 public class Usuario {
 
     @Id
+    @Column(name = "cpf", nullable = false, unique = true)
     private String cpf;
 
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "nome", nullable = false)
     private String nome;
 
+    @Column(name = "matricula", nullable = false, unique = true)
     private String matricula;
 
+    @Column(name = "setor", nullable = false)
     private String setor;
 
     @Column(name = "data_nascimento")
