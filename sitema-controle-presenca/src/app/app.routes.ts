@@ -22,6 +22,8 @@ export const routes: Routes = [
   
   // Rotas de edição de usuário com parâmetro CPF
   { path: 'editar-usuario/:cpf', component: UsuarioCrud },
+  // Rotas de edição de evento com parâmetro ID
+  { path: 'editar-evento/:id', component: EventoCrud },
 
   // A rota de redirecionamento ou wildcard deve sempre vir por último
   { path: '', redirectTo: '/login', pathMatch: 'full' },

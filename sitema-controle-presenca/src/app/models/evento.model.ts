@@ -5,5 +5,4 @@ export interface Evento {
   dataHora: Date | string;
   categoria: string;
   cargaHoraria: number;
-  status?: string; // Agora virá do backend
-}
+ }
