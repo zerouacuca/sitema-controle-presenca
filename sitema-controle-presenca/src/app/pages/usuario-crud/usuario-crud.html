@@ -1,60 +1,118 @@
 <app-navbar></app-navbar>
-<div class="gradient-custom min-vh-100 p-4 mt-5">
-    <div class="background-glass p-4">
-        <h2 class="system-title mb-4">Gerenciar Usuário</h2>
-
-        <form (ngSubmit)="salvarUsuario()">
-            <div class="mb-3">
-                <label for="cpf" class="form-label">CPF:</label>
-                <input id="cpf" type="text" class="form-control" [(ngModel)]="usuario.cpf" name="cpf"
-                    mask="000.000.000-00" required autocomplete="off" [disabled]="isEditMode">
-            </div>
-
-            <div class="mb-3">
-                <label for="nomeCompleto" class="form-label">NOME COMPLETO</label>
-                <input id="nomeCompleto" type="text" class="form-control" [(ngModel)]="usuario.nome" name="nome"
-                    required>
-            </div>
-
-            <div class="mb-3">
-                <label for="dataNascimento" class="form-label">DATA DE NASCIMENTO</label>
-                <input id="dataNascimento" type="date" class="form-control" [(ngModel)]="usuario.dataNascimento"
-                    name="dataNascimento" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="matricula" class="form-label">MATRÍCULA</label>
-                <input id="matricula" type="text" class="form-control" [(ngModel)]="usuario.matricula" name="matricula"
-                    required>
-            </div>
-
-            <div class="mb-3">
-                <label for="setor" class="form-label">SETOR</label>
-                <input id="setor" type="text" class="form-control" [(ngModel)]="usuario.setor" name="setor">
-            </div>
-
-            <div class="mb-4">
-                <label for="biometria" class="form-label">BIOMETRIA</label>
-                <div class="d-flex gap-2">
-                    <input id="biometria" type="text" class="form-control shadow-sm border-0"
-                        [(ngModel)]="usuario.template" name="biometria" readonly autocomplete="off"
-                        placeholder="Hash da biometria">
-                    <button type="button" class="btn btn-primary btn-sm rounded-pill shadow-sm flex-fill btn-biotoken"
-                        (click)="obterBiometria()">
-                        <i class="bi bi-fingerprint"></i> Obter biometria
-                    </button>
-                </div>
-            </div>
-
-            <div class="actions-container d-flex gap-2">
-                                <button type="submit" class="btn btn-primary btn-sm rounded-pill shadow-sm flex-fill">
-                    <i class="bi bi-person-plus"></i> {{ isEditMode ? 'Atualizar' : 'Cadastrar' }}
-                </button>
-                                <button *ngIf="isEditMode" type="button"
-                    class="btn btn-danger btn-sm rounded-pill shadow-sm flex-fill" (click)="remover()">
-                    <i class="bi bi-trash"></i> Remover
-                </button>
-            </div>
-        </form>
+<div class="gradient-custom min-vh-100 p-4">
+  <div class="background-glass p-4">
+    
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Carregando...</span>
+      </div>
+      <p class="mt-2">
+        {{ isEditMode ? 'Carregando usuário...' : 'Salvando usuário...' }}
+      </p>
     </div>
+
+    <!-- Conteúdo principal -->
+    <div *ngIf="!isLoading">
+      <h2 class="system-title mb-4">
+        {{ isEditMode ? 'Editar Usuário' : 'Cadastrar Novo Usuário' }}
+      </h2>
+
+      <form #usuarioForm="ngForm">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="cpf" class="form-label">CPF *</label>
+            <input id="cpf" type="text" class="form-control" 
+                  [(ngModel)]="usuario.cpf" name="cpf"
+                  mask="000.000.000-00" required 
+                  [disabled]="isEditMode"
+                  placeholder="000.000.000-00">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="dataNascimento" class="form-label">Data de Nascimento *</label>
+            <input id="dataNascimento" type="date" class="form-control" 
+                  [(ngModel)]="usuario.dataNascimento" name="dataNascimento" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="nome" class="form-label">Nome Completo *</label>
+            <input id="nome" type="text" class="form-control" 
+                  [(ngModel)]="usuario.nome" name="nome" required>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="matricula" class="form-label">Matrícula *</label>
+            <input id="matricula" type="text" class="form-control" 
+                  [(ngModel)]="usuario.matricula" name="matricula" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="setor" class="form-label">Setor</label>
+            <input id="setor" type="text" class="form-control" 
+                  [(ngModel)]="usuario.setor" name="setor"
+                  placeholder="Opcional">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="biometria" class="form-label">Biometria *</label>
+            <div class="input-group">
+              <input id="biometria" type="text" class="form-control" 
+                    [(ngModel)]="usuario.template" name="biometria" 
+                    readonly placeholder="Hash da biometria">
+              <button type="button" class="btn btn-primary" 
+                      (click)="obterBiometria()" title="Obter Biometria"
+                      [disabled]="isLoading">
+                <i class="fas fa-fingerprint"></i>
+              </button>
+            </div>
+            <small class="text-muted">Clique no botão para capturar a biometria</small>
+          </div>
+        </div>
+      </form>
+
+      <div class="actions-container mt-4">
+        <!-- Modo Criação -->
+        <div *ngIf="!isEditMode" class="d-flex gap-2">
+          <button class="btn btn-success" 
+                  (click)="salvarUsuario()" 
+                  [disabled]="!usuarioForm.valid || !usuario.template || isLoading">
+            <i class="fas fa-user-plus me-1"></i> Cadastrar Usuário
+          </button>
+          <button class="btn btn-secondary" (click)="cancelar()" [disabled]="isLoading">
+            <i class="fas fa-times me-1"></i> Cancelar
+          </button>
+        </div>
+
+        <!-- Modo Edição -->
+        <div *ngIf="isEditMode" class="d-flex gap-2 flex-wrap">
+          <button class="btn btn-primary" 
+                  (click)="salvarUsuario()" 
+                  [disabled]="!usuarioForm.valid || isLoading">
+            <i class="fas fa-save me-1"></i> Salvar Alterações
+          </button>
+          
+          <button class="btn btn-danger" (click)="remover()" [disabled]="isLoading">
+            <i class="fas fa-trash me-1"></i> Remover Usuário
+          </button>
+
+          <button class="btn btn-info" (click)="obterBiometria()" [disabled]="isLoading">
+            <i class="fas fa-fingerprint me-1"></i> Atualizar Biometria
+          </button>
+
+          <button class="btn btn-secondary" (click)="cancelar()" [disabled]="isLoading">
+            <i class="fas fa-arrow-left me-1"></i> Voltar
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <small class="text-muted">* Campos obrigatórios</small>
+      </div>
+    </div>
+  </div>
 </div>
