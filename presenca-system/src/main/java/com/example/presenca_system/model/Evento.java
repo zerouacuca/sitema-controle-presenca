@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
-import java.util.Set; // Importe a classe Set
+import java.util.Set;
+
+import com.example.presenca_system.model.enums.StatusEvento;
 
 @Entity
 @Data
@@ -35,6 +37,10 @@ public class Evento {
 
     @Column(name = "cargaHoraria", nullable = false)
     private double cargaHoraria;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private StatusEvento status = StatusEvento.AGENDADO; // Valor padrão
 
     @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL)
     private Set<CheckIn> checkIns;

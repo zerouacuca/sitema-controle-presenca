@@ -12,9 +12,9 @@ INSERT INTO superusuarios (cpf, senha) VALUES
 ('23456789012', '$2a$10$DEF456ghi789jkl012mno');
 
 -- Inserir Eventos - VERIFIQUE OS NOMES EXATOS DAS COLUNAS NO SEU BANCO!
-INSERT INTO evento (superusuario_cpf, titulo, descricao, data_hora, categoria, carga_horaria) VALUES
-('12345678901', 'Workshop Spring Boot', 'Workshop completo sobre desenvolvimento com Spring Boot e boas práticas', '2024-01-15 14:00:00', 'Tecnologia', 4.0),
-('23456789012', 'Treinamento Liderança', 'Desenvolvimento de habilidades de liderança e gestão de equipes', '2024-01-20 09:00:00', 'Gestão', 8.0);
+INSERT INTO evento (superusuario_cpf, titulo, descricao, data_hora, categoria, carga_horaria, status) VALUES
+('12345678901', 'Workshop Spring Boot', 'Workshop completo sobre desenvolvimento com Spring Boot e boas práticas', '2024-01-15 14:00:00', 'Tecnologia', 4.0,'AGENDADO'),
+('23456789012', 'Treinamento Liderança', 'Desenvolvimento de habilidades de liderança e gestão de equipes', '2024-01-20 09:00:00', 'Gestão', 8.0, 'EM_ANDAMENTO');
 
 -- Inserir CheckIns
 INSERT INTO check_in (evento_id, usuario_cpf, data_hora_checkin, status) VALUES

@@ -2,8 +2,8 @@ package com.example.presenca_system.service.impl;
 
 import com.example.presenca_system.model.CheckIn;
 import com.example.presenca_system.model.Evento;
-import com.example.presenca_system.model.StatusCheckIn;
 import com.example.presenca_system.model.Usuario;
+import com.example.presenca_system.model.enums.StatusCheckIn;
 import com.example.presenca_system.repository.CheckInRepository;
 import com.example.presenca_system.repository.EventoRepository; // Adicionado para buscar o evento
 import com.example.presenca_system.repository.UsuarioRepository;

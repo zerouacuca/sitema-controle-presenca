@@ -1,6 +1,8 @@
+// src/main/java/com/example/presenca_system/service/impl/EventoServiceImpl.java
 package com.example.presenca_system.service.impl;
 
 import com.example.presenca_system.model.dto.EventoDTO;
+import com.example.presenca_system.model.enums.StatusEvento;
 import com.example.presenca_system.model.Evento;
 import com.example.presenca_system.repository.EventoRepository;
 import com.example.presenca_system.service.EventoService;
@@ -33,6 +35,10 @@ public class EventoServiceImpl implements EventoService {
 
     @Override
     public Evento save(Evento evento) {
+        // Define o status automaticamente baseado na data
+        if (evento.getStatus() == null) {
+            evento.setStatus(calcularStatus(evento));
+        }
         return eventoRepository.save(evento);
     }
 
@@ -49,6 +55,14 @@ public class EventoServiceImpl implements EventoService {
             existingEvento.setDataHora(evento.getDataHora());
             existingEvento.setCategoria(evento.getCategoria());
             existingEvento.setCargaHoraria(evento.getCargaHoraria());
+            
+            // Atualiza o status se necessário
+            if (evento.getStatus() != null) {
+                existingEvento.setStatus(evento.getStatus());
+            } else {
+                existingEvento.setStatus(calcularStatus(existingEvento));
+            }
+            
             return eventoRepository.save(existingEvento);
         });
     }
@@ -72,16 +86,54 @@ public class EventoServiceImpl implements EventoService {
         dto.setDataHora(evento.getDataHora());
         dto.setCategoria(evento.getCategoria());
         dto.setCargaHoraria(evento.getCargaHoraria());
-        dto.setStatus(calcularStatus(evento));
+        dto.setStatus(evento.getStatus());
         return dto;
     }
 
-    private String calcularStatus(Evento evento) {
+    private StatusEvento calcularStatus(Evento evento) {
         Date agora = new Date();
-        if (evento.getDataHora().after(agora)) {
-            return "agendado";
-        } else {
-            return "finalizado";
+        Date dataEvento = evento.getDataHora();
+        
+        if (dataEvento.after(agora)) {
+            return StatusEvento.AGENDADO;
         }
+        
+        // Se o evento já começou, verifica se ainda está em andamento
+        Date fimEvento = new Date(dataEvento.getTime() + (long) (evento.getCargaHoraria() * 60 * 60 * 1000));
+        
+        if (agora.after(dataEvento) && agora.before(fimEvento)) {
+            return StatusEvento.EM_ANDAMENTO;
+        }
+        
+        // Se já passou do tempo do evento
+        if (agora.after(fimEvento)) {
+            return StatusEvento.FINALIZADO;
+        }
+        
+        return StatusEvento.AGENDADO; // fallback
+    }
+
+    // Método para atualizar o status de um evento
+    public void atualizarStatus(Long eventoId, StatusEvento novoStatus) {
+        eventoRepository.findById(eventoId).ifPresent(evento -> {
+            evento.setStatus(novoStatus);
+            eventoRepository.save(evento);
+        });
+    }
+
+    // Método para encerrar um evento
+    public void encerrarEvento(Long eventoId) {
+        eventoRepository.findById(eventoId).ifPresent(evento -> {
+            evento.setStatus(StatusEvento.FINALIZADO);
+            eventoRepository.save(evento);
+        });
+    }
+
+    // Método para cancelar um evento
+    public void cancelarEvento(Long eventoId) {
+        eventoRepository.findById(eventoId).ifPresent(evento -> {
+            evento.setStatus(StatusEvento.CANCELADO);
+            eventoRepository.save(evento);
+        });
     }
 }

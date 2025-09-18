@@ -1,19 +1,19 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { FormsModule } from '@angular/forms';
 
-import { Evento } from '../../models/evento.model';
+import { Evento, StatusEvento } from '../../models/evento.model';
 import { EventoService } from '../../servicos/evento-service';
 import { Navbar } from '../../componentes/navbar/navbar';
 
 @Component({
   selector: 'app-tabela-eventos',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, Navbar, FormsModule],
+  imports: [CommonModule, HttpClientModule, FormsModule, Navbar],
   templateUrl: './tabela-eventos.html',
   styleUrls: ['./tabela-eventos.css']
 })
@@ -24,6 +24,9 @@ export class TabelaEventos implements OnInit, OnDestroy {
   isLoading: boolean = true;
   dataInicioFiltro: string | null = null;
   dataFimFiltro: string | null = null;
+  
+  // Disponibilize o enum para o template
+  StatusEvento = StatusEvento;
   
   private routerSubscription!: Subscription;
 
@@ -39,7 +42,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
     this.routerSubscription = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-      // Recarrega os eventos quando navegar de volta para esta página
       if (event.url === '/tabela-eventos' || event.url === '/') {
         this.carregarEventos();
       }
@@ -59,12 +61,12 @@ export class TabelaEventos implements OnInit, OnDestroy {
         this.eventos = eventos;
         this.eventosFiltrados = [...this.eventos];
         this.isLoading = false;
-        this.cd.detectChanges(); // Força o Angular a atualizar o template
+        this.cd.detectChanges();
       },
       error: (error) => {
         console.error('Erro ao carregar eventos:', error);
         this.isLoading = false;
-        this.cd.detectChanges(); // Força a atualização mesmo em caso de erro
+        this.cd.detectChanges();
       }
     });
   }
@@ -117,7 +119,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
 
   baixarRelatorio(evento: Evento): void {
     console.log('Baixar relatório:', evento);
-    // Implementar lógica de download de relatório
   }
 
   encerrarEvento(evento: Evento): void {
@@ -144,18 +145,31 @@ export class TabelaEventos implements OnInit, OnDestroy {
     return date.toLocaleDateString('pt-BR');
   }
 
-  getStatusClass(status: string | undefined): string {
-    switch (status?.toLowerCase()) {
-      case 'em andamento':
-        return 'status-andamento';
-      case 'finalizada':
-        return 'status-finalizada';
-      case 'cancelada':
-        return 'status-cancelada';
-      case 'agendado':
-        return 'status-agendado';
-      default:
-        return 'status-padrao';
+  // Método para obter a descrição do status
+  getStatusDescricao(status: StatusEvento | undefined): string {
+    if (!status) return 'Não definido';
+    
+    switch (status) {
+      case StatusEvento.AGENDADO: return 'Agendado';
+      case StatusEvento.EM_ANDAMENTO: return 'Em Andamento';
+      case StatusEvento.FINALIZADO: return 'Finalizado';
+      case StatusEvento.CANCELADO: return 'Cancelado';
+      case StatusEvento.PAUSADO: return 'Pausado';
+      default: return 'Não definido';
+    }
+  }
+
+  // Método para obter a classe CSS baseada no status
+  getStatusClass(status: StatusEvento | undefined): string {
+    if (!status) return 'status-padrao';
+    
+    switch (status) {
+      case StatusEvento.EM_ANDAMENTO: return 'status-andamento';
+      case StatusEvento.FINALIZADO: return 'status-finalizada';
+      case StatusEvento.CANCELADO: return 'status-cancelada';
+      case StatusEvento.AGENDADO: return 'status-agendado';
+      case StatusEvento.PAUSADO: return 'status-pausado';
+      default: return 'status-padrao';
     }
   }
 }

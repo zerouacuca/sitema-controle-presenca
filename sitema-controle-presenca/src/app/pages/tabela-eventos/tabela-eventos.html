@@ -41,9 +41,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let evento of eventosFiltrados" [class.table-warning]="evento.status === 'em andamento'" 
-                [class.table-success]="evento.status === 'finalizada'" [class.table-danger]="evento.status === 'cancelada'"
-                [class.table-info]="evento.status === 'agendado'">
+            <tr *ngFor="let evento of eventosFiltrados" 
+                [class.table-warning]="evento.status === StatusEvento.EM_ANDAMENTO" 
+                [class.table-success]="evento.status === StatusEvento.FINALIZADO" 
+                [class.table-danger]="evento.status === StatusEvento.CANCELADO"
+                [class.table-info]="evento.status === StatusEvento.AGENDADO"
+                [class.table-secondary]="evento.status === StatusEvento.PAUSADO">
               <td>{{ evento.eventoId }}</td>
               <td>{{ formatarData(evento.dataHora) }}</td>
               <td>{{ evento.titulo }}</td>
@@ -52,13 +55,13 @@
               <td>{{ evento.cargaHoraria }}h</td>
               <td>
                 <span class="badge" [ngClass]="{
-                  'bg-warning': evento.status === 'em andamento',
-                  'bg-success': evento.status === 'finalizada',
-                  'bg-danger': evento.status === 'cancelada',
-                  'bg-info': evento.status === 'agendado',
-                  'bg-secondary': !evento.status
+                  'bg-warning': evento.status === StatusEvento.EM_ANDAMENTO,
+                  'bg-success': evento.status === StatusEvento.FINALIZADO,
+                  'bg-danger': evento.status === StatusEvento.CANCELADO,
+                  'bg-info': evento.status === StatusEvento.AGENDADO,
+                  'bg-secondary': evento.status === StatusEvento.PAUSADO || !evento.status
                 }">
-                  {{ evento.status || 'Não definido' }}
+                  {{ getStatusDescricao(evento.status) }}
                 </span>
               </td>
               <td class="actions">
@@ -73,7 +76,8 @@
                     <i class="fas fa-download"></i>
                   </button>
                   <button class="btn btn-outline-success btn-sm" (click)="encerrarEvento(evento)" 
-                          *ngIf="evento.status !== 'finalizada' && evento.status !== 'cancelada'" title="Encerrar Evento">
+                          *ngIf="evento.status !== StatusEvento.FINALIZADO && evento.status !== StatusEvento.CANCELADO" 
+                          title="Encerrar Evento">
                     <i class="fas fa-flag-checkered"></i>
                   </button>
                 </div>
