@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>Certificado de Treinamento</title>
+    <title>Certificado</title>
     <style type="text/css">
         @page {
             size: A4 landscape;
@@ -11,172 +11,173 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            position: relative;
             height: 210mm;
             width: 297mm;
+            background-image: url('data:image/png;base64,[[${backgroundImageBase64}]]');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            font-family: 'Arial', sans-serif;
         }
 
-        /* Imagem de fundo como elemento HTML */
-        .background-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        .content {
-            position: relative;
-            width: 100%;
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             height: 100%;
             text-align: center;
-            padding: 30mm 20mm;
-            box-sizing: border-box;
-            color: #2c3e50;
-            z-index: 1;
+            padding: 40px;
         }
 
         .title {
-            font-size: 42pt;
+            font-size: 36pt;
             font-weight: bold;
-            margin-top: 20mm;
             color: #2c3e50;
+            margin-bottom: 20px;
             text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
         .subtitle {
             font-size: 16pt;
-            margin-top: 15mm;
             color: #7f8c8d;
+            margin-bottom: 10px;
         }
-        
+
         .participant-name {
             font-family: 'Georgia', serif;
-            font-size: 32pt;
-            margin-top: 5mm;
+            font-size: 28pt;
+            font-weight: bold;
             color: #2c3e50;
-            font-weight: bold;
-            padding: 10px 30px;
-            display: inline-block;
+            margin: 20px 0;
+            padding: 15px 40px;
+            border-bottom: 2px solid #2c3e50;
         }
-        
-        .course-description {
-            font-size: 16pt;
-            margin-top: 20mm;
+
+        .completion-text {
+            font-size: 14pt;
             color: #34495e;
-            line-height: 1.6;
+            margin: 15px 0;
+            line-height: 1.5;
         }
-        
-        .course-name {
-            font-size: 26pt;
+
+        .event-name {
+            font-size: 22pt;
             font-weight: bold;
-            margin-top: 5mm;
             color: #e74c3c;
+            margin: 15px 0;
             text-transform: uppercase;
         }
-        
-        .course-complement {
-            font-size: 14pt;
-            margin-top: 15mm;
+
+        .certificate-text {
+            font-size: 12pt;
             color: #7f8c8d;
             font-style: italic;
-            line-height: 1.5;
-            max-width: 80%;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 20px 0;
+            line-height: 1.4;
+            max-width: 600px;
         }
-        
+
         .footer {
-            position: absolute;
-            bottom: 25mm;
-            width: calc(100% - 40mm);
+            margin-top: 30px;
+            width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
         }
-        
-        .instructor-info {
-            font-size: 12pt;
-            line-height: 1.4;
+
+        .signature {
             text-align: left;
-            color: #2c3e50;
         }
-        
-        .instructor-signature {
-            margin-top: 40px;
-            border-top: 2px solid #2c3e50;
-            padding-top: 10px;
+
+        .signature-line {
+            border-top: 1px solid #2c3e50;
+            padding-top: 5px;
+            margin-top: 20px;
+            width: 200px;
+        }
+
+        .signature-name {
             font-weight: bold;
+            color: #2c3e50;
+            font-size: 12pt;
         }
-        
-        .certificate-details {
+
+        .signature-role {
+            color: #7f8c8d;
             font-size: 11pt;
-            line-height: 1.4;
+        }
+
+        .details {
             text-align: right;
-            color: #2c3e50;
         }
 
-        .certificate-details .label {
+        .detail-item {
+            margin-bottom: 5px;
+        }
+
+        .detail-label {
             font-weight: bold;
             color: #2c3e50;
+            font-size: 11pt;
         }
 
-        .certificate-details .value {
+        .detail-value {
             color: #e74c3c;
-            font-weight: bold;
+            font-size: 11pt;
         }
 
-        /* Overlay para melhor legibilidade do texto sobre a imagem */
-        .text-overlay {
-            background: rgba(255, 255, 255, 0.85);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin: 0 auto;
-            max-width: 85%;
+        /* Overlay para melhor contraste */
+        .content-overlay {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 10px;
             border: 2px solid #e74c3c;
+            max-width: 800px;
         }
     </style>
 </head>
 <body>
-    <!-- Imagem de fundo como elemento HTML (mais confiável que CSS background) -->
-    <img class="background-image" th:src="${backgroundImagePath}" alt="Background" />
-    
-    <div class="content">
-        <div class="text-overlay">
+    <div class="container">
+        <div class="content-overlay">
             <h1 class="title">Certificate of Training</h1>
-            <p class="subtitle">Concedido a</p>
-            <h2 class="participant-name" th:text="${certificado.nomeUsuario}">João Silva</h2>
             
-            <p class="course-description">Por completar com sucesso 
-                <span th:text="${#numbers.formatInteger(certificado.evento.cargaHoraria, 0)}">4</span> 
+            <p class="subtitle">Concedido a</p>
+            
+            <h2 class="participant-name" th:text="${certificado.nomeUsuario}">Nome do Participante</h2>
+            
+            <p class="completion-text">
+                Por completar com sucesso 
+                <span th:text="${#numbers.formatInteger(certificado.evento.cargaHoraria, 0)}">0</span> 
                 horas de
             </p>
-            <h3 class="course-name" th:text="${certificado.evento.titulo}">Workshop Spring Boot</h3>
-            <p class="course-complement" th:text="${certificado.texto}">Certificado de participação no Workshop Spring Boot com carga horária de 4 horas.</p>
-        </div>
+            
+            <h3 class="event-name" th:text="${certificado.evento.titulo}">Nome do Evento</h3>
+            
+            <p class="certificate-text" th:text="${certificado.texto}">
+                Certificado de participação com carga horária total de horas.
+            </p>
 
-        <div class="footer">
-            <div class="instructor-info">
-                <div class="instructor-signature">
-                    <p th:text="${certificado.nomeSuperusuario}">João Silva</p>
-                    <p>Instructor</p>
+            <div class="footer">
+                <div class="signature">
+                    <div class="signature-line">
+                        <p class="signature-name" th:text="${certificado.nomeSuperusuario}">Nome do Instrutor</p>
+                        <p class="signature-role">Instructor</p>
+                    </div>
                 </div>
-            </div>
-            <div class="certificate-details">
-                <p>
-                    <span class="label">Data de emissão: </span>
-                    <span class="value" th:text="${#temporals.format(certificado.dataEmissao, 'dd/MM/yyyy')}">15/01/2024</span>
-                </p>
-                <p>
-                    <span class="label">Certificado nº: </span>
-                    <span class="value" th:text="${certificado.codigoValidacao}">CERT001</span>
-                </p>
+                
+                <div class="details">
+                    <div class="detail-item">
+                        <span class="detail-label">Data de emissão: </span>
+                        <span class="detail-value" th:text="${#temporals.format(certificado.dataEmissao, 'dd/MM/yyyy')}">00/00/0000</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Certificado nº: </span>
+                        <span class="detail-value" th:text="${certificado.codigoValidacao}">CODIGO123</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
