@@ -1,15 +1,15 @@
 package com.example.presenca_system.service.impl;
 
+import com.example.presenca_system.service.PDFService;
+import com.example.presenca_system.service.CertificadoService;
 import com.example.presenca_system.model.Certificado;
 import com.example.presenca_system.model.Evento;
 import com.example.presenca_system.model.Usuario;
 import com.example.presenca_system.repository.CertificadoRepository;
 import com.example.presenca_system.repository.UsuarioRepository;
-import com.example.presenca_system.service.CertificadoService;
 import com.lowagie.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.presenca_system.service.PDFService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,8 +30,8 @@ public class CertificadoServiceImpl implements CertificadoService {
 
     @Override
     public void gerarCertificadosParaEvento(Evento evento) {
-        // Implementação existente para gerar certificados
-        // (mantenha a implementação que você já tinha)
+        // Implementação para gerar certificados para um evento
+        // (sua implementação existente)
     }
 
     @Override
