@@ -1,0 +1,177 @@
+<div class="container mt-4">
+  <!-- Cabeçalho -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="text-center mb-4">
+        <i class="bi bi-award-fill me-2"></i>Gerenciamento de Certificados
+      </h2>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <i class="bi bi-search me-2"></i>Pesquisar Certificados
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <!-- Pesquisa por CPF -->
+        <div class="col-md-5">
+          <label class="form-label">Pesquisar por CPF:</label>
+          <div class="input-group">
+            <input type="text" class="form-control" 
+                   [(ngModel)]="cpfPesquisa" 
+                   placeholder="Digite o CPF do usuário"
+                   (keyup.enter)="pesquisarPorUsuario()">
+            <button class="btn btn-outline-primary" 
+                    (click)="pesquisarPorUsuario()">
+              <i class="bi bi-search"></i> Buscar
+            </button>
+          </div>
+        </div>
+
+        <!-- Pesquisa por Evento -->
+        <div class="col-md-5">
+          <label class="form-label">Pesquisar por Evento (ID):</label>
+          <div class="input-group">
+            <input type="number" class="form-control" 
+                   [(ngModel)]="eventoIdPesquisa" 
+                   placeholder="ID do Evento"
+                   (keyup.enter)="pesquisarPorEvento()">
+            <button class="btn btn-outline-primary" 
+                    (click)="pesquisarPorEvento()">
+              <i class="bi bi-search"></i> Buscar
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="btn btn-outline-secondary w-100" 
+                  (click)="limparFiltros()">
+            <i class="bi bi-x-circle"></i> Limpar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensagens -->
+  @if (mensagem) {
+  <div class="alert alert-success alert-dismissible fade show">
+    {{ mensagem }}
+    <button type="button" class="btn-close" (click)="mensagem = ''"></button>
+  </div>
+  }
+
+  @if (erro) {
+  <div class="alert alert-danger alert-dismissible fade show">
+    {{ erro }}
+    <button type="button" class="btn-close" (click)="erro = ''"></button>
+  </div>
+  }
+
+  <!-- Loading -->
+  @if (carregando) {
+  <div class="text-center my-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Carregando...</span>
+    </div>
+    <p class="mt-2">Carregando certificados...</p>
+  </div>
+  }
+
+  <!-- Lista de Certificados -->
+  @if (!carregando) {
+  <div class="card">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <span>
+        <i class="bi bi-list-check me-2"></i>
+        Certificados Encontrados: {{ certificadosFiltrados.length }}
+        @if (filtroAtivo !== 'todos') {
+          <span class="badge bg-info ms-2">Filtrado</span>
+        }
+      </span>
+      
+      <!-- Ações em Lote -->
+      @if (algumSelecionado()) {
+      <div class="btn-group">
+        <button class="btn btn-success btn-sm" 
+                (click)="baixarCertificadosSelecionados()">
+          <i class="bi bi-download"></i> Baixar Selecionados
+        </button>
+        <button class="btn btn-info btn-sm" 
+                (click)="enviarPorEmail()">
+          <i class="bi bi-envelope"></i> Enviar Email
+        </button>
+      </div>
+      }
+
+      <!-- Download todos do evento -->
+      @if (filtroAtivo === 'evento' && eventoIdPesquisa) {
+      <button class="btn btn-primary btn-sm"
+              (click)="baixarTodosEvento()">
+        <i class="bi bi-download"></i> Baixar Todos
+      </button>
+      }
+    </div>
+
+    <div class="card-body p-0">
+      @if (certificadosFiltrados.length > 0) {
+      <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th width="50px">
+                <input type="checkbox" 
+                       [checked]="todosSelecionados()"
+                       (change)="toggleSelecionarTodos($event)">
+              </th>
+              <th>Nome do Participante</th>
+              <th>CPF</th>
+              <th>Evento</th>
+              <th>Carga Horária</th>
+              <th>Data Emissão</th>
+              <th>Código</th>
+              <th width="100px">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (certificado of certificadosFiltrados; track certificado.id) {
+            <tr [class.table-primary]="certificado.selected">
+              <td>
+                <input type="checkbox" 
+                       [checked]="certificado.selected"
+                       (change)="toggleSelecionar(certificado)">
+              </td>
+              <td>{{ certificado.nomeUsuario }}</td>
+              <td>{{ certificado.cpfUsuario }}</td>
+              <td>{{ certificado.eventoTitulo }}</td>
+              <td>{{ certificado.eventoCargaHoraria }}h</td>
+              <td>{{ formatarData(certificado.dataEmissao) }}</td>
+              <td>
+                <span class="badge bg-secondary">{{ certificado.codigoValidacao }}</span>
+              </td>
+              <td>
+                <button class="btn btn-outline-primary btn-sm" 
+                        (click)="baixarCertificadoIndividual(certificado)"
+                        title="Baixar Certificado">
+                  <i class="bi bi-download"></i>
+                </button>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      } @else {
+      <!-- Empty state -->
+      <div class="text-center py-5">
+        <i class="bi bi-inbox display-4 text-muted"></i>
+        <p class="text-muted mt-3">Nenhum certificado encontrado</p>
+        <p class="text-muted">Use os filtros acima para pesquisar certificados</p>
+      </div>
+      }
+    </div>
+  </div>
+  }
+</div>

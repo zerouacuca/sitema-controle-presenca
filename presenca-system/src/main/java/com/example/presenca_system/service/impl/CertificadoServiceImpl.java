@@ -5,18 +5,25 @@ import com.example.presenca_system.service.CertificadoService;
 import com.example.presenca_system.model.Certificado;
 import com.example.presenca_system.model.Evento;
 import com.example.presenca_system.model.Usuario;
+import com.example.presenca_system.model.Superusuario;
+import com.example.presenca_system.model.dto.CertificadoDTO;
 import com.example.presenca_system.repository.CertificadoRepository;
 import com.example.presenca_system.repository.UsuarioRepository;
 import com.lowagie.text.DocumentException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
+@Transactional
 public class CertificadoServiceImpl implements CertificadoService {
 
     @Autowired
@@ -30,8 +37,17 @@ public class CertificadoServiceImpl implements CertificadoService {
 
     @Override
     public void gerarCertificadosParaEvento(Evento evento) {
-        // Implementação para gerar certificados para um evento
-        // (sua implementação existente)
+        // Este método precisa ser implementado de acordo com sua lógica de negócio
+        // Como não há um método direto para buscar usuários por evento,
+        // você precisará implementar essa lógica de outra forma
+        // Por exemplo, através de CheckIn ou outra relação
+        
+        // Implementação simplificada para demonstração:
+        System.out.println("Método gerarCertificadosParaEvento precisa ser implementado");
+    }
+
+    private String generateValidationCode() {
+        return "CERT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     @Override
@@ -68,5 +84,83 @@ public class CertificadoServiceImpl implements CertificadoService {
             return usuarioOptional.get().getEmail();
         }
         throw new RuntimeException("Usuário não encontrado com CPF: " + cpf);
+    }
+    
+    // Novos métodos para DTO
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertificadoDTO> findAllDTO() {
+        return certificadoRepository.findAllDTO();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertificadoDTO> findByUsuarioCpfDTO(String cpf) {
+        return certificadoRepository.findByUsuarioCpfDTO(cpf);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertificadoDTO> findByEventoEventoIdDTO(Long eventoId) {
+        return certificadoRepository.findByEventoEventoIdDTO(eventoId);
+    }
+
+    // Métodos CRUD básicos
+    @Override
+    public Certificado save(Certificado certificado) {
+        return certificadoRepository.save(certificado);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Certificado> findById(Long id) {
+        return certificadoRepository.findById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Certificado> findAll() {
+        return certificadoRepository.findAll();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        certificadoRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Certificado> findByEventoEventoId(Long eventoId) {
+        return certificadoRepository.findByEventoEventoId(eventoId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Certificado> findByUsuarioCpfAndEventoEventoId(String cpf, Long eventoId) {
+        return certificadoRepository.findByUsuarioCpfAndEventoEventoId(cpf, eventoId);
+    }
+
+    // Métodos adicionais úteis (removidos os que não existem no repository)
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByUsuarioCpfAndEventoEventoId(String cpf, Long eventoId) {
+        return certificadoRepository.findByUsuarioCpfAndEventoEventoId(cpf, eventoId).isPresent();
+    }
+
+    // Método auxiliar para criar certificado
+    public Certificado criarCertificado(Usuario usuario, Evento evento, Superusuario superusuario) {
+        Certificado certificado = new Certificado();
+        certificado.setUsuario(usuario);
+        certificado.setEvento(evento);
+        certificado.setSuperusuario(superusuario);
+        certificado.setNomeUsuario(usuario.getNome());
+        certificado.setCpfUsuario(usuario.getCpf());
+        certificado.setNomeSuperusuario(superusuario.getNome());
+        certificado.setCodigoValidacao(generateValidationCode());
+        certificado.setDataEmissao(LocalDate.now());
+        certificado.setTexto("Certificado de participação no evento " + evento.getTitulo() + 
+                           " com carga horária de " + evento.getCargaHoraria() + " horas.");
+        
+        return certificadoRepository.save(certificado);
     }
 }

@@ -1,6 +1,8 @@
+// src/main/java/com/example/presenca_system/controller/CertificadoController.java
 package com.example.presenca_system.controller;
 
 import com.example.presenca_system.model.Certificado;
+import com.example.presenca_system.model.dto.CertificadoDTO;
 import com.example.presenca_system.repository.CertificadoRepository;
 import com.example.presenca_system.service.CertificadoService;
 import com.example.presenca_system.service.EmailService;
@@ -31,6 +33,7 @@ public class CertificadoController {
     @Autowired
     private EmailService emailService;
 
+    // Endpoints para PDF (mantidos com entidade)
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> getCertificadoPDF(@PathVariable Long id) {
         Optional<Certificado> certificadoOptional = certificadoRepository.findById(id);
@@ -46,7 +49,7 @@ public class CertificadoController {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            String filename = "certificado_" + certificado.getUsuario().getCpf() + ".pdf";
+            String filename = "certificado_" + certificado.getCpfUsuario() + ".pdf";
             headers.setContentDispositionFormData(filename, filename);
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
@@ -88,7 +91,6 @@ public class CertificadoController {
         }
     }
 
-    // Novo endpoint para gerar todos os certificados de um evento em um único PDF
     @GetMapping("/evento/{eventoId}/pdf-all")
     public ResponseEntity<byte[]> getCertificadosEventoPDF(@PathVariable Long eventoId) {
         try {
@@ -111,11 +113,16 @@ public class CertificadoController {
         }
     }
 
-    // 1) Endpoint para retornar a lista de certificados de um usuário por CPF
+    // Endpoints para listagem (usando DTO)
+    @GetMapping
+    public List<CertificadoDTO> getAllCertificados() {
+        return certificadoService.findAllDTO();
+    }
+
     @GetMapping("/usuario/{cpf}")
-    public ResponseEntity<List<Certificado>> getCertificadosPorCpf(@PathVariable String cpf) {
+    public ResponseEntity<List<CertificadoDTO>> getCertificadosPorCpf(@PathVariable String cpf) {
         try {
-            List<Certificado> certificados = certificadoService.buscarCertificadosPorCpf(cpf);
+            List<CertificadoDTO> certificados = certificadoService.findByUsuarioCpfDTO(cpf);
             
             if (certificados.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -127,7 +134,22 @@ public class CertificadoController {
         }
     }
 
-    // 2) Endpoint para enviar certificados por email
+    @GetMapping("/evento/{eventoId}")
+    public ResponseEntity<List<CertificadoDTO>> getCertificadosPorEvento(@PathVariable Long eventoId) {
+        try {
+            List<CertificadoDTO> certificados = certificadoService.findByEventoEventoIdDTO(eventoId);
+            
+            if (certificados.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            
+            return new ResponseEntity<>(certificados, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Endpoints de email (mantidos)
     @PostMapping("/enviar-email")
     public ResponseEntity<String> enviarCertificadosPorEmail(@RequestBody Map<String, Object> request) {
         try {
@@ -160,7 +182,6 @@ public class CertificadoController {
         }
     }
 
-    // Versão alternativa usando o método com tratamento interno
     @PostMapping("/enviar-email-simples")
     public ResponseEntity<String> enviarCertificadosPorEmailSimples(@RequestBody Map<String, Object> request) {
         try {
@@ -189,7 +210,6 @@ public class CertificadoController {
         }
     }
 
-    // Versão alternativa que busca o email automaticamente pelo CPF
     @PostMapping("/enviar-email/{cpf}")
     public ResponseEntity<String> enviarCertificadosPorEmailAutomatico(
             @PathVariable String cpf, 
@@ -201,7 +221,6 @@ public class CertificadoController {
                                           HttpStatus.BAD_REQUEST);
             }
 
-            // Buscar email do usuário pelo CPF
             String emailDestinatario = certificadoService.buscarEmailPorCpf(cpf);
             
             emailService.enviarCertificadosPorEmail(certificadoIds, emailDestinatario);

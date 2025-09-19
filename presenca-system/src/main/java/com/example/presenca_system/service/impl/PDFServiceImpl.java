@@ -5,6 +5,7 @@ import com.example.presenca_system.model.Certificado;
 import com.example.presenca_system.repository.CertificadoRepository;
 import com.lowagie.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -28,10 +29,20 @@ public class PDFServiceImpl implements PDFService {
         Context context = new Context();
         context.setVariable("certificado", certificado);
         
+        // Adiciona informações da imagem de fundo
+        String imagePath = new ClassPathResource("templates/plano_de_fundo_certificado.png").getFile().getAbsolutePath();
+        context.setVariable("backgroundImagePath", "file:" + imagePath);
+        
         String htmlContent = templateEngine.process("certificado-template", context);
         
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             ITextRenderer renderer = new ITextRenderer();
+            
+            // Configuração importante para permitir imagens
+            renderer.getSharedContext().setReplacedElementFactory(
+                new org.xhtmlrenderer.pdf.ITextReplacedElementFactory(renderer.getOutputDevice())
+            );
+            
             renderer.setDocumentFromString(htmlContent);
             renderer.layout();
             renderer.createPDF(outputStream);
@@ -54,6 +65,10 @@ public class PDFServiceImpl implements PDFService {
                 Certificado certificado = certificados.get(i);
                 Context context = new Context();
                 context.setVariable("certificado", certificado);
+                
+                String imagePath = new ClassPathResource("templates/plano_de_fundo_certificado.png").getFile().getAbsolutePath();
+                context.setVariable("backgroundImagePath", "file:" + imagePath);
+                
                 String htmlContent = templateEngine.process("certificado-template", context);
                 
                 renderer.setDocumentFromString(htmlContent);
