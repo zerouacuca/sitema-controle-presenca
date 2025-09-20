@@ -8,11 +8,12 @@ import { filter, Subscription } from 'rxjs';
 
 import { Certificado } from '../../models/certificado.model';
 import { CertificadoService } from '../../servicos/certificado-service';
+import { Navbar } from '../../componentes/navbar/navbar';
 
 @Component({
   selector: 'app-certificados',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, Navbar],
   templateUrl: './certificados.component.html',
   styleUrls: ['./certificados.component.css']
 })
