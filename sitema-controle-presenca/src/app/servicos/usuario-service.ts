@@ -8,7 +8,7 @@ import { environment } from '../environments/environment';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = `${environment.apiUrl}/usuarios`;
+  private backendApiUrl = `${environment.backendApiUrl}/usuarios`;
 
   constructor(private http: HttpClient) { }
 
@@ -28,31 +28,31 @@ export class UsuarioService {
 
   // CREATE: Cadastrar um novo usuário
   cadastrarUsuario(usuario: Usuario): Observable<Usuario> {
-    return this.http.post<Usuario>(this.apiUrl, usuario);
+    return this.http.post<Usuario>(this.backendApiUrl, usuario);
   }
 
   // READ: Buscar todos os usuários
   buscarTodosUsuarios(): Observable<UsuarioListDTO[]> {
-    return this.http.get<UsuarioListDTO[]>(this.apiUrl);
+    return this.http.get<UsuarioListDTO[]>(this.backendApiUrl);
   }
 
   // READ: Buscar um usuário por CPF
   buscarPorCpf(cpf: string): Observable<Usuario> {
-    return this.http.get<Usuario>(`${this.apiUrl}/${cpf}`);
+    return this.http.get<Usuario>(`${this.backendApiUrl}/${cpf}`);
   }
 
   // UPDATE: Atualizar um usuário existente
   atualizarUsuario(cpf: string, usuario: Usuario): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.apiUrl}/${cpf}`, usuario);
+    return this.http.put<Usuario>(`${this.backendApiUrl}/${cpf}`, usuario);
   }
 
   // DELETE: Deletar um usuário por CPF
   deletarUsuario(cpf: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${cpf}`);
+    return this.http.delete<void>(`${this.backendApiUrl}/${cpf}`);
   }
 
   // Validação de biometria
   validarBiometria(template: Uint8Array): Observable<Usuario> {
-    return this.http.post<Usuario>(`${this.apiUrl}/validar-biometria`, template);
+    return this.http.post<Usuario>(`${this.backendApiUrl}/validar-biometria`, template);
   }
 }

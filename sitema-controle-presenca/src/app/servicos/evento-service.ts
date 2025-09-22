@@ -8,31 +8,31 @@ import { environment } from '../environments/environment';
   providedIn: 'root'
 })
 export class EventoService {
-  private apiUrl = `${environment.apiUrl}/eventos`;
+  private backendApiUrl = `${environment.backendApiUrl}/eventos`;
 
   constructor(private http: HttpClient) { }
 
   getAllEventos(): Observable<Evento[]> {
-    return this.http.get<Evento[]>(this.apiUrl);
+    return this.http.get<Evento[]>(this.backendApiUrl);
   }
 
   getEventoById(id: number): Observable<Evento> {
-    return this.http.get<Evento>(`${this.apiUrl}/${id}`);
+    return this.http.get<Evento>(`${this.backendApiUrl}/${id}`);
   }
 
   createEvento(evento: Evento): Observable<Evento> {
-    return this.http.post<Evento>(this.apiUrl, evento);
+    return this.http.post<Evento>(this.backendApiUrl, evento);
   }
 
   updateEvento(id: number, evento: Evento): Observable<Evento> {
-    return this.http.put<Evento>(`${this.apiUrl}/${id}`, evento);
+    return this.http.put<Evento>(`${this.backendApiUrl}/${id}`, evento);
   }
 
   deleteEvento(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.backendApiUrl}/${id}`);
   }
 
   encerrarEvento(eventoId: number): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/${eventoId}/encerrar`, {});
+    return this.http.post<string>(`${this.backendApiUrl}/${eventoId}/encerrar`, {});
   }
 }

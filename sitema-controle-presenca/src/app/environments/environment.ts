@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080'
+  biometricApiUrl: 'http://localhost:5000/apiservice',
+  backendApiUrl: 'http://localhost:8080'
 };
