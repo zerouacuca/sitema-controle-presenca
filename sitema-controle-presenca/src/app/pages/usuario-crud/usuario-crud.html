@@ -2,14 +2,38 @@
 <div class="gradient-custom min-vh-100 p-4">
   <div class="background-glass p-4">
     
-    <!-- Loading indicator -->
-    <div *ngIf="isLoading" class="text-center py-4">
+    <!-- Loading indicator principal -->
+    <div *ngIf="isLoading && !isCapturingBiometry" class="text-center py-4">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Carregando...</span>
       </div>
       <p class="mt-2">
         {{ isEditMode ? 'Carregando usuário...' : 'Salvando usuário...' }}
       </p>
+    </div>
+
+    <!-- Loading para captura de biometria -->
+    <div *ngIf="isCapturingBiometry" class="text-center py-4">
+      <div class="spinner-border text-warning" role="status">
+        <span class="visually-hidden">Capturando biometria...</span>
+      </div>
+      <p class="mt-2 text-warning">
+        <i class="fas fa-fingerprint me-2"></i>
+        Aguarde... Capturando biometria. Coloque o dedo no leitor.
+      </p>
+      
+      <!-- Botão para cancelar a captura -->
+      <div class="mt-3">
+        <button class="btn btn-sm btn-outline-danger" 
+                (click)="cancelarCapturaBiometria()">
+          <i class="fas fa-times me-1"></i> Cancelar Captura
+        </button>
+      </div>
+      
+      <!-- Mensagem de erro durante a captura -->
+      <div *ngIf="biometryError" class="alert alert-danger mt-3">
+        <small>{{ biometryError }}</small>
+      </div>
     </div>
 
     <!-- Conteúdo principal -->

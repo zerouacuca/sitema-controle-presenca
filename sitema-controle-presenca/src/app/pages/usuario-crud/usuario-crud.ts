@@ -7,6 +7,7 @@ import { Navbar } from '../../componentes/navbar/navbar';
 
 import { CpfValidatorService } from '../../servicos/cpf-validator';
 import { UsuarioService } from '../../servicos/usuario-service';
+import { BiometricService } from '../../servicos/biometric-service';
 import { Usuario } from '../../models/usuario.model'; 
 
 @Component({
@@ -33,10 +34,13 @@ export class UsuarioCrud implements OnInit {
   
   isEditMode: boolean = false;
   isLoading: boolean = false;
+  isCapturingBiometry: boolean = false;
+  biometryError: string = '';
 
   constructor(
     private cpfValidator: CpfValidatorService,
     private usuarioService: UsuarioService,
+    private biometricService: BiometricService,
     private route: ActivatedRoute,
     private router: Router,
     private cd: ChangeDetectorRef
@@ -80,13 +84,8 @@ export class UsuarioCrud implements OnInit {
       return;
     }
 
-    if (!this.isEditMode) {
-      const biometriaMockString = "mock-biometric-hash-for-new-user-123";
-      this.usuario.template = this.usuarioService.stringToBase64(biometriaMockString);
-    }
-    
     if (!this.usuario.template) {
-      alert('Erro: template de biometria não pode estar vazio.');
+      alert('É necessário capturar a biometria antes de salvar!');
       return;
     }
 
@@ -140,21 +139,94 @@ export class UsuarioCrud implements OnInit {
   }
 
   obterBiometria(): void {
-    this.isLoading = true;
-    const biometriaBase64 = "mock-biometric-hash-for-new-user-123";
-    const biometriaBytes = this.usuarioService.base64ToUint8Array(biometriaBase64);
-
-    this.usuarioService.validarBiometria(biometriaBytes).subscribe({
-      next: (usuario) => {
-        console.log('Biometria validada com sucesso para:', usuario.nome);
-        this.usuario.template = biometriaBase64;
-        this.isLoading = false;
-        alert('Biometria obtida com sucesso!');
+    this.isCapturingBiometry = true;
+    this.biometryError = '';
+    this.cd.detectChanges(); // Força a atualização da view
+    
+    this.biometricService.captureHash(false).subscribe({
+      next: (response) => {
+        this.isCapturingBiometry = false;
+        
+        if (response.success) {
+          this.usuario.template = response.template;
+          this.cd.detectChanges();
+          alert('Biometria capturada com sucesso!');
+        } else {
+          this.biometryError = response.message || 'Falha na captura da biometria';
+          alert('Falha na captura da biometria: ' + this.biometryError);
+        }
       },
-      error: (err) => {
-        console.error('Erro ao validar biometria:', err);
+      error: (error) => {
+        this.isCapturingBiometry = false;
+        this.biometryError = this.getErrorMessage(error);
+        this.cd.detectChanges(); // Força a atualização da view
+        
+        console.error('Erro ao capturar biometria:', error);
+        
+        // Aguarda um pouco antes de mostrar o alerta para garantir que a UI foi atualizada
+        setTimeout(() => {
+          if (error.message && error.message.includes('Error on Capture')) {
+            alert('Erro no dispositivo biométrico. Verifique se o dispositivo está conectado e tente novamente.');
+          } else if (error.message && error.message.includes('Http failure response')) {
+            alert('Erro de comunicação com o serviço de biometria. Verifique se o serviço está rodando na porta 5000.');
+          } else {
+            alert('Erro ao capturar biometria: ' + error.message);
+          }
+        }, 100);
+      }
+    });
+  }
+
+  // Método auxiliar para obter mensagem de erro
+  private getErrorMessage(error: any): string {
+    if (error.error && error.error.message) {
+      return error.error.message;
+    } else if (error.message) {
+      return error.message;
+    } else if (error.status === 0) {
+      return 'Erro de conexão: Serviço de biometria não está respondendo';
+    } else {
+      return 'Erro desconhecido ao capturar biometria';
+    }
+  }
+
+  // Método para cancelar a captura de biometria
+  cancelarCapturaBiometria(): void {
+    this.isCapturingBiometry = false;
+    this.biometryError = '';
+    this.cd.detectChanges();
+  }
+
+  // Método para cadastro completo com biometria
+  cadastrarComBiometria(): void {
+    if (!this.cpfValidator.validarCPF(this.usuario.cpf)) {
+      alert('CPF inválido!');
+      return;
+    }
+
+    if (!this.usuario.nome || !this.usuario.matricula || !this.usuario.dataNascimento) {
+      alert('Preencha todos os campos obrigatórios!');
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.biometricService.cadastrarUsuarioComBiometria({
+      cpf: this.usuario.cpf,
+      nome: this.usuario.nome,
+      matricula: this.usuario.matricula,
+      setor: this.usuario.setor
+    }).subscribe({
+      next: (response) => {
         this.isLoading = false;
-        alert('Erro ao obter biometria.');
+        console.log('Usuário cadastrado com sucesso!', response);
+        alert('Usuário cadastrado com sucesso!');
+        this.navegarParaLista();
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Erro ao cadastrar usuário:', error);
+        alert('Erro ao cadastrar usuário: ' + error.message);
       }
     });
   }
@@ -166,5 +238,14 @@ export class UsuarioCrud implements OnInit {
 
   cancelar(): void {
     this.navegarParaLista();
+  }
+
+  // Verifica se o formulário está válido para cadastro
+  isFormValid(): boolean {
+    return !!this.usuario.cpf && 
+           !!this.usuario.nome && 
+           !!this.usuario.matricula && 
+           !!this.usuario.dataNascimento && 
+           !!this.usuario.template;
   }
 }
