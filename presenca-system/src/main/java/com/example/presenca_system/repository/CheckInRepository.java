@@ -14,4 +14,5 @@ public interface CheckInRepository extends JpaRepository<CheckIn, Long> {
     Optional<CheckIn> findByUsuarioAndEvento(Usuario usuario, Evento evento);
     // Buscar todos os check-ins de um evento
     List<CheckIn> findByEvento(Evento evento);
+    List<CheckIn> findByEvento_EventoId(Long eventoId);
 }

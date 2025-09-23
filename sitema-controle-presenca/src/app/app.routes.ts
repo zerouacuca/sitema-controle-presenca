@@ -8,6 +8,7 @@ import { Navbar } from './componentes/navbar/navbar';
 import { Usuarios } from './pages/usuarios/usuarios';
 import { UsuarioCadastro } from './pages/usuario-cadastro/usuario-cadastro';
 import { CertificadosComponent } from './pages/certificados/certificados.component';
+import { DetalhesEventoComponent } from './pages/detalhes-evento/detalhes-evento.component';
 
 // Definição das rotas da aplicação
 export const routes: Routes = [
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'editar-usuario/:cpf', component: UsuarioCrud },
   // Rotas de edição de evento com parâmetro ID
   { path: 'editar-evento/:id', component: EventoCrud },
+  { path: 'detalhes-evento/:id', component: DetalhesEventoComponent },
 
   // A rota de redirecionamento ou wildcard deve sempre vir por último
   { path: '', redirectTo: '/login', pathMatch: 'full' },

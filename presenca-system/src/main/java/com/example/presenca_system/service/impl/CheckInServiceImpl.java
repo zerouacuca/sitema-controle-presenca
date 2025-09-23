@@ -3,17 +3,21 @@ package com.example.presenca_system.service.impl;
 import com.example.presenca_system.model.CheckIn;
 import com.example.presenca_system.model.Evento;
 import com.example.presenca_system.model.Usuario;
+import com.example.presenca_system.model.dto.CheckInResponseDTO;
 import com.example.presenca_system.model.enums.StatusCheckIn;
 import com.example.presenca_system.repository.CheckInRepository;
 import com.example.presenca_system.repository.EventoRepository; // Adicionado para buscar o evento
 import com.example.presenca_system.repository.UsuarioRepository;
 import com.example.presenca_system.service.CheckInService;
+import com.example.presenca_system.model.dto.CheckInRequestDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CheckInServiceImpl implements CheckInService {
@@ -59,5 +63,21 @@ public class CheckInServiceImpl implements CheckInService {
         checkInRepository.save(novoCheckIn);
 
         return "Check-in realizado com sucesso para o usuário: " + usuario.getNome();
+    }
+    
+    public List<CheckInResponseDTO> findCheckInsPorEvento(Long eventoId) {
+        List<CheckIn> checkIns = checkInRepository.findByEvento_EventoId(eventoId);
+        
+        return checkIns.stream().map(checkIn -> {
+            CheckInResponseDTO dto = new CheckInResponseDTO();
+            dto.setId(checkIn.getId());
+            dto.setEventoId(checkIn.getEvento().getEventoId());
+            dto.setEventoTitulo(checkIn.getEvento().getTitulo());
+            dto.setUsuarioCpf(checkIn.getUsuario().getCpf());
+            dto.setUsuarioNome(checkIn.getUsuario().getNome());
+            dto.setDataHoraCheckin(checkIn.getDataHoraCheckin());
+            dto.setStatus(checkIn.getStatus());
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

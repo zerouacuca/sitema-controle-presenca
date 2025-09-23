@@ -1,7 +1,12 @@
 package com.example.presenca_system.controller;
 
+import com.example.presenca_system.model.CheckIn;
 import com.example.presenca_system.model.dto.CheckInRequestDTO;
+import com.example.presenca_system.model.dto.CheckInResponseDTO;
 import com.example.presenca_system.service.CheckInService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +41,16 @@ public class CheckInController {
             return ResponseEntity.badRequest().body("Template biométrico em formato inválido (não é Base64).");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Ocorreu um erro interno ao processar o check-in.");
+        }
+    }
+
+    @GetMapping("/evento/{eventoId}")
+    public ResponseEntity<List<CheckInResponseDTO>> getCheckInsPorEvento(@PathVariable Long eventoId) {
+        try {
+            List<CheckInResponseDTO> checkIns = checkInService.findCheckInsPorEvento(eventoId);
+            return ResponseEntity.ok(checkIns);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }
