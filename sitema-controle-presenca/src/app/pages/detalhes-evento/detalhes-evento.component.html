@@ -46,8 +46,8 @@
               <p><strong>Categoria:</strong> {{ evento.categoria }}</p>
               <p><strong>Carga Horária:</strong> {{ evento.cargaHoraria }} horas</p>
               <p><strong>Status:</strong> 
-                <span class="badge" [ngClass]="getStatusBadgeClass(evento.status)">
-                  {{ getStatusDescricao(evento.status) }}
+                <span class="badge" [ngClass]="getStatusBadgeClass(evento?.status)">
+                  {{ getStatusDescricao(evento?.status) }}
                 </span>
               </p>
             </div>

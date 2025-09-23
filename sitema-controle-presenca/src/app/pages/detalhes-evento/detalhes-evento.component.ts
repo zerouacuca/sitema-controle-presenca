@@ -32,7 +32,7 @@ export class DetalhesEventoComponent implements OnInit {
     private router: Router,
     private eventoService: EventoService,
     private checkInService: CheckInService,
-    private cd: ChangeDetectorRef // Adicionado ChangeDetectorRef
+    private cd: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -44,14 +44,13 @@ export class DetalhesEventoComponent implements OnInit {
     
     if (!eventoId) {
       this.isLoading = false;
-      this.cd.detectChanges(); // Força detecção de mudanças
+      this.cd.detectChanges();
       return;
     }
 
     this.isLoading = true;
-    this.cd.detectChanges(); // Força atualização do loading
+    this.cd.detectChanges();
     
-    // Carregar dados do evento
     this.eventoService.getEventoById(Number(eventoId)).subscribe({
       next: (evento) => {
         this.evento = evento;
@@ -60,7 +59,7 @@ export class DetalhesEventoComponent implements OnInit {
       error: (error: any) => {
         console.error('Erro ao carregar evento:', error);
         this.isLoading = false;
-        this.cd.detectChanges(); // Força detecção de mudanças
+        this.cd.detectChanges();
       }
     });
   }
@@ -70,12 +69,14 @@ export class DetalhesEventoComponent implements OnInit {
       next: (checkIns: CheckIn[]) => {
         this.checkIns = checkIns;
         this.isLoading = false;
-        this.cd.detectChanges(); // Força detecção de mudanças após carregar tudo
+        this.cd.detectChanges();
+        console.log('Check-ins carregados:', this.checkIns.length);
       },
       error: (error: any) => {
         console.error('Erro ao carregar check-ins:', error);
+        this.checkIns = [];
         this.isLoading = false;
-        this.cd.detectChanges(); // Força detecção de mudanças mesmo em erro
+        this.cd.detectChanges();
       }
     });
   }
@@ -113,7 +114,7 @@ export class DetalhesEventoComponent implements OnInit {
       this.eventoService.encerrarEvento(this.evento.eventoId).subscribe({
         next: (mensagem: string) => {
           alert(mensagem);
-          this.carregarDetalhesEvento(); // Recarrega os dados
+          this.carregarDetalhesEvento();
         },
         error: (error: any) => {
           console.error('Erro ao encerrar evento:', error);
@@ -123,7 +124,7 @@ export class DetalhesEventoComponent implements OnInit {
     }
   }
 
-  // Formatação
+  // Formatação - CORREÇÃO: Adicione verificações para undefined
   formatarDataHora(data: string | Date): string {
     if (!data) return 'Data inválida';
     const date = new Date(data);
@@ -135,7 +136,10 @@ export class DetalhesEventoComponent implements OnInit {
     return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
 
-  getStatusDescricao(status: StatusEvento): string {
+  // CORREÇÃO: Aceita undefined e retorna string padrão
+  getStatusDescricao(status: StatusEvento | undefined): string {
+    if (!status) return 'Não definido';
+    
     switch (status) {
       case StatusEvento.AGENDADO: return 'Agendado';
       case StatusEvento.EM_ANDAMENTO: return 'Em Andamento';
@@ -146,7 +150,10 @@ export class DetalhesEventoComponent implements OnInit {
     }
   }
 
-  getStatusBadgeClass(status: StatusEvento): string {
+  // CORREÇÃO: Aceita undefined e retorna classe padrão
+  getStatusBadgeClass(status: StatusEvento | undefined): string {
+    if (!status) return 'bg-secondary';
+    
     switch (status) {
       case StatusEvento.AGENDADO: return 'bg-info';
       case StatusEvento.EM_ANDAMENTO: return 'bg-warning';
@@ -165,5 +172,10 @@ export class DetalhesEventoComponent implements OnInit {
       case StatusCheckIn.CANCELADO: return 'Cancelado';
       default: return 'Não definido';
     }
+  }
+
+  // NOVO MÉTODO: Garante que sempre há um status válido para o template
+  getEventoStatus(): StatusEvento {
+    return this.evento?.status || StatusEvento.AGENDADO;
   }
 }
