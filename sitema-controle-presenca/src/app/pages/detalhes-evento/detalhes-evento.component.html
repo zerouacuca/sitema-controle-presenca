@@ -23,9 +23,7 @@
           <button class="btn btn-outline-secondary" (click)="voltarParaLista()">
             <i class="fas fa-arrow-left me-1"></i> Voltar
           </button>
-          <button class="btn btn-outline-primary" (click)="editarEvento()">
-            <i class="fas fa-edit me-1"></i> Editar
-          </button>
+          <!-- REMOVIDO: Botão Editar daqui -->
         </div>
       </div>
 
@@ -36,6 +34,14 @@
         </div>
         <div class="card-body">
           <div class="d-flex gap-2 flex-wrap">
+            <!-- Botão Editar Evento -->
+            <button class="btn btn-outline-primary" 
+                    (click)="editarEvento()"
+                    *ngIf="evento.status !== statusEvento.FINALIZADO && evento.status !== statusEvento.CANCELADO"
+                    [disabled]="isLoadingAction">
+              <i class="fas fa-edit me-1"></i> Editar
+            </button>
+
             <!-- Botão Iniciar Evento -->
             <button class="btn btn-success" 
                     (click)="iniciarEvento()"
@@ -115,8 +121,8 @@
               <p class="text-muted">{{ evento.cargaHoraria }} horas</p>
               
               <p><strong>Status:</strong></p>
-              <span class="badge" [ngClass]="getStatusBadgeClass(evento?.status)">
-                {{ getStatusDescricao(evento?.status) }}
+              <span class="badge" [ngClass]="getStatusBadgeClass(evento.status)">
+                {{ getStatusDescricao(evento.status) }}
               </span>
             </div>
           </div>

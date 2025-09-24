@@ -140,6 +140,12 @@ export class TabelaEventos implements OnInit, OnDestroy {
     this.router.navigate(['/cadastrar-evento']);
   }
 
+  verDetalhesEvento(eventoId: number | undefined): void {
+    if (eventoId) {
+      this.router.navigate(['/detalhes-evento', eventoId]);
+    }
+  }
+
   formatarData(data: string | Date): string {
     const date = new Date(data);
     return date.toLocaleDateString('pt-BR');

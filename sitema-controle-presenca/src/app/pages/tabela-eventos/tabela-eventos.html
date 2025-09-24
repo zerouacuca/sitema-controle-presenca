@@ -66,6 +66,11 @@
               </td>
               <td class="actions">
                 <div class="btn-group" role="group">
+                  <button class="btn btn-outline-info btn-sm" 
+                          (click)="verDetalhesEvento(evento.eventoId!)" 
+                          title="Ver Detalhes">
+                    <i class="fas fa-eye"></i>
+                  </button>
                   <button class="btn btn-outline-primary btn-sm" (click)="editarEvento(evento)" title="Editar">
                     <i class="fas fa-edit"></i>
                   </button>

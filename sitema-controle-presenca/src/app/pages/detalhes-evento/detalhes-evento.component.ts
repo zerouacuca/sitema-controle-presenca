@@ -96,8 +96,6 @@ export class DetalhesEventoComponent implements OnInit {
         next: () => {
           this.actionMessage = 'Evento iniciado com sucesso!';
           this.carregarDetalhesEvento();
-          this.isLoadingAction = false;
-          this.cd.detectChanges();
         },
         error: (error: any) => {
           console.error('Erro ao iniciar evento:', error);
@@ -118,8 +116,6 @@ export class DetalhesEventoComponent implements OnInit {
         next: () => {
           this.actionMessage = 'Evento pausado com sucesso!';
           this.carregarDetalhesEvento();
-          this.isLoadingAction = false;
-          this.cd.detectChanges();
         },
         error: (error: any) => {
           console.error('Erro ao pausar evento:', error);
@@ -140,8 +136,6 @@ export class DetalhesEventoComponent implements OnInit {
         next: () => {
           this.actionMessage = 'Evento retomado com sucesso!';
           this.carregarDetalhesEvento();
-          this.isLoadingAction = false;
-          this.cd.detectChanges();
         },
         error: (error: any) => {
           console.error('Erro ao retomar evento:', error);
@@ -197,7 +191,7 @@ export class DetalhesEventoComponent implements OnInit {
     }
   }
 
-  // === CHECK-IN BIOMÉTRICO ===
+  // === CHECK-IN BIOMÉTRICO (SIMPLIFICADO) ===
 
   realizarCheckInBiometrico(): void {
     if (!this.evento?.eventoId) return;
@@ -207,83 +201,26 @@ export class DetalhesEventoComponent implements OnInit {
     this.actionMessage = 'Aguardando leitura biométrica...';
     this.cd.detectChanges();
 
-    // Primeiro, carrega todos os templates na memória do dispositivo
-    this.carregarTemplatesNaMemoria().then(() => {
-      // Depois realiza a identificação 1:N
-      this.biometricService.identification(5).subscribe({
-        next: (response) => {
-          this.isCapturingBiometry = false;
-          
-          if (response.success) {
-            this.actionMessage = `Check-in realizado para ID: ${response.id}`;
-            this.carregarCheckIns(this.evento!.eventoId!);
-          } else {
-            this.biometryError = response.message || 'Digital não reconhecida';
-            this.actionMessage = '';
-          }
-          this.cd.detectChanges();
-        },
-        error: (error) => {
-          this.isCapturingBiometry = false;
-          this.biometryError = this.getErrorMessage(error);
+    // Versão simplificada - verificação 1:1 com o backend
+    this.biometricService.realizarCheckInBiometrico(this.evento.eventoId).subscribe({
+      next: (response: any) => {
+        this.isCapturingBiometry = false;
+        
+        if (response.success) {
+          this.actionMessage = 'Check-in realizado com sucesso!';
+          this.carregarCheckIns(this.evento!.eventoId!);
+        } else {
+          this.biometryError = response.message || 'Digital não reconhecida';
           this.actionMessage = '';
-          this.cd.detectChanges();
         }
-      });
-    }).catch(error => {
-      this.isCapturingBiometry = false;
-      this.biometryError = 'Erro ao carregar templates: ' + error.message;
-      this.actionMessage = '';
-      this.cd.detectChanges();
-    });
-  }
-
-  private async carregarTemplatesNaMemoria(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // Primeiro limpa a memória
-      this.biometricService.deleteAllFromMemory().subscribe({
-        next: () => {
-          // Busca todos os usuários cadastrados
-          this.carregarUsuariosETemplates().then(templates => {
-            if (templates.length === 0) {
-              reject(new Error('Nenhum usuário cadastrado com template biométrico'));
-              return;
-            }
-
-            // Carrega os templates na memória do dispositivo
-            this.biometricService.loadToMemory(templates).subscribe({
-              next: (response) => {
-                if (response.success) {
-                  resolve();
-                } else {
-                  reject(new Error(response.message || 'Erro ao carregar templates'));
-                }
-              },
-              error: (error) => {
-                reject(error);
-              }
-            });
-          }).catch(error => {
-            reject(error);
-          });
-        },
-        error: (error) => {
-          reject(error);
-        }
-      });
-    });
-  }
-
-  private async carregarUsuariosETemplates(): Promise<any[]> {
-    // Aqui você precisa implementar a busca dos usuários com seus templates
-    // Esta é uma implementação mock - substitua pela sua lógica real
-    return new Promise((resolve) => {
-      // Mock - substitua por chamada real ao seu serviço de usuários
-      const mockTemplates = [
-        { id: 1, template: 'template1' },
-        { id: 2, template: 'template2' }
-      ];
-      resolve(mockTemplates);
+        this.cd.detectChanges();
+      },
+      error: (error: any) => {
+        this.isCapturingBiometry = false;
+        this.biometryError = this.getErrorMessage(error);
+        this.actionMessage = '';
+        this.cd.detectChanges();
+      }
     });
   }
 
@@ -300,7 +237,7 @@ export class DetalhesEventoComponent implements OnInit {
   // === NAVEGAÇÃO E FORMATAÇÃO ===
 
   voltarParaLista(): void {
-    this.router.navigate(['/tabela-eventos']);
+    this.router.navigate(['/eventos']);
   }
 
   editarEvento(): void {

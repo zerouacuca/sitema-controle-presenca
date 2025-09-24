@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Evento } from '../models/evento.model';
 import { environment } from '../environments/environment';
@@ -38,13 +38,14 @@ export class EventoService {
   }
 
   atualizarStatus(eventoId: number, status: StatusEvento): Observable<void> {
-    return this.http.patch<void>(`${this.backendApiUrl}/${eventoId}/status`, null, {
-      params: { status }
-    });
+    const params = new HttpParams().set('status', status.toString());
+    return this.http.patch<void>(`${this.backendApiUrl}/${eventoId}/status`, null, { params });
   }
 
-  cancelarEvento(eventoId: number): Observable<string> {
-    return this.http.post<string>(`${this.backendApiUrl}/${eventoId}/cancelar`, {});
+  cancelarEvento(eventoId: number): Observable<any> {
+    return this.http.post<any>(`${this.backendApiUrl}/${eventoId}/cancelar`, {}, {
+      responseType: 'text' as 'json' // Force text response
+    });
   }
 
   // Método alternativo se o PATCH não funcionar
