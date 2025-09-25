@@ -23,9 +23,65 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
         this.jwtService = jwtService;
     }
 
+    // 🔐 NOVOS MÉTODOS PARA VALIDAÇÃO DE PERMISSÕES
+    @Override
+    public Superusuario cadastrarSuperusuario(Superusuario superusuario, String emailSuperusuarioAutenticado) {
+        // Verificar se o superusuário autenticado tem permissão para criar outros
+        Optional<Superusuario> autenticado = superusuarioRepository.findByEmail(emailSuperusuarioAutenticado);
+        if (autenticado.isEmpty()) {
+            throw new RuntimeException("Superusuário autenticado não encontrado");
+        }
+        
+        // Aqui você pode adicionar lógica de autorização (ex: apenas admin pode criar)
+        return cadastrarSuperusuario(superusuario);
+    }
+
+    @Override
+    public Superusuario alterarSuperusuario(String cpf, Superusuario superusuarioAtualizado, String emailSuperusuarioAutenticado) {
+        // Verificar permissões
+        Optional<Superusuario> autenticado = superusuarioRepository.findByEmail(emailSuperusuarioAutenticado);
+        if (autenticado.isEmpty()) {
+            throw new RuntimeException("Superusuário autenticado não encontrado");
+        }
+        
+        // Impedir que um superusuário altere seus próprios dados sem verificação adicional
+        if (autenticado.get().getCpf().equals(cpf)) {
+            throw new RuntimeException("Não é permitido alterar o próprio usuário por esta operação");
+        }
+        
+        return alterarSuperusuario(cpf, superusuarioAtualizado);
+    }
+
+    @Override
+    public void excluirSuperusuario(String cpf, String emailSuperusuarioAutenticado) {
+        // Verificar permissões
+        Optional<Superusuario> autenticado = superusuarioRepository.findByEmail(emailSuperusuarioAutenticado);
+        if (autenticado.isEmpty()) {
+            throw new RuntimeException("Superusuário autenticado não encontrado");
+        }
+        
+        // Impedir auto-exclusão
+        if (autenticado.get().getCpf().equals(cpf)) {
+            throw new RuntimeException("Não é permitido excluir o próprio usuário");
+        }
+        
+        excluirSuperusuario(cpf);
+    }
+
+    @Override
+    public List<Superusuario> listarTodos(String emailSuperusuarioAutenticado) {
+        // Apenas verificar que está autenticado
+        Optional<Superusuario> autenticado = superusuarioRepository.findByEmail(emailSuperusuarioAutenticado);
+        if (autenticado.isEmpty()) {
+            throw new RuntimeException("Superusuário autenticado não encontrado");
+        }
+        
+        return listarTodos();
+    }
+
+    // MÉTODOS EXISTENTES (mantidos conforme seu código)
     @Override
     public Superusuario cadastrarSuperusuario(Superusuario superusuario) {
-        // Criptografar a senha antes de salvar
         superusuario.setSenha(passwordEncoder.encode(superusuario.getSenha()));
         return superusuarioRepository.save(superusuario);
     }
@@ -39,14 +95,10 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
     public Superusuario alterarSuperusuario(String cpf, Superusuario superusuarioAtualizado) {
         return superusuarioRepository.findById(cpf)
                 .map(superusuarioExistente -> {
-                    
-                    //superusuarioExistente.setNome(superusuarioAtualizado.getNome());
                     superusuarioExistente.setEmail(superusuarioAtualizado.getEmail());
-                    // Criptografa a nova senha se ela for diferente
                     if (superusuarioAtualizado.getSenha() != null && !superusuarioAtualizado.getSenha().isEmpty()) {
                         superusuarioExistente.setSenha(passwordEncoder.encode(superusuarioAtualizado.getSenha()));
                     }
-                    // Adicione outros campos a serem atualizados aqui
                     return superusuarioRepository.save(superusuarioExistente);
                 })
                 .orElseThrow(() -> new RuntimeException("Superusuário não encontrado com o CPF: " + cpf));
@@ -62,20 +114,16 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
         return superusuarioRepository.findAll();
     }
 
+    @Override
     public String login(String email, String senha) {
-        // 1. Busca o superusuário pelo e-mail
         Optional<Superusuario> superusuarioOptional = superusuarioRepository.findByEmail(email);
 
         if (superusuarioOptional.isPresent()) {
             Superusuario superusuario = superusuarioOptional.get();
-
-            // 2. Valida se a senha informada corresponde à senha criptografada
             if (passwordEncoder.matches(senha, superusuario.getSenha())) {
-                // 3. Se a senha for válida, gera e retorna o token JWT
                 return jwtService.generateToken(superusuario.getEmail());
             }
         }
-        // 4. Se o usuário não for encontrado ou a senha for inválida, lança uma exceção
         throw new RuntimeException("Credenciais inválidas");
     }
 }

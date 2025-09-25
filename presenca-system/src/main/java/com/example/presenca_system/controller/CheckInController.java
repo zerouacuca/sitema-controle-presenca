@@ -1,35 +1,26 @@
 package com.example.presenca_system.controller;
 
-import com.example.presenca_system.model.CheckIn;
 import com.example.presenca_system.model.dto.CheckInRequestDTO;
 import com.example.presenca_system.model.dto.CheckInResponseDTO;
 import com.example.presenca_system.service.CheckInService;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/checkin")
+@RequestMapping("/public/checkin")
 public class CheckInController {
 
     @Autowired
     private CheckInService checkInService;
 
-    /**
-     * Endpoint para registrar o check-in biométrico.
-     * Recebe um DTO com o ID do evento e o template biométrico em Base64.
-     * Retorna uma resposta HTTP com o resultado da operação.
-     */
+    // 🔓 Endpoint PÚBLICO - não exige autenticação
     @PostMapping("/biometrico")
     public ResponseEntity<String> registrarCheckInBiometrico(@RequestBody CheckInRequestDTO request) {
         try {
-            // Decodifica a string Base64 para um array de bytes
             byte[] templateBiometrico = java.util.Base64.getDecoder().decode(request.getTemplate());
-            
-            // Chama o serviço para realizar o check-in
             String resultado = checkInService.registrarCheckInBiometrico(templateBiometrico, request.getEventoId());
 
             if (resultado.startsWith("Check-in realizado")) {
@@ -38,12 +29,13 @@ public class CheckInController {
                 return ResponseEntity.badRequest().body(resultado);
             }
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Template biométrico em formato inválido (não é Base64).");
+            return ResponseEntity.badRequest().body("Template biométrico em formato inválido");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Ocorreu um erro interno ao processar o check-in.");
+            return ResponseEntity.internalServerError().body("Erro interno ao processar check-in");
         }
     }
 
+    // 🔐 Este endpoint deve ser protegido (apenas superusuários)
     @GetMapping("/evento/{eventoId}")
     public ResponseEntity<List<CheckInResponseDTO>> getCheckInsPorEvento(@PathVariable Long eventoId) {
         try {

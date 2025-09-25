@@ -12,4 +12,10 @@ public interface SuperusuarioService {
     void excluirSuperusuario(String cpf);
     List<Superusuario> listarTodos();
     String login(String email, String senha);
+    
+    // 🔐 NOVOS MÉTODOS PARA VALIDAÇÃO DE PERMISSÕES
+    Superusuario cadastrarSuperusuario(Superusuario superusuario, String emailSuperusuarioAutenticado);
+    Superusuario alterarSuperusuario(String cpf, Superusuario superusuario, String emailSuperusuarioAutenticado);
+    void excluirSuperusuario(String cpf, String emailSuperusuarioAutenticado);
+    List<Superusuario> listarTodos(String emailSuperusuarioAutenticado);
 }

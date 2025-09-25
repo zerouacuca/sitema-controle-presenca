@@ -35,14 +35,40 @@ public class CertificadoServiceImpl implements CertificadoService {
     @Autowired
     private PDFService pdfService;
 
+    // 🔐 NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertificadoDTO> findBySuperusuarioEmailDTO(String emailSuperusuario) {
+        return certificadoRepository.findBySuperusuarioEmailDTO(emailSuperusuario);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertificadoDTO> findByEventoAndSuperusuarioEmailDTO(Long eventoId, String emailSuperusuario) {
+        return certificadoRepository.findByEventoAndSuperusuarioEmailDTO(eventoId, emailSuperusuario);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Certificado> findByIdAndSuperusuarioEmail(Long id, String emailSuperusuario) {
+        return certificadoRepository.findByIdAndSuperusuarioEmail(id, emailSuperusuario);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean verificarPermissoesCertificados(List<Long> certificadoIds, String emailSuperusuario) {
+        for (Long certificadoId : certificadoIds) {
+            Optional<Certificado> certificado = certificadoRepository.findByIdAndSuperusuarioEmail(certificadoId, emailSuperusuario);
+            if (certificado.isEmpty()) {
+                return false; // Um dos certificados não pertence ao superusuário
+            }
+        }
+        return true; // Todos os certificados pertencem ao superusuário
+    }
+
+    // MÉTODOS EXISTENTES (mantidos conforme seu código)
     @Override
     public void gerarCertificadosParaEvento(Evento evento) {
-        // Este método precisa ser implementado de acordo com sua lógica de negócio
-        // Como não há um método direto para buscar usuários por evento,
-        // você precisará implementar essa lógica de outra forma
-        // Por exemplo, através de CheckIn ou outra relação
-        
-        // Implementação simplificada para demonstração:
         System.out.println("Método gerarCertificadosParaEvento precisa ser implementado");
     }
 
@@ -67,7 +93,8 @@ public class CertificadoServiceImpl implements CertificadoService {
 
     @Override
     public List<byte[]> gerarPDFsPorIds(List<Long> certificadoIds) throws IOException, DocumentException {
-        List<Certificado> certificados = certificadoRepository.findByIds(certificadoIds);
+        // 🔧 CORREÇÃO: Use o método correto do JpaRepository
+        List<Certificado> certificados = certificadoRepository.findAllById(certificadoIds);
         List<byte[]> pdfs = new ArrayList<>();
         
         for (Certificado certificado : certificados) {
@@ -86,7 +113,6 @@ public class CertificadoServiceImpl implements CertificadoService {
         throw new RuntimeException("Usuário não encontrado com CPF: " + cpf);
     }
     
-    // Novos métodos para DTO
     @Override
     @Transactional(readOnly = true)
     public List<CertificadoDTO> findAllDTO() {
@@ -105,7 +131,6 @@ public class CertificadoServiceImpl implements CertificadoService {
         return certificadoRepository.findByEventoEventoIdDTO(eventoId);
     }
 
-    // Métodos CRUD básicos
     @Override
     public Certificado save(Certificado certificado) {
         return certificadoRepository.save(certificado);
@@ -140,14 +165,12 @@ public class CertificadoServiceImpl implements CertificadoService {
         return certificadoRepository.findByUsuarioCpfAndEventoEventoId(cpf, eventoId);
     }
 
-    // Métodos adicionais úteis (removidos os que não existem no repository)
     @Override
     @Transactional(readOnly = true)
     public boolean existsByUsuarioCpfAndEventoEventoId(String cpf, Long eventoId) {
         return certificadoRepository.findByUsuarioCpfAndEventoEventoId(cpf, eventoId).isPresent();
     }
 
-    // Método auxiliar para criar certificado
     public Certificado criarCertificado(Usuario usuario, Evento evento, Superusuario superusuario) {
         Certificado certificado = new Certificado();
         certificado.setUsuario(usuario);
