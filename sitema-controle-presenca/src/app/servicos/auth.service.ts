@@ -1,0 +1,64 @@
+// servicos/auth.service.ts
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Router } from '@angular/router';
+import { Login, AuthResponse } from '../models/login.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private apiUrl = 'http://localhost:8080/auth';
+  private tokenKey = 'auth_token';
+  private currentUserSubject = new BehaviorSubject<string | null>(this.getCurrentUserEmail());
+  public currentUser$ = this.currentUserSubject.asObservable();
+
+  constructor(private http: HttpClient, private router: Router) {}
+
+  login(login: Login): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, login)
+      .pipe(
+        tap(response => {
+          this.setToken(response.token);
+          this.currentUserSubject.next(response.email);
+        })
+      );
+  }
+
+  private setToken(token: string): void {
+    localStorage.setItem(this.tokenKey, token);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  logout(): void {
+    localStorage.removeItem(this.tokenKey);
+    this.currentUserSubject.next(null);
+    this.router.navigate(['/login']);
+  }
+
+  getCurrentUserEmail(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.sub; // O email está no subject do token
+    } catch (error) {
+      console.error('Erro ao decodificar token:', error);
+      return null;
+    }
+  }
+
+  // Método para criar admin (útil para desenvolvimento)
+  setupAdmin(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/setup-admin`);
+  }
+}

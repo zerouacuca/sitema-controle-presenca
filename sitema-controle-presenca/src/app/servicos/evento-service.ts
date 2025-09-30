@@ -9,7 +9,7 @@ import { StatusEvento } from '../models/evento.model';
   providedIn: 'root'
 })
 export class EventoService {
-  private backendApiUrl = `${environment.backendApiUrl}/eventos`;
+  private backendApiUrl = `${environment.backendApiUrl}/admin/eventos`;
 
   constructor(private http: HttpClient) { }
 
@@ -38,19 +38,16 @@ export class EventoService {
   }
 
   atualizarStatus(eventoId: number, status: StatusEvento): Observable<void> {
-    const params = new HttpParams().set('status', status.toString());
+    const params = new HttpParams().set('status', status);
     return this.http.patch<void>(`${this.backendApiUrl}/${eventoId}/status`, null, { params });
   }
 
-  cancelarEvento(eventoId: number): Observable<any> {
-    return this.http.post<any>(`${this.backendApiUrl}/${eventoId}/cancelar`, {}, {
-      responseType: 'text' as 'json' // Force text response
-    });
+  cancelarEvento(eventoId: number): Observable<string> {
+    return this.http.post<string>(`${this.backendApiUrl}/${eventoId}/cancelar`, {});
   }
 
-  // Método alternativo se o PATCH não funcionar
-  atualizarStatusPost(eventoId: number, status: StatusEvento): Observable<void> {
-    return this.http.post<void>(`${this.backendApiUrl}/${eventoId}/status`, { status });
+  // Método para buscar eventos por superusuário (já é automático pelo token)
+  getMeusEventos(): Observable<Evento[]> {
+    return this.http.get<Evento[]>(this.backendApiUrl);
   }
-
 }

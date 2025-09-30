@@ -34,6 +34,12 @@
               Entre com seu e-mail e senha!
             </p>
 
+            <!-- Mensagem de erro -->
+            <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{ errorMessage }}
+              <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+            </div>
+
             <form #formLogin="ngForm">
               <div
                 class="form-outline mb-2 d-flex flex-column justify-content-start"
@@ -48,6 +54,7 @@
                   [(ngModel)]="login.email"
                   #email="ngModel"
                   required
+                  [disabled]="isLoading"
                 />
                 <div
                   *ngIf="email.errors && (email.dirty || email.touched)"
@@ -72,6 +79,7 @@
                   #senha="ngModel"
                   class="form-control form-control-lg"
                   required
+                  [disabled]="isLoading"
                 />
                 <div
                   *ngIf="senha.errors && (senha.dirty || senha.touched)"
@@ -91,9 +99,26 @@
                 class="btn btn-primary btn-lg px-5 w-100"
                 type="submit"
                 (click)="onSubmit()"
+                [disabled]="isLoading"
               >
-                Login
+                <span *ngIf="!isLoading">Login</span>
+                <span *ngIf="isLoading">
+                  <span class="spinner-border spinner-border-sm" role="status"></span>
+                  Entrando...
+                </span>
               </button>
+
+              <!-- Botão de desenvolvimento (opcional) -->
+              <div class="text-center mt-3">
+                <button 
+                  type="button" 
+                  class="btn btn-outline-secondary btn-sm" 
+                  (click)="setupAdmin()"
+                  [disabled]="isLoading"
+                >
+                  Configurar Admin (Desenvolvimento)
+                </button>
+              </div>
             </form>
           </div>
         </div>

@@ -8,29 +8,29 @@ import { CertificadosComponent } from './pages/certificados/certificados.compone
 import { DetalhesEventoComponent } from './pages/detalhes-evento/detalhes-evento.component';
 import { PaginaPrincipal } from './pages/pagina-principal/pagina-principal';
 import { Navbar } from './pages/navbar/navbar';
+import { AuthGuard } from './guards/auth.guard';
+
 export const routes: Routes = [
-
   { path: 'login', component: LoginComponent },
-
-
+  
   {
     path: '',
     component: PaginaPrincipal,
+    canActivate: [AuthGuard],
     children: [
-      {path: 'navbar', component: Navbar},
+      { path: 'navbar', component: Navbar },
       { path: 'eventos', component: TabelaEventos },
       { path: 'cadastrar-evento', component: EventoCrud },
       { path: 'editar-evento/:id', component: EventoCrud },
       { path: 'detalhes-evento/:id', component: DetalhesEventoComponent },
       { path: 'tabela-usuarios', component: TabelaUsuarios },
       { path: 'cadastrar-usuario', component: UsuarioCrud },
-      { path: 'editar-usuario', component: UsuarioCrud },
       { path: 'editar-usuario/:cpf', component: UsuarioCrud },
       { path: 'certificados', component: CertificadosComponent },
+      { path: '', redirectTo: 'eventos', pathMatch: 'full' }
     ]
   },
 
-  // Wildcard
+  // Wildcard - redireciona para login
   { path: '**', redirectTo: '/login' },
-
 ];

@@ -1,11 +1,18 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-  <a class="navbar-brand mx-4" href="#">
+  <a class="navbar-brand mx-4" href="/eventos">
     <img src="logo_svg.svg" width="21" height="21" alt="">
     Pontu
   </a>
+  
+  <!-- Usuário logado -->
+  <div class="navbar-text me-3 d-none d-md-block" *ngIf="currentUser">
+    <small class="text-muted">Logado como: {{ currentUser }}</small>
+  </div>
+
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
+  
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
       <li class="nav-item dropdown mx-2">
@@ -13,8 +20,10 @@
           Eventos
         </a>
         <div class="dropdown-menu" aria-labelledby="eventoDropdownMenuLink">
-          <a class="dropdown-item" href="/cadastrar-evento">Novo evento</a>
-          <a class="dropdown-item" href="/eventos">Gerenciar eventos</a>
+          <a class="dropdown-item" [class.active]="isActiveRoute('/cadastrar-evento')" 
+             routerLink="/cadastrar-evento">Novo evento</a>
+          <a class="dropdown-item" [class.active]="isActiveRoute('/eventos')" 
+             routerLink="/eventos">Gerenciar eventos</a>
         </div>
       </li>
       <li class="nav-item dropdown mx-2">
@@ -22,24 +31,34 @@
           Usuários
         </a>
         <div class="dropdown-menu" aria-labelledby="usuarioDropdownMenuLink">
-          <a class="dropdown-item" href="/cadastrar-usuario">Novo usuário</a>
-          <a class="dropdown-item" href="/tabela-usuarios">Gerenciar usuários</a>
+          <a class="dropdown-item" [class.active]="isActiveRoute('/cadastrar-usuario')" 
+             routerLink="/cadastrar-usuario">Novo usuário</a>
+          <a class="dropdown-item" [class.active]="isActiveRoute('/tabela-usuarios')" 
+             routerLink="/tabela-usuarios">Gerenciar usuários</a>
         </div>
       </li>
       <li class="nav-item mx-2">
         <a class="nav-link" href="#">Relatórios</a>
       </li>
       <li class="nav-item mx-2">
-        <a class="nav-link" href="/certificados">Certificados</a>
+        <a class="nav-link" [class.active]="isActiveRoute('/certificados')" 
+           routerLink="/certificados">Certificados</a>
       </li>
     </ul>
+    
+    <!-- Usuário logado (mobile) -->
+    <div class="navbar-text d-block d-md-none me-3" *ngIf="currentUser">
+      <small class="text-muted">{{ currentUser }}</small>
+    </div>
+    
     <ul class="navbar-nav ms-auto">
-        <li class="nav-item mx-4">
+      <li class="nav-item mx-4">
         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">
-            <i class="bi bi-box-arrow-right"></i> Sair
+          <i class="bi bi-box-arrow-right"></i> Sair
         </a>
-    </li>
+      </li>
     </ul>
   </div>
 </nav>
+
 <app-modal-logout></app-modal-logout>
