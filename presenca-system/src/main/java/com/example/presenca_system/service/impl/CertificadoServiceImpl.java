@@ -176,13 +176,13 @@ public class CertificadoServiceImpl implements CertificadoService {
         certificado.setUsuario(usuario);
         certificado.setEvento(evento);
         certificado.setSuperusuario(superusuario);
-        certificado.setNomeUsuario(usuario.getNome());
-        certificado.setCpfUsuario(usuario.getCpf());
-        certificado.setNomeSuperusuario(superusuario.getNome());
         certificado.setCodigoValidacao(generateValidationCode());
         certificado.setDataEmissao(LocalDate.now());
-        certificado.setTexto("Certificado de participação no evento " + evento.getTitulo() + 
-                           " com carga horária de " + evento.getCargaHoraria() + " horas.");
+        
+        // 🔥 TEXTO GERADO AUTOMATICAMENTE COM DADOS DOS RELACIONAMENTOS
+        certificado.setTexto("Certificado de participação no evento \"" + evento.getTitulo() + 
+                        "\" com carga horária de " + evento.getCargaHoraria() + " horas. " +
+                        "Emitido por " + superusuario.getNome() + ".");
         
         return certificadoRepository.save(certificado);
     }

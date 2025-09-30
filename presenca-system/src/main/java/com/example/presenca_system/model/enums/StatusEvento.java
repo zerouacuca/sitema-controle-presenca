@@ -4,8 +4,8 @@ public enum StatusEvento {
     AGENDADO("agendado"),
     EM_ANDAMENTO("em andamento"), 
     FINALIZADO("finalizado"),
-    CANCELADO("cancelado"),
-    PAUSADO("pausado");
+    CANCELADO("cancelado");
+    // 🔥 PAUSADO REMOVIDO para simplificar
 
     private final String descricao;
 

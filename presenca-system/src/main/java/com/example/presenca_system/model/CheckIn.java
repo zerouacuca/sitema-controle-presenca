@@ -6,12 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
 
-import com.example.presenca_system.model.enums.StatusCheckIn;
-
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "check_in")
 public class CheckIn {
 
     @Id
@@ -28,8 +27,4 @@ public class CheckIn {
 
     @Column(name = "data_hora_checkin", nullable = false)
     private Date dataHoraCheckin;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private StatusCheckIn status;
 }
