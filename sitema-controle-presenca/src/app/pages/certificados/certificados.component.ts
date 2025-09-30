@@ -1,4 +1,3 @@
-// src/app/pages/certificados/certificados.component.ts
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,12 +7,11 @@ import { filter, Subscription } from 'rxjs';
 
 import { Certificado } from '../../models/certificado.model';
 import { CertificadoService } from '../../servicos/certificado-service';
-import { Navbar } from '../../componentes/navbar/navbar';
 
 @Component({
   selector: 'app-certificados',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, Navbar],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './certificados.component.html',
   styleUrls: ['./certificados.component.css']
 })
@@ -22,12 +20,12 @@ export class CertificadosComponent implements OnInit, OnDestroy {
   certificados: Certificado[] = [];
   certificadosFiltrados: Certificado[] = [];
   certificadosSelecionados: Certificado[] = [];
-  
+
   // Filtros
   cpfPesquisa: string = '';
   eventoIdPesquisa: string = '';
   filtroAtivo: 'todos' | 'usuario' | 'evento' = 'todos';
-  
+
   // Estados
   carregando: boolean = false;
   mensagem: string = '';
@@ -149,7 +147,7 @@ export class CertificadosComponent implements OnInit, OnDestroy {
   }
 
   todosSelecionados(): boolean {
-    return this.certificadosFiltrados.length > 0 && 
+    return this.certificadosFiltrados.length > 0 &&
            this.certificadosFiltrados.every(c => c.selected);
   }
 
@@ -176,7 +174,7 @@ export class CertificadosComponent implements OnInit, OnDestroy {
 
   baixarCertificadosSelecionados(): void {
     const ids = this.certificadosSelecionados.map(c => c.id);
-    
+
     if (ids.length === 0) {
       this.erro = 'Selecione pelo menos um certificado';
       setTimeout(() => this.erro = '', 3000);
@@ -196,7 +194,7 @@ export class CertificadosComponent implements OnInit, OnDestroy {
         }
       });
     });
-    
+
     this.mensagem = 'Iniciando download dos certificados...';
     setTimeout(() => this.mensagem = '', 3000);
     this.cd.detectChanges(); // Forçar detecção de mudanças
@@ -223,7 +221,7 @@ export class CertificadosComponent implements OnInit, OnDestroy {
 
   enviarPorEmail(): void {
     const ids = this.certificadosSelecionados.map(c => c.id);
-    
+
     if (ids.length === 0) {
       this.erro = 'Selecione pelo menos um certificado';
       setTimeout(() => this.erro = '', 3000);
@@ -232,7 +230,7 @@ export class CertificadosComponent implements OnInit, OnDestroy {
     }
 
     const email = prompt('Digite o email para envio:');
-    
+
     if (email && ids.length > 0) {
       this.certificadoService.enviarCertificadosPorEmail(ids, email).subscribe({
         next: () => {

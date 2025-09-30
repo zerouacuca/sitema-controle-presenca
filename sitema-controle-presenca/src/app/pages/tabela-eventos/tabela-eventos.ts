@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 
 import { Evento, StatusEvento } from '../../models/evento.model';
 import { EventoService } from '../../servicos/evento-service';
-import { Navbar } from '../../componentes/navbar/navbar';
+import { Navbar } from '../navbar/navbar';
 
 @Component({
   selector: 'app-tabela-eventos',
@@ -24,10 +24,10 @@ export class TabelaEventos implements OnInit, OnDestroy {
   isLoading: boolean = true;
   dataInicioFiltro: string | null = null;
   dataFimFiltro: string | null = null;
-  
+
   // Disponibilize o enum para o template
   StatusEvento = StatusEvento;
-  
+
   private routerSubscription!: Subscription;
 
   constructor(
@@ -154,7 +154,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
   // Método para obter a descrição do status
   getStatusDescricao(status: StatusEvento | undefined): string {
     if (!status) return 'Não definido';
-    
+
     switch (status) {
       case StatusEvento.AGENDADO: return 'Agendado';
       case StatusEvento.EM_ANDAMENTO: return 'Em Andamento';
@@ -168,7 +168,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
   // Método para obter a classe CSS baseada no status
   getStatusClass(status: StatusEvento | undefined): string {
     if (!status) return 'status-padrao';
-    
+
     switch (status) {
       case StatusEvento.EM_ANDAMENTO: return 'status-andamento';
       case StatusEvento.FINALIZADO: return 'status-finalizada';

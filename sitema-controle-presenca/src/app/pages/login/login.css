@@ -1,43 +1,44 @@
-.gradient-custom {
-
-  background: linear-gradient(
-    270deg,
-    hsla(210, 100%, 70%, 1) 0%,
-    hsla(210, 100%, 20%, 1) 100%
-  );
-  background: -moz-linear-gradient(270deg, hsla(210, 100%, 70%, 1) 0%, hsla(210, 100%, 20%, 1) 100%);
-  background: -webkit-linear-gradient(270deg, hsla(210, 100%, 70%, 1) 0%, hsla(210, 100%, 20%, 1) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#99c9ff", endColorstr="#003366", GradientType=1);
+.fundo {
+  background-color: #f8f9fa;
 }
 
 .background-glass {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  color: #212529;
+  padding: 2rem;
 }
 
 input.form-control {
-  background-color: rgba(255, 255, 255, 0.3);
-  border: none;
-  color: #000;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  color: #212529;
+  border-radius: 0.375rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 input.form-control::placeholder {
-  color: #ddd;
+  color: #6c757d;
+}
+
+input.form-control:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 button.btn-primary {
-  background-color: #3399ff;
-  border-color: #3399ff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
 button.btn-primary:hover {
-  background-color: #267acc;
-  border-color: #267acc;
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
 }
 
 .logo {
@@ -46,6 +47,8 @@ button.btn-primary:hover {
 }
 
 .sistema-titulo {
-  font-size: 20px;
+  font-size: 1.25rem; /* ~20px */
   font-weight: 600;
+  color: #212529;
+  margin-bottom: 1rem;
 }

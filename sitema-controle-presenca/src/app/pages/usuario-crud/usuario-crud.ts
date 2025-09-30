@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgxMaskDirective } from 'ngx-mask';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Navbar } from '../../componentes/navbar/navbar';
+import { Navbar } from '../navbar/navbar';
 
 import { CpfValidatorService } from '../../servicos/cpf-validator';
 import { UsuarioService } from '../../servicos/usuario-service';
 import { BiometricService } from '../../servicos/biometric-service';
-import { Usuario } from '../../models/usuario.model'; 
+import { Usuario } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-usuario-crud',
@@ -31,7 +31,7 @@ export class UsuarioCrud implements OnInit {
     template: '',
     dataNascimento: ''
   };
-  
+
   isEditMode: boolean = false;
   isLoading: boolean = false;
   isCapturingBiometry: boolean = false;
@@ -142,11 +142,11 @@ export class UsuarioCrud implements OnInit {
     this.isCapturingBiometry = true;
     this.biometryError = '';
     this.cd.detectChanges(); // Força a atualização da view
-    
+
     this.biometricService.captureHash(false).subscribe({
       next: (response) => {
         this.isCapturingBiometry = false;
-        
+
         if (response.success) {
           this.usuario.template = response.template;
           this.cd.detectChanges();
@@ -160,9 +160,9 @@ export class UsuarioCrud implements OnInit {
         this.isCapturingBiometry = false;
         this.biometryError = this.getErrorMessage(error);
         this.cd.detectChanges(); // Força a atualização da view
-        
+
         console.error('Erro ao capturar biometria:', error);
-        
+
         // Aguarda um pouco antes de mostrar o alerta para garantir que a UI foi atualizada
         setTimeout(() => {
           if (error.message && error.message.includes('Error on Capture')) {
@@ -242,10 +242,10 @@ export class UsuarioCrud implements OnInit {
 
   // Verifica se o formulário está válido para cadastro
   isFormValid(): boolean {
-    return !!this.usuario.cpf && 
-           !!this.usuario.nome && 
-           !!this.usuario.matricula && 
-           !!this.usuario.dataNascimento && 
+    return !!this.usuario.cpf &&
+           !!this.usuario.nome &&
+           !!this.usuario.matricula &&
+           !!this.usuario.dataNascimento &&
            !!this.usuario.template;
   }
 }

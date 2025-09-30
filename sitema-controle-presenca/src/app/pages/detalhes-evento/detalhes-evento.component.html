@@ -1,7 +1,6 @@
-<app-navbar></app-navbar>
 <div class="gradient-custom min-vh-100 p-4">
   <div class="background-glass p-4">
-    
+
     <!-- Loading -->
     <div *ngIf="isLoading" class="text-center py-4">
       <div class="spinner-border text-primary" role="status">
@@ -12,7 +11,7 @@
 
     <!-- Conteúdo principal -->
     <div *ngIf="!isLoading && evento">
-      
+
       <!-- Cabeçalho com título e botões de ação -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -35,7 +34,7 @@
         <div class="card-body">
           <div class="d-flex gap-2 flex-wrap">
             <!-- Botão Editar Evento -->
-            <button class="btn btn-outline-primary" 
+            <button class="btn btn-outline-primary"
                     (click)="editarEvento()"
                     *ngIf="evento.status !== statusEvento.FINALIZADO && evento.status !== statusEvento.CANCELADO"
                     [disabled]="isLoadingAction">
@@ -43,7 +42,7 @@
             </button>
 
             <!-- Botão Iniciar Evento -->
-            <button class="btn btn-success" 
+            <button class="btn btn-success"
                     (click)="iniciarEvento()"
                     *ngIf="evento.status === statusEvento.AGENDADO || evento.status === statusEvento.PAUSADO"
                     [disabled]="isLoadingAction">
@@ -51,16 +50,16 @@
             </button>
 
             <!-- Botão Realizar Check-in Biométrico -->
-            <button class="btn btn-primary" 
+            <button class="btn btn-primary"
                     (click)="realizarCheckInBiometrico()"
                     *ngIf="evento.status === statusEvento.EM_ANDAMENTO"
                     [disabled]="isLoadingAction || isCapturingBiometry">
-              <i class="fas fa-fingerprint me-1"></i> 
+              <i class="fas fa-fingerprint me-1"></i>
               {{ isCapturingBiometry ? 'Capturando...' : 'Realizar Check-in' }}
             </button>
 
             <!-- Botão Encerrar Evento -->
-            <button class="btn btn-warning" 
+            <button class="btn btn-warning"
                     (click)="encerrarEvento()"
                     *ngIf="evento.status === statusEvento.EM_ANDAMENTO"
                     [disabled]="isLoadingAction">
@@ -68,7 +67,7 @@
             </button>
 
             <!-- Botão Cancelar Evento -->
-            <button class="btn btn-danger" 
+            <button class="btn btn-danger"
                     (click)="cancelarEvento()"
                     *ngIf="evento.status !== statusEvento.FINALIZADO && evento.status !== statusEvento.CANCELADO"
                     [disabled]="isLoadingAction">
@@ -76,7 +75,7 @@
             </button>
 
             <!-- Botão Pausar/Retomar Evento -->
-            <button class="btn btn-info" 
+            <button class="btn btn-info"
                     (click)="evento.status === statusEvento.PAUSADO ? retomarEvento() : pausarEvento()"
                     *ngIf="evento.status === statusEvento.EM_ANDAMENTO || evento.status === statusEvento.PAUSADO"
                     [disabled]="isLoadingAction">
@@ -109,17 +108,17 @@
             <div class="col-md-6">
               <p><strong>Descrição:</strong></p>
               <p class="text-muted">{{ evento.descricao }}</p>
-              
+
               <p><strong>Data e Hora:</strong></p>
               <p class="text-muted">{{ formatarDataHora(evento.dataHora) }}</p>
             </div>
             <div class="col-md-6">
               <p><strong>Categoria:</strong></p>
               <p class="text-muted">{{ evento.categoria }}</p>
-              
+
               <p><strong>Carga Horária:</strong></p>
               <p class="text-muted">{{ evento.cargaHoraria }} horas</p>
-              
+
               <p><strong>Status:</strong></p>
               <span class="badge" [ngClass]="getStatusBadgeClass(evento.status)">
                 {{ getStatusDescricao(evento.status) }}

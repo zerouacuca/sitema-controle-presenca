@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Navbar } from '../../componentes/navbar/navbar';
+import { Navbar } from '../navbar/navbar';
 
 import { EventoService } from '../../servicos/evento-service';
 import { Evento } from '../../models/evento.model';
@@ -22,7 +22,7 @@ export class EventoCrud implements OnInit {
     categoria: '',
     cargaHoraria: 0
   };
-  
+
   isEditMode: boolean = false;
   eventoId: number | null = null;
 
@@ -35,7 +35,7 @@ export class EventoCrud implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    
+
     if (id) {
       this.isEditMode = true;
       this.eventoId = Number(id);

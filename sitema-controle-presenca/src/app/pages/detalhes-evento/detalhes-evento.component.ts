@@ -9,7 +9,7 @@ import { CheckIn, StatusCheckIn } from '../../models/checkin.model';
 import { EventoService } from '../../servicos/evento-service';
 import { CheckInService } from '../../servicos/checkin-service';
 import { BiometricService } from '../../servicos/biometric-service';
-import { Navbar } from '../../componentes/navbar/navbar';
+import { Navbar } from '../navbar/navbar';
 
 @Component({
   selector: 'app-detalhes-evento',
@@ -27,7 +27,7 @@ export class DetalhesEventoComponent implements OnInit {
   isCapturingBiometry: boolean = false;
   actionMessage: string = '';
   biometryError: string = '';
-  
+
   statusEvento = StatusEvento;
   statusCheckIn = StatusCheckIn;
 
@@ -46,7 +46,7 @@ export class DetalhesEventoComponent implements OnInit {
 
   carregarDetalhesEvento(): void {
     const eventoId = this.route.snapshot.paramMap.get('id');
-    
+
     if (!eventoId) {
       this.isLoading = false;
       this.cd.detectChanges();
@@ -55,7 +55,7 @@ export class DetalhesEventoComponent implements OnInit {
 
     this.isLoading = true;
     this.cd.detectChanges();
-    
+
     this.eventoService.getEventoById(Number(eventoId)).subscribe({
       next: (evento) => {
         this.evento = evento;
@@ -91,7 +91,7 @@ export class DetalhesEventoComponent implements OnInit {
     if (this.evento?.eventoId && confirm('Iniciar este evento?')) {
       this.isLoadingAction = true;
       this.actionMessage = 'Iniciando evento...';
-      
+
       this.eventoService.atualizarStatus(this.evento.eventoId, StatusEvento.EM_ANDAMENTO).subscribe({
         next: () => {
           this.actionMessage = 'Evento iniciado com sucesso!';
@@ -111,7 +111,7 @@ export class DetalhesEventoComponent implements OnInit {
     if (this.evento?.eventoId && confirm('Pausar este evento?')) {
       this.isLoadingAction = true;
       this.actionMessage = 'Pausando evento...';
-      
+
       this.eventoService.atualizarStatus(this.evento.eventoId, StatusEvento.PAUSADO).subscribe({
         next: () => {
           this.actionMessage = 'Evento pausado com sucesso!';
@@ -131,7 +131,7 @@ export class DetalhesEventoComponent implements OnInit {
     if (this.evento?.eventoId && confirm('Retomar este evento?')) {
       this.isLoadingAction = true;
       this.actionMessage = 'Retomando evento...';
-      
+
       this.eventoService.atualizarStatus(this.evento.eventoId, StatusEvento.EM_ANDAMENTO).subscribe({
         next: () => {
           this.actionMessage = 'Evento retomado com sucesso!';
@@ -151,7 +151,7 @@ export class DetalhesEventoComponent implements OnInit {
     if (this.evento?.eventoId && confirm('Encerrar este evento?')) {
       this.isLoadingAction = true;
       this.actionMessage = 'Encerrando evento e gerando certificados...';
-      
+
       this.eventoService.encerrarEvento(this.evento.eventoId).subscribe({
         next: (mensagem: string) => {
           this.actionMessage = mensagem;
@@ -173,7 +173,7 @@ export class DetalhesEventoComponent implements OnInit {
     if (this.evento?.eventoId && confirm('Cancelar este evento?')) {
       this.isLoadingAction = true;
       this.actionMessage = 'Cancelando evento...';
-      
+
       this.eventoService.cancelarEvento(this.evento.eventoId).subscribe({
         next: () => {
           this.actionMessage = 'Evento cancelado com sucesso!';
@@ -205,7 +205,7 @@ export class DetalhesEventoComponent implements OnInit {
     this.biometricService.realizarCheckInBiometrico(this.evento.eventoId).subscribe({
       next: (response: any) => {
         this.isCapturingBiometry = false;
-        
+
         if (response.success) {
           this.actionMessage = 'Check-in realizado com sucesso!';
           this.carregarCheckIns(this.evento!.eventoId!);

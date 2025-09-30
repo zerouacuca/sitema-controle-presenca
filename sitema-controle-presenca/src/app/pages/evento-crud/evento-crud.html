@@ -1,4 +1,3 @@
-<app-navbar></app-navbar>
 <div class="gradient-custom min-vh-100 p-4">
   <div class="background-glass p-4">
     <h2 class="system-title mb-4">
@@ -9,7 +8,7 @@
       <div class="row">
         <div class="col-md-12 mb-3">
           <label for="titulo" class="form-label">Título *</label>
-          <input id="titulo" type="text" class="form-control" 
+          <input id="titulo" type="text" class="form-control"
                  [(ngModel)]="evento.titulo" name="titulo" required>
         </div>
       </div>
@@ -17,14 +16,14 @@
       <div class="row">
         <div class="col-md-6 mb-3">
           <label for="dataHora" class="form-label">Data e Hora *</label>
-          <input id="dataHora" type="datetime-local" class="form-control" 
+          <input id="dataHora" type="datetime-local" class="form-control"
                  [(ngModel)]="evento.dataHora" name="dataHora" required>
         </div>
 
         <div class="col-md-6 mb-3">
           <label for="cargaHoraria" class="form-label">Carga Horária (horas) *</label>
-          <input id="cargaHoraria" type="number" class="form-control" 
-                 [(ngModel)]="evento.cargaHoraria" name="cargaHoraria" 
+          <input id="cargaHoraria" type="number" class="form-control"
+                 [(ngModel)]="evento.cargaHoraria" name="cargaHoraria"
                  step="0.5" min="0" required>
         </div>
       </div>
@@ -32,7 +31,7 @@
       <div class="row">
         <div class="col-md-6 mb-3">
           <label for="categoria" class="form-label">Categoria *</label>
-          <input id="categoria" type="text" class="form-control" 
+          <input id="categoria" type="text" class="form-control"
                  [(ngModel)]="evento.categoria" name="categoria" required>
         </div>
 
@@ -44,8 +43,8 @@
               'bg-warning': isEventoEmAndamento(),
               'bg-success': isEventoFinalizado()
             }">
-              {{ isEventoAgendado() ? 'Agendado' : 
-                 isEventoEmAndamento() ? 'Em Andamento' : 
+              {{ isEventoAgendado() ? 'Agendado' :
+                 isEventoEmAndamento() ? 'Em Andamento' :
                  isEventoFinalizado() ? 'Finalizado' : 'Indefinido' }}
             </span>
           </div>
@@ -54,7 +53,7 @@
 
       <div class="mb-3">
         <label for="descricao" class="form-label">Descrição *</label>
-        <textarea id="descricao" class="form-control" rows="4" 
+        <textarea id="descricao" class="form-control" rows="4"
                   [(ngModel)]="evento.descricao" name="descricao" required></textarea>
       </div>
     </form>
@@ -62,8 +61,8 @@
     <div class="actions-container mt-4">
       <!-- Modo Criação -->
       <div *ngIf="!isEditMode" class="d-flex gap-2">
-        <button class="btn btn-success" 
-                (click)="salvarEvento()" 
+        <button class="btn btn-success"
+                (click)="salvarEvento()"
                 [disabled]="!eventoForm.valid">
           Cadastrar Evento
         </button>
@@ -74,27 +73,27 @@
 
       <!-- Modo Edição -->
       <div *ngIf="isEditMode" class="d-flex gap-2 flex-wrap">
-        <button class="btn btn-primary" 
-                (click)="salvarEvento()" 
+        <button class="btn btn-primary"
+                (click)="salvarEvento()"
                 [disabled]="!eventoForm.valid">
           Salvar Alterações
         </button>
-        
+
         <button class="btn btn-danger" (click)="removerEvento()">
           Remover Evento
         </button>
 
-        <button class="btn btn-warning" (click)="encerrarEvento()" 
+        <button class="btn btn-warning" (click)="encerrarEvento()"
                 *ngIf="isEventoEmAndamento()">
           Encerrar Evento
         </button>
 
-        <button class="btn btn-info" 
+        <button class="btn btn-info"
                 *ngIf="isEventoFinalizado()">
           Gerar Relatório
         </button>
 
-        <button class="btn btn-success" 
+        <button class="btn btn-success"
                 *ngIf="isEventoFinalizado()">
           Gerar Certificados
         </button>
