@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Navbar } from '../navbar/navbar';
 
 import { EventoService } from '../../servicos/evento-service';
 import { Evento } from '../../models/evento.model';
@@ -10,7 +9,7 @@ import { Evento } from '../../models/evento.model';
 @Component({
   selector: 'app-evento-crud',
   standalone: true,
-  imports: [CommonModule, FormsModule, Navbar],
+  imports: [CommonModule, FormsModule ],
   templateUrl: './evento-crud.html',
   styleUrls: ['./evento-crud.css']
 })

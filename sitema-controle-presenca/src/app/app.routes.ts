@@ -7,7 +7,6 @@ import { UsuarioCrud } from './pages/usuario-crud/usuario-crud';
 import { CertificadosComponent } from './pages/certificados/certificados.component';
 import { DetalhesEventoComponent } from './pages/detalhes-evento/detalhes-evento.component';
 import { PaginaPrincipal } from './pages/pagina-principal/pagina-principal';
-import { Navbar } from './pages/navbar/navbar';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -18,7 +17,7 @@ export const routes: Routes = [
     component: PaginaPrincipal,
     canActivate: [AuthGuard],
     children: [
-      { path: 'navbar', component: Navbar },
+      // REMOVA a rota 'navbar' - não é necessária
       { path: 'eventos', component: TabelaEventos },
       { path: 'cadastrar-evento', component: EventoCrud },
       { path: 'editar-evento/:id', component: EventoCrud },

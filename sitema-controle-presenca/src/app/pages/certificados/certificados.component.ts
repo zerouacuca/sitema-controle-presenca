@@ -12,7 +12,7 @@ import { Navbar } from '../../componentes/navbar/navbar';
 @Component({
   selector: 'app-certificados',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, Navbar],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './certificados.component.html',
   styleUrls: ['./certificados.component.css']
 })

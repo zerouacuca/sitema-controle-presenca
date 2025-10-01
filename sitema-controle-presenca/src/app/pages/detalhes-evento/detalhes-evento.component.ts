@@ -9,12 +9,11 @@ import { CheckIn, StatusCheckIn } from '../../models/checkin.model';
 import { EventoService } from '../../servicos/evento-service';
 import { CheckInService } from '../../servicos/checkin-service';
 import { BiometricService } from '../../servicos/biometric-service';
-import { Navbar } from '../navbar/navbar';
 
 @Component({
   selector: 'app-detalhes-evento',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, RouterModule, FormsModule, Navbar],
+  imports: [CommonModule, HttpClientModule, RouterModule, FormsModule ],
   templateUrl: './detalhes-evento.component.html',
   styleUrls: ['./detalhes-evento.component.css']
 })

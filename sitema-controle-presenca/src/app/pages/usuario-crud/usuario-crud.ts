@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgxMaskDirective } from 'ngx-mask';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Navbar } from '../navbar/navbar';
 
 import { CpfValidatorService } from '../../servicos/cpf-validator';
 import { UsuarioService } from '../../servicos/usuario-service';
@@ -16,8 +15,7 @@ import { Usuario } from '../../models/usuario.model';
   imports: [
     CommonModule,
     FormsModule,
-    NgxMaskDirective,
-    Navbar
+    NgxMaskDirective
   ],
   templateUrl: './usuario-crud.html',
   styleUrls: ['./usuario-crud.css']

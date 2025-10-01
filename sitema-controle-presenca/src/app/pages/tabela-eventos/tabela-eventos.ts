@@ -8,12 +8,11 @@ import { Subscription } from 'rxjs';
 
 import { Evento, StatusEvento } from '../../models/evento.model';
 import { EventoService } from '../../servicos/evento-service';
-import { Navbar } from '../navbar/navbar';
 
 @Component({
   selector: 'app-tabela-eventos',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule, Navbar],
+  imports: [CommonModule, HttpClientModule, FormsModule],
   templateUrl: './tabela-eventos.html',
   styleUrls: ['./tabela-eventos.css']
 })
