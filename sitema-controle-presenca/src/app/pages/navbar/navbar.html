@@ -3,11 +3,6 @@
     <img src="logo_svg.svg" width="21" height="21" alt="">
     Pontu
   </a>
-  
-  <!-- Usuário logado -->
-  <div class="navbar-text me-3 d-none d-md-block" *ngIf="currentUser">
-    <small class="text-muted">Logado como: {{ currentUser }}</small>
-  </div>
 
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -46,19 +41,26 @@
       </li>
     </ul>
     
-    <!-- Usuário logado (mobile) -->
-    <div class="navbar-text d-block d-md-none me-3" *ngIf="currentUser">
-      <small class="text-muted">{{ currentUser }}</small>
-    </div>
-    
+    <!-- Área do usuário logado e logout -->
     <ul class="navbar-nav ms-auto">
-      <li class="nav-item mx-4">
-        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">
+      <!-- Usuário logado (desktop) -->
+      <li class="nav-item d-none d-md-block" *ngIf="currentUser">
+        <div class="navbar-text me-3">
+          <small class="text-muted">Logado como: {{ currentUser }}</small>
+        </div>
+      </li>
+      
+      <!-- Botão de logout -->
+      <li class="nav-item">
+        <a class="nav-link" href="#" (click)="logout(); $event.preventDefault()">
           <i class="bi bi-box-arrow-right"></i> Sair
         </a>
       </li>
     </ul>
+
+    <!-- Usuário logado (mobile) -->
+    <div class="navbar-text d-block d-md-none w-100 text-center" *ngIf="currentUser">
+      <small class="text-muted">{{ currentUser }}</small>
+    </div>
   </div>
 </nav>
-
-<app-modal-logout></app-modal-logout>

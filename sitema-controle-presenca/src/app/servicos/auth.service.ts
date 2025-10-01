@@ -38,10 +38,15 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  
   logout(): void {
-    localStorage.removeItem(this.tokenKey);
+    // Remove o token do localStorage
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('currentUser');
+    
+    // Atualiza o BehaviorSubject
     this.currentUserSubject.next(null);
-    this.router.navigate(['/login']);
+    
   }
 
   getCurrentUserEmail(): string | null {
