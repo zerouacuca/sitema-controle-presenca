@@ -9,7 +9,7 @@ import { environment } from '../environments/environment.prod';
   providedIn: 'root'
 })
 export class CertificadoService {
-  private backendApiUrl = `${environment.backendApiUrl}/certificados`;
+  private backendApiUrl = `${environment.backendApiUrl}/admin/certificados/meus-certificados`;
 
   constructor(private http: HttpClient) { }
 
