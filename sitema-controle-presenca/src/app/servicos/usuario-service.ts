@@ -8,7 +8,7 @@ import { environment } from '../environments/environment';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private backendApiUrl = `${environment.backendApiUrl}/usuarios`;
+  private backendApiUrl = `${environment.backendApiUrl}/admin/usuarios`;
 
   constructor(private http: HttpClient) { }
 
