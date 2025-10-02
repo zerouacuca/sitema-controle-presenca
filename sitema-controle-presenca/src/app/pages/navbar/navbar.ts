@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../servicos/auth.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule], // ← ADICIONADO RouterModule
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css']
 })
@@ -26,7 +26,7 @@ export class Navbar implements OnInit {
 
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']); // Redireciona para a página de login
+    this.router.navigate(['/login']);
   }
 
   isActiveRoute(route: string): boolean {

@@ -7,7 +7,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.getToken();
   
-  if (token && shouldAddToken(req.url)) {
+  // Adiciona token para TODAS as requisições (exceto login e auth)
+  if (token && !isAuthRequest(req.url)) {
     const cloned = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`)
     });
@@ -17,6 +18,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req);
 };
 
-function shouldAddToken(url: string): boolean {
-  return url.includes('/admin/');
+function isAuthRequest(url: string): boolean {
+  // Não adiciona token para endpoints de autenticação
+  return url.includes('/auth/') || url.includes('/login');
 }

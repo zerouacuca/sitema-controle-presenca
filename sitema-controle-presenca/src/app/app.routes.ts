@@ -10,26 +10,38 @@ import { PaginaPrincipal } from './pages/pagina-principal/pagina-principal';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  // Rota pública de login
   { path: 'login', component: LoginComponent },
   
+  // Rotas protegidas com layout principal
   {
     path: '',
     component: PaginaPrincipal,
     canActivate: [AuthGuard],
     children: [
-      // REMOVA a rota 'navbar' - não é necessária
+      // Rotas de Eventos
       { path: 'eventos', component: TabelaEventos },
       { path: 'cadastrar-evento', component: EventoCrud },
       { path: 'editar-evento/:id', component: EventoCrud },
       { path: 'detalhes-evento/:id', component: DetalhesEventoComponent },
+      
+      // Rotas de Usuários
       { path: 'tabela-usuarios', component: TabelaUsuarios },
       { path: 'cadastrar-usuario', component: UsuarioCrud },
       { path: 'editar-usuario/:cpf', component: UsuarioCrud },
+      
+      // Outras rotas
       { path: 'certificados', component: CertificadosComponent },
-      { path: '', redirectTo: 'eventos', pathMatch: 'full' }
+      
+      // Rota padrão - redireciona para eventos
+      { path: '', redirectTo: 'eventos', pathMatch: 'full' },
+      
+      // Redirecionamentos alternativos para garantir que sempre caia em eventos
+      { path: 'home', redirectTo: 'eventos', pathMatch: 'full' },
+      { path: 'dashboard', redirectTo: 'eventos', pathMatch: 'full' }
     ]
   },
 
   // Wildcard - redireciona para login
-  { path: '**', redirectTo: '/login' },
+  { path: '**', redirectTo: 'login' }
 ];

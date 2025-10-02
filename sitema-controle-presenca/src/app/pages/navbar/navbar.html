@@ -1,5 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-  <a class="navbar-brand mx-4" href="/eventos">
+  <!-- Logo - Corrigido para usar routerLink -->
+  <a class="navbar-brand mx-4" routerLink="/eventos">
     <img src="logo_svg.svg" width="21" height="21" alt="">
     Pontu
   </a>
@@ -10,6 +11,7 @@
   
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
+      <!-- Menu Eventos -->
       <li class="nav-item dropdown mx-2">
         <a class="nav-link dropdown-toggle" href="#" id="eventoDropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Eventos
@@ -21,6 +23,8 @@
              routerLink="/eventos">Gerenciar eventos</a>
         </div>
       </li>
+      
+      <!-- Menu Usuários -->
       <li class="nav-item dropdown mx-2">
         <a class="nav-link dropdown-toggle" href="#" id="usuarioDropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Usuários
@@ -32,9 +36,13 @@
              routerLink="/tabela-usuarios">Gerenciar usuários</a>
         </div>
       </li>
+      
+      <!-- Menu Relatórios (mantido como placeholder) -->
       <li class="nav-item mx-2">
         <a class="nav-link" href="#">Relatórios</a>
       </li>
+      
+      <!-- Menu Certificados -->
       <li class="nav-item mx-2">
         <a class="nav-link" [class.active]="isActiveRoute('/certificados')" 
            routerLink="/certificados">Certificados</a>
@@ -59,8 +67,8 @@
     </ul>
 
     <!-- Usuário logado (mobile) -->
-    <div class="navbar-text d-block d-md-none w-100 text-center" *ngIf="currentUser">
-      <small class="text-muted">{{ currentUser }}</small>
+    <div class="navbar-text d-block d-md-none w-100 text-center mt-2" *ngIf="currentUser">
+      <small class="text-muted">Logado como: {{ currentUser }}</small>
     </div>
   </div>
 </nav>
