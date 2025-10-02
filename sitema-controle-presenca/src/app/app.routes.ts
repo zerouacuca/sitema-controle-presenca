@@ -8,40 +8,91 @@ import { CertificadosComponent } from './pages/certificados/certificados.compone
 import { DetalhesEventoComponent } from './pages/detalhes-evento/detalhes-evento.component';
 import { PaginaPrincipal } from './pages/pagina-principal/pagina-principal';
 import { AuthGuard } from './guards/auth.guard';
+import { NovoSuperusuarioComponent } from './pages/novo-superusuario/novo-superusuario.component';
 
 export const routes: Routes = [
-  // Rota pública de login
+  // Rotas públicas - SEM AuthGuard
   { path: 'login', component: LoginComponent },
   
-  // Rotas protegidas com layout principal
-  {
-    path: '',
+  // Rotas protegidas - COM AuthGuard
+  { 
+    path: 'eventos', 
     component: PaginaPrincipal,
     canActivate: [AuthGuard],
     children: [
-      // Rotas de Eventos
-      { path: 'eventos', component: TabelaEventos },
-      { path: 'cadastrar-evento', component: EventoCrud },
-      { path: 'editar-evento/:id', component: EventoCrud },
-      { path: 'detalhes-evento/:id', component: DetalhesEventoComponent },
-      
-      // Rotas de Usuários
-      { path: 'tabela-usuarios', component: TabelaUsuarios },
-      { path: 'cadastrar-usuario', component: UsuarioCrud },
-      { path: 'editar-usuario/:cpf', component: UsuarioCrud },
-      
-      // Outras rotas
-      { path: 'certificados', component: CertificadosComponent },
-      
-      // Rota padrão - redireciona para eventos
-      { path: '', redirectTo: 'eventos', pathMatch: 'full' },
-      
-      // Redirecionamentos alternativos para garantir que sempre caia em eventos
-      { path: 'home', redirectTo: 'eventos', pathMatch: 'full' },
-      { path: 'dashboard', redirectTo: 'eventos', pathMatch: 'full' }
+      { path: '', component: TabelaEventos }
     ]
   },
-
-  // Wildcard - redireciona para login
+  { 
+    path: 'cadastrar-evento', 
+    component: PaginaPrincipal,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: EventoCrud }
+    ]
+  },
+  { 
+    path: 'editar-evento/:id', 
+    component: PaginaPrincipal,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: EventoCrud }
+    ]
+  },
+  { 
+    path: 'detalhes-evento/:id', 
+    component: PaginaPrincipal,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: DetalhesEventoComponent }
+    ]
+  },
+  { 
+    path: 'tabela-usuarios', 
+    component: PaginaPrincipal,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: TabelaUsuarios }
+    ]
+  },
+  { 
+    path: 'cadastrar-usuario', 
+    component: PaginaPrincipal,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: UsuarioCrud }
+    ]
+  },
+  { 
+    path: 'editar-usuario/:cpf', 
+    component: PaginaPrincipal,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: UsuarioCrud }
+    ]
+  },
+  { 
+    path: 'certificados', 
+    component: PaginaPrincipal,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: CertificadosComponent }
+    ]
+  },
+  { 
+    path: 'novo-superusuario', 
+    component: PaginaPrincipal,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: NovoSuperusuarioComponent }
+    ]
+  },
+  
+  // Redirecionamentos
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'home', redirectTo: 'eventos', pathMatch: 'full' },
+  { path: 'dashboard', redirectTo: 'eventos', pathMatch: 'full' },
+  
+  // Wildcard
   { path: '**', redirectTo: 'login' }
 ];

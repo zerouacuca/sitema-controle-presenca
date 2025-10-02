@@ -13,6 +13,10 @@ public interface SuperusuarioService {
     List<Superusuario> listarTodos();
     String login(String email, String senha);
     
+    Superusuario criarPrimeiroSuperusuario(Superusuario superusuario);
+    boolean existeAlgumSuperusuario();
+    
+    
     // 🔐 NOVOS MÉTODOS PARA VALIDAÇÃO DE PERMISSÕES
     Superusuario cadastrarSuperusuario(Superusuario superusuario, String emailSuperusuarioAutenticado);
     Superusuario alterarSuperusuario(String cpf, Superusuario superusuario, String emailSuperusuarioAutenticado);

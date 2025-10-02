@@ -126,4 +126,33 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
         }
         throw new RuntimeException("Credenciais inválidas");
     }
+
+    /**
+     * Verifica se existe algum superusuário no sistema
+     */
+    public boolean existeAlgumSuperusuario() {
+        return superusuarioRepository.count() > 0;
+    }
+
+    /**
+     * Cria o primeiro superusuário do sistema (método especial para inicialização)
+     */
+    public Superusuario criarPrimeiroSuperusuario(Superusuario superusuario) {
+        // Validações básicas
+        if (superusuario.getEmail() == null || superusuario.getSenha() == null) {
+            throw new RuntimeException("Email e senha são obrigatórios");
+        }
+        
+        // Verifica se já existe um usuário com este email
+        if (superusuarioRepository.findByEmail(superusuario.getEmail()).isPresent()) {
+            throw new RuntimeException("Já existe um usuário com este email");
+        }
+        
+        // Criptografa a senha
+        String senhaCriptografada = passwordEncoder.encode(superusuario.getSenha());
+        superusuario.setSenha(senhaCriptografada);
+        
+        // Salva o superusuário
+        return superusuarioRepository.save(superusuario);
+    }
 }

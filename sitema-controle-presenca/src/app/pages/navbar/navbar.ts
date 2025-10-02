@@ -30,6 +30,10 @@ export class Navbar implements OnInit {
   }
 
   isActiveRoute(route: string): boolean {
-    return this.router.url === route || this.router.url.startsWith(route + '/');
+    // Remove o prefixo /app/ para comparação, se existir
+    const currentRoute = this.router.url.replace('/app', '');
+    const compareRoute = route.replace('/app', '');
+    
+    return currentRoute === compareRoute || currentRoute.startsWith(compareRoute + '/');
   }
 }

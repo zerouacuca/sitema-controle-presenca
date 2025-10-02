@@ -18,15 +18,32 @@ public class SuperusuarioController {
         this.superusuarioService = superusuarioService;
     }
 
-    // 🔐 Apenas superusuários autenticados podem gerenciar outros superusuários
+    // 🔐 Criar novo superusuário (apenas para superusuários autenticados)
     @PostMapping
     public ResponseEntity<Superusuario> cadastrarSuperusuario(@RequestBody Superusuario superusuario, Authentication authentication) {
-        // Verificar se o usuário autenticado tem permissão
         String emailAutenticado = authentication.getName();
         Superusuario novoSuperusuario = superusuarioService.cadastrarSuperusuario(superusuario, emailAutenticado);
         return ResponseEntity.ok(novoSuperusuario);
     }
 
+    // 🔐 Listar todos superusuários
+    @GetMapping
+    public ResponseEntity<List<Superusuario>> listarTodos(Authentication authentication) {
+        String emailAutenticado = authentication.getName();
+        List<Superusuario> superusuarios = superusuarioService.listarTodos(emailAutenticado);
+        return ResponseEntity.ok(superusuarios);
+    }
+
+    // 🔐 Buscar perfil do usuário logado
+    @GetMapping("/perfil")
+    public ResponseEntity<Superusuario> getMeuPerfil(Authentication authentication) {
+        String email = authentication.getName();
+        return superusuarioService.buscarPorEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // 🔐 Atualizar superusuário
     @PutMapping("/{cpf}")
     public ResponseEntity<Superusuario> alterarSuperusuario(@PathVariable String cpf, @RequestBody Superusuario superusuario, Authentication authentication) {
         try {
@@ -38,26 +55,11 @@ public class SuperusuarioController {
         }
     }
 
+    // 🔐 Excluir superusuário
     @DeleteMapping("/{cpf}")
     public ResponseEntity<Void> excluirSuperusuario(@PathVariable String cpf, Authentication authentication) {
         String emailAutenticado = authentication.getName();
         superusuarioService.excluirSuperusuario(cpf, emailAutenticado);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/perfil")
-    public ResponseEntity<Superusuario> getMeuPerfil(Authentication authentication) {
-        String email = authentication.getName();
-        return superusuarioService.buscarPorEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Superusuario>> listarTodos(Authentication authentication) {
-        // Verificar permissões antes de listar todos
-        String emailAutenticado = authentication.getName();
-        List<Superusuario> superusuarios = superusuarioService.listarTodos(emailAutenticado);
-        return ResponseEntity.ok(superusuarios);
     }
 }

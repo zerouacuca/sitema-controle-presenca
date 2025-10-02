@@ -48,18 +48,4 @@ export class LoginComponent {
       }
     });
   }
-
-  // Método para criar admin (desenvolvimento)
-  setupAdmin() {
-    this.authService.setupAdmin().subscribe({
-      next: (response: any) => {
-        console.log('Admin configurado:', response);
-        alert('Admin configurado com sucesso! Use: admin@admin.com / admin');
-      },
-      error: (error) => {
-        console.error('Erro ao configurar admin:', error);
-        alert('Erro ao configurar admin: ' + error.message);
-      }
-    });
-  }
 }
