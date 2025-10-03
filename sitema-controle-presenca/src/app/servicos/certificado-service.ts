@@ -8,12 +8,12 @@ import { environment } from '../environments/environment.prod';
   providedIn: 'root'
 })
 export class CertificadoService {
-  private backendApiUrl = `${environment.backendApiUrl}/admin/certificados/meus-certificados`;
+  private backendApiUrl = `${environment.backendApiUrl}/admin/certificados`;
 
   constructor(private http: HttpClient) { }
 
   getAllCertificados(): Observable<Certificado[]> {
-    return this.http.get<Certificado[]>(this.backendApiUrl);
+    return this.http.get<Certificado[]>(`${this.backendApiUrl}/meus-certificados`);
   }
 
   getCertificadosPorUsuario(cpf: string): Observable<Certificado[]> {

@@ -7,7 +7,6 @@ import { filter, Subscription } from 'rxjs';
 
 import { Certificado } from '../../models/certificado.model';
 import { CertificadoService } from '../../servicos/certificado-service';
-import { Navbar } from '../../componentes/navbar/navbar';
 
 @Component({
   selector: 'app-certificados',
