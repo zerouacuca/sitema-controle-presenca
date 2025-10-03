@@ -24,4 +24,7 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
     @Query("SELECT e FROM Evento e WHERE e.superusuario.email = :emailSuperusuario AND e.status = :status")
     List<Evento> findBySuperusuarioEmailAndStatus(@Param("emailSuperusuario") String emailSuperusuario, 
                                                  @Param("status") String status);
+
+    @Query("SELECT COUNT(e) > 0 FROM Evento e WHERE e.titulo = :titulo")
+    boolean existsByTitulo(@Param("titulo") String titulo);
 }
