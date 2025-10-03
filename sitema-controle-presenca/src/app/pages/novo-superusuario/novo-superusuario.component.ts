@@ -8,8 +8,8 @@ import { SuperusuarioService, Superusuario } from '../../servicos/superusuario.s
   selector: 'app-novo-superusuario',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './novo-superusuario.component.html', // CORRIGIDO
-  styleUrls: ['./novo-superusuario.component.css'] // CORRIGIDO
+  templateUrl: './novo-superusuario.component.html',
+  styleUrls: ['./novo-superusuario.component.css']
 })
 export class NovoSuperusuarioComponent {
   superusuario: any = {
@@ -85,14 +85,10 @@ export class NovoSuperusuarioComponent {
         console.log('✅ Superusuário criado com sucesso:', response);
         this.successMessage = 'Superusuário criado com sucesso!';
         
-        // Limpa o formulário
-        this.superusuario = {
-          cpf: '',
-          nome: '',
-          email: '',
-          senha: '',
-          confirmarSenha: ''
-        };
+        // 🔥 CORREÇÃO: Redirecionar após 2 segundos para mostrar a mensagem de sucesso
+        setTimeout(() => {
+          this.redirecionarParaHome();
+        }, 2000);
       },
       error: (error: any) => {
         this.isLoading = false;
@@ -107,6 +103,26 @@ export class NovoSuperusuarioComponent {
         } else {
           this.errorMessage = 'Erro ao criar superusuário. Tente novamente.';
         }
+      }
+    });
+  }
+
+  // 🔥 NOVO MÉTODO: Redirecionar para a página inicial
+  private redirecionarParaHome(): void {
+    console.log('🏠 Redirecionando para a página inicial...');
+    
+    // Tenta navegar para a página inicial (ajuste a rota conforme sua aplicação)
+    this.router.navigate(['/']).then(success => {
+      if (!success) {
+        console.log('⚠️ Não foi possível navegar para "/", tentando "/eventos"...');
+        // Fallback: tenta navegar para eventos
+        this.router.navigate(['/eventos']).then(success2 => {
+          if (!success2) {
+            console.log('⚠️ Não foi possível navegar para "/eventos", tentando "/tabela-usuarios"...');
+            // Fallback final: tenta navegar para tabela de usuários
+            this.router.navigate(['/tabela-usuarios']);
+          }
+        });
       }
     });
   }

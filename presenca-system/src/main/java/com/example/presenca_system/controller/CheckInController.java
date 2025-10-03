@@ -5,12 +5,13 @@ import com.example.presenca_system.model.dto.CheckInResponseDTO;
 import com.example.presenca_system.service.CheckInService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/public/checkin")
+@RequestMapping("/checkin") // ✅ Agora é protegido
 public class CheckInController {
 
     @Autowired
@@ -35,11 +36,14 @@ public class CheckInController {
         }
     }
 
-    // 🔐 Este endpoint deve ser protegido (apenas superusuários)
+    // 🔐 Endpoint PROTEGIDO - requer autenticação de superusuário
     @GetMapping("/evento/{eventoId}")
-    public ResponseEntity<List<CheckInResponseDTO>> getCheckInsPorEvento(@PathVariable Long eventoId) {
+    public ResponseEntity<List<CheckInResponseDTO>> getCheckInsPorEvento(
+            @PathVariable Long eventoId, 
+            Authentication authentication) {
         try {
-            List<CheckInResponseDTO> checkIns = checkInService.findCheckInsPorEvento(eventoId);
+            String emailSuperusuario = authentication.getName();
+            List<CheckInResponseDTO> checkIns = checkInService.findCheckInsPorEventoESuperusuario(eventoId, emailSuperusuario);
             return ResponseEntity.ok(checkIns);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();

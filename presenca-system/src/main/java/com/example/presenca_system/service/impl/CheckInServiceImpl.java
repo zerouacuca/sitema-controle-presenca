@@ -11,6 +11,7 @@ import com.example.presenca_system.service.CheckInService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -78,25 +79,20 @@ public class CheckInServiceImpl implements CheckInService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CheckInResponseDTO> findCheckInsPorEventoESuperusuario(Long eventoId, String emailSuperusuario) {
-        // Primeiro verificar se o evento pertence ao superusuário
-        Optional<Evento> eventoOpt = eventoRepository.findByIdAndSuperusuarioEmail(eventoId, emailSuperusuario);
-        if (eventoOpt.isEmpty()) {
-            throw new RuntimeException("Evento não encontrado ou acesso negado");
-        }
+        List<CheckIn> checkins = checkInRepository.findByEventoAndSuperusuarioEmail(eventoId, emailSuperusuario);
         
-        List<CheckIn> checkIns = checkInRepository.findByEvento_EventoId(eventoId);
-        
-        return checkIns.stream().map(checkIn -> {
-            CheckInResponseDTO dto = new CheckInResponseDTO();
-            dto.setId(checkIn.getId());
-            dto.setEventoId(checkIn.getEvento().getEventoId());
-            dto.setEventoTitulo(checkIn.getEvento().getTitulo());
-            dto.setUsuarioCpf(checkIn.getUsuario().getCpf());
-            dto.setUsuarioNome(checkIn.getUsuario().getNome());
-            dto.setDataHoraCheckin(checkIn.getDataHoraCheckin());
-            // 🔥 STATUS REMOVIDO
-            return dto;
-        }).collect(Collectors.toList());
+        return checkins.stream()
+                .map(checkin -> {
+                    CheckInResponseDTO dto = new CheckInResponseDTO();
+                    dto.setId(checkin.getId());
+                    dto.setUsuarioCpf(checkin.getUsuario().getCpf());
+                    dto.setUsuarioNome(checkin.getUsuario().getNome());
+                    dto.setDataHoraCheckin(checkin.getDataHoraCheckin());
+                    dto.setEventoTitulo(checkin.getEvento().getTitulo());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }
