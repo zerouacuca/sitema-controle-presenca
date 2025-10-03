@@ -42,24 +42,23 @@ public class EventoController {
     }
 
     @PostMapping
-    public ResponseEntity<Evento> createEvento(@RequestBody Evento evento, Authentication authentication) {
+    public ResponseEntity<String> createEvento(@RequestBody Evento evento, Authentication authentication) {
         String emailSuperusuario = authentication.getName();
         Optional<Superusuario> superusuario = superusuarioRepository.findByEmail(emailSuperusuario);
         
         if (superusuario.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Superusuário não encontrado");
         }
         
         evento.setSuperusuario(superusuario.get());
-        Evento eventoSaved = eventoService.save(evento);
-        return ResponseEntity.ok(eventoSaved);
+        eventoService.save(evento);
+        return ResponseEntity.ok("Evento criado com sucesso");
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Evento> updateEvento(@PathVariable Long id, @RequestBody Evento evento, Authentication authentication) {
+    public ResponseEntity<String> updateEvento(@PathVariable Long id, @RequestBody Evento evento, Authentication authentication) {
         String emailSuperusuario = authentication.getName();
         
-        // 🔧 CORREÇÃO: Usar o método que retorna a entidade Evento, não DTO
         Optional<Evento> eventoExistente = eventoService.findByIdAndSuperusuarioEmailEntity(id, emailSuperusuario);
         
         if (eventoExistente.isEmpty()) {
@@ -67,16 +66,14 @@ public class EventoController {
         }
         
         evento.setSuperusuario(eventoExistente.get().getSuperusuario());
-        return eventoService.update(id, evento)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        eventoService.update(id, evento);
+        return ResponseEntity.ok("Evento atualizado com sucesso");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvento(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<String> deleteEvento(@PathVariable Long id, Authentication authentication) {
         String emailSuperusuario = authentication.getName();
         
-        // 🔧 CORREÇÃO: Usar o método que retorna a entidade Evento
         Optional<Evento> evento = eventoService.findByIdAndSuperusuarioEmailEntity(id, emailSuperusuario);
         
         if (evento.isEmpty()) {
@@ -84,14 +81,13 @@ public class EventoController {
         }
         
         eventoService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Evento removido com sucesso");
     }
 
     @PostMapping("/{eventoId}/encerrar")
     public ResponseEntity<String> encerrarEventoEGerarCertificados(@PathVariable Long eventoId, Authentication authentication) {
         String emailSuperusuario = authentication.getName();
         
-        // 🔧 CORREÇÃO: Usar o método que retorna a entidade Evento
         Optional<Evento> eventoOpt = eventoService.findByIdAndSuperusuarioEmailEntity(eventoId, emailSuperusuario);
         
         if (eventoOpt.isEmpty()) {
@@ -101,18 +97,16 @@ public class EventoController {
         Evento evento = eventoOpt.get();
         evento.setStatus(StatusEvento.FINALIZADO);
         
-        // 🔧 CORREÇÃO: Salvar através do serviço
         eventoService.save(evento);
-        
         certificadoService.gerarCertificadosParaEvento(evento);
-        return ResponseEntity.ok("Certificados gerados com sucesso para o evento " + evento.getTitulo() + "!");
+        
+        return ResponseEntity.ok("Evento encerrado e certificados gerados com sucesso!");
     }
 
     @PatchMapping("/{eventoId}/status")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long eventoId, @RequestParam StatusEvento status, Authentication authentication) {
+    public ResponseEntity<String> atualizarStatus(@PathVariable Long eventoId, @RequestParam StatusEvento status, Authentication authentication) {
         String emailSuperusuario = authentication.getName();
         
-        // 🔧 CORREÇÃO: Usar o método que retorna a entidade Evento
         Optional<Evento> evento = eventoService.findByIdAndSuperusuarioEmailEntity(eventoId, emailSuperusuario);
         
         if (evento.isEmpty()) {
@@ -120,14 +114,13 @@ public class EventoController {
         }
         
         eventoService.atualizarStatus(eventoId, status);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Status do evento atualizado para: " + status);
     }
 
     @PostMapping("/{eventoId}/cancelar")
     public ResponseEntity<String> cancelarEvento(@PathVariable Long eventoId, Authentication authentication) {
         String emailSuperusuario = authentication.getName();
         
-        // 🔧 CORREÇÃO: Usar o método que retorna a entidade Evento
         Optional<Evento> evento = eventoService.findByIdAndSuperusuarioEmailEntity(eventoId, emailSuperusuario);
         
         if (evento.isEmpty()) {

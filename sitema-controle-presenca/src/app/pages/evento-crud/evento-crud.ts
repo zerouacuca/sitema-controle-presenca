@@ -1,10 +1,11 @@
+// evento-crud.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { EventoService } from '../../servicos/evento-service';
-import { Evento } from '../../models/evento.model';
+import { Evento, StatusEvento } from '../../models/evento.model';
 
 @Component({
   selector: 'app-evento-crud',
@@ -17,9 +18,10 @@ export class EventoCrud implements OnInit {
   evento: Evento = {
     titulo: '',
     descricao: '',
-    dataHora: new Date().toISOString().slice(0, 16),
+    dataHora: new Date().toISOString().slice(0, 16), // Para o form
     categoria: '',
-    cargaHoraria: 0
+    cargaHoraria: 0,
+    status: StatusEvento.AGENDADO // Status inicial correto
   };
 
   isEditMode: boolean = false;
@@ -45,6 +47,7 @@ export class EventoCrud implements OnInit {
   carregarEvento(id: number): void {
     this.eventoService.getEventoById(id).subscribe({
       next: (data) => {
+        // 🔥 CORREÇÃO: Converter data string para formato do form
         this.evento = {
           ...data,
           dataHora: this.formatarDataParaInput(data.dataHora)
@@ -59,34 +62,61 @@ export class EventoCrud implements OnInit {
   }
 
   salvarEvento(): void {
-    // Converte a string dataHora para Date
-    const eventoParaEnviar = {
-      ...this.evento,
-      dataHora: new Date(this.evento.dataHora)
-    };
+    // 🔥 CORREÇÃO: Preparar dados no formato exato do backend
+    const eventoParaEnviar = this.prepararDadosParaBackend();
 
     if (this.isEditMode && this.eventoId) {
       this.eventoService.updateEvento(this.eventoId, eventoParaEnviar).subscribe({
-        next: () => {
-          console.log('Evento atualizado com sucesso!');
+        next: (response) => {
+          console.log('Evento atualizado com sucesso!', response);
           this.navegarParaLista();
         },
         error: (err) => {
           console.error('Erro ao atualizar evento:', err);
-          alert('Erro ao atualizar evento. Verifique o console para detalhes.');
+          this.tratarErro(err);
         }
       });
     } else {
       this.eventoService.createEvento(eventoParaEnviar).subscribe({
-        next: () => {
-          console.log('Evento cadastrado com sucesso!');
+        next: (response) => {
+          console.log('Evento cadastrado com sucesso!', response);
           this.navegarParaLista();
         },
         error: (err) => {
           console.error('Erro ao cadastrar evento:', err);
-          alert('Erro ao cadastrar evento. Verifique o console para detalhes.');
+          this.tratarErro(err);
         }
       });
+    }
+  }
+
+  private prepararDadosParaBackend(): any {
+    // 🔥 CORREÇÃO: Criar objeto IDÊNTICO ao modelo Java
+    const dados = {
+      titulo: this.evento.titulo,
+      descricao: this.evento.descricao,
+      dataHora: new Date(this.evento.dataHora), // Envia como Date object
+      cargaHoraria: Number(this.evento.cargaHoraria), // Garante que é number
+      categoria: this.evento.categoria,
+      status: this.evento.status || StatusEvento.AGENDADO
+    };
+
+    console.log('Dados enviados para backend:', dados);
+    return dados;
+  }
+
+  private tratarErro(err: any): void {
+    if (err.error && typeof err.error === 'string') {
+      alert('Erro: ' + err.error);
+    } else if (err.error && err.error.message) {
+      alert('Erro: ' + err.error.message);
+    } else if (err.status === 403) {
+      alert('Acesso negado. Verifique suas permissões.');
+    } else if (err.status === 401) {
+      alert('Sessão expirada. Faça login novamente.');
+      this.router.navigate(['/login']);
+    } else {
+      alert('Erro ao processar solicitação. Verifique o console para detalhes.');
     }
   }
 
@@ -99,7 +129,7 @@ export class EventoCrud implements OnInit {
         },
         error: (err) => {
           console.error('Erro ao remover evento:', err);
-          alert('Erro ao remover evento.');
+          alert('Erro ao remover evento: ' + (err.error?.message || err.message));
         }
       });
     }
@@ -114,13 +144,13 @@ export class EventoCrud implements OnInit {
         },
         error: (err) => {
           console.error('Erro ao encerrar evento:', err);
-          alert('Erro ao encerrar evento.');
+          alert('Erro ao encerrar evento: ' + (err.error?.message || err.message));
         }
       });
     }
   }
 
-  // Métodos públicos para navegação
+  // Métodos de navegação
   navegarParaLista(): void {
     this.router.navigate(['/eventos']);
   }
@@ -134,25 +164,24 @@ export class EventoCrud implements OnInit {
     return date.toISOString().slice(0, 16);
   }
 
-  // Métodos auxiliares para determinar o status visual
+  // Métodos auxiliares para status visual (baseado no backend)
   isEventoAgendado(): boolean {
-    if (!this.evento.dataHora) return false;
-    const dataEvento = new Date(this.evento.dataHora);
-    return dataEvento > new Date();
+    return this.evento.status === StatusEvento.AGENDADO;
   }
 
   isEventoEmAndamento(): boolean {
-    if (!this.evento.dataHora) return false;
-    const dataEvento = new Date(this.evento.dataHora);
-    const agora = new Date();
-    const fimEvento = new Date(dataEvento.getTime() + this.evento.cargaHoraria * 60 * 60 * 1000);
-    return dataEvento <= agora && fimEvento >= agora;
+    return this.evento.status === StatusEvento.EM_ANDAMENTO;
   }
 
   isEventoFinalizado(): boolean {
-    if (!this.evento.dataHora) return false;
-    const dataEvento = new Date(this.evento.dataHora);
-    const fimEvento = new Date(dataEvento.getTime() + this.evento.cargaHoraria * 60 * 60 * 1000);
-    return fimEvento < new Date();
+    return this.evento.status === StatusEvento.FINALIZADO;
+  }
+
+  isEventoCancelado(): boolean {
+    return this.evento.status === StatusEvento.CANCELADO;
+  }
+
+  isEventoPausado(): boolean {
+    return this.evento.status === StatusEvento.PAUSADO;
   }
 }

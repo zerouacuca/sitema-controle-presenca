@@ -13,6 +13,7 @@ export class EventoService {
 
   constructor(private http: HttpClient) { }
 
+  // GET - mantém como JSON
   getAllEventos(): Observable<Evento[]> {
     return this.http.get<Evento[]>(this.backendApiUrl);
   }
@@ -21,33 +22,46 @@ export class EventoService {
     return this.http.get<Evento>(`${this.backendApiUrl}/${id}`);
   }
 
-  createEvento(evento: Evento): Observable<Evento> {
-    return this.http.post<Evento>(this.backendApiUrl, evento);
+  getMeusEventos(): Observable<Evento[]> {
+    return this.http.get<Evento[]>(this.backendApiUrl);
   }
 
-  updateEvento(id: number, evento: Evento): Observable<Evento> {
-    return this.http.put<Evento>(`${this.backendApiUrl}/${id}`, evento);
+  // POST/PUT/DELETE/PATCH - todos retornam string
+  createEvento(evento: any): Observable<string> {
+    return this.http.post(this.backendApiUrl, evento, { 
+      responseType: 'text'
+    });
   }
 
-  deleteEvento(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.backendApiUrl}/${id}`);
+  updateEvento(id: number, evento: any): Observable<string> {
+    return this.http.put(`${this.backendApiUrl}/${id}`, evento, { 
+      responseType: 'text'
+    });
+  }
+
+  deleteEvento(id: number): Observable<string> {
+    return this.http.delete(`${this.backendApiUrl}/${id}`, { 
+      responseType: 'text'
+    });
   }
 
   encerrarEvento(eventoId: number): Observable<string> {
-    return this.http.post<string>(`${this.backendApiUrl}/${eventoId}/encerrar`, {});
-  }
-
-  atualizarStatus(eventoId: number, status: StatusEvento): Observable<void> {
-    const params = new HttpParams().set('status', status);
-    return this.http.patch<void>(`${this.backendApiUrl}/${eventoId}/status`, null, { params });
+    return this.http.post(`${this.backendApiUrl}/${eventoId}/encerrar`, {}, { 
+      responseType: 'text'
+    });
   }
 
   cancelarEvento(eventoId: number): Observable<string> {
-    return this.http.post<string>(`${this.backendApiUrl}/${eventoId}/cancelar`, {});
+    return this.http.post(`${this.backendApiUrl}/${eventoId}/cancelar`, {}, { 
+      responseType: 'text'
+    });
   }
 
-  // Método para buscar eventos por superusuário (já é automático pelo token)
-  getMeusEventos(): Observable<Evento[]> {
-    return this.http.get<Evento[]>(this.backendApiUrl);
+  atualizarStatus(eventoId: number, status: StatusEvento): Observable<string> {
+    const params = new HttpParams().set('status', status);
+    return this.http.patch(`${this.backendApiUrl}/${eventoId}/status`, null, { 
+      params,
+      responseType: 'text'
+    });
   }
 }

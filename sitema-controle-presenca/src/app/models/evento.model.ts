@@ -1,4 +1,3 @@
-// models/evento.model.ts
 export enum StatusEvento {
   AGENDADO = 'AGENDADO',
   EM_ANDAMENTO = 'EM_ANDAMENTO', 
@@ -12,7 +11,7 @@ export interface Evento {
   titulo: string;
   descricao: string;
   dataHora: Date | string;
-  categoria: string;
   cargaHoraria: number;
+  categoria: string;
   status?: StatusEvento;
 }
