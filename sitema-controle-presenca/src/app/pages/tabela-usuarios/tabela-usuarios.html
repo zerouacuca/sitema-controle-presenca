@@ -1,54 +1,156 @@
-<div class="gradient-custom min-vh-100 p-4">
-  <div class="background-glass p-4">
-    <h2 class="system-title mb-4">Usuários</h2>
+<div class="container mt-4">
 
-    <div class="table-responsive">
-      <div *ngIf="isLoading" class="text-center mt-4">
-        <p>Carregando usuários...</p>
-      </div>
-
-      <table class="table table-hover" *ngIf="!isLoading && usuarios.length > 0">
-        <thead>
-          <tr>
-            <th>Matrícula</th>
-            <th>Setor</th>
-            <th>Nome do Usuário</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let f of usuarios">
-            <td>{{ f.matricula }}</td>
-            <td>{{ f.setor }}</td>
-            <td>{{ f.nome }}</td>
-            <td class="actions">
-              <div class="d-flex gap-2">
-                <button class="btn btn-outline-info btn-sm rounded-pill shadow-sm flex-fill"
-                  (click)="visualizarUsuario(f)">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm flex-fill"
-                  (click)="editarUsuario(f)">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-outline-danger btn-sm rounded-pill shadow-sm flex-fill"
-                  (click)="removerUsuario(f)">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div *ngIf="!isLoading && usuarios.length === 0" class="text-center mt-4">
-        <p>Nenhum usuário cadastrado.</p>
-      </div>
-    </div>
-    <div class="text-center mt-3">
-      <button class="btn btn-primary btn-sm rounded-pill shadow-sm" (click)="cadastrarUsuario()">
-        <i class="bi bi-person-plus"></i> Cadastrar
-      </button>
+  <!-- Cabeçalho -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="text-center mb-4">
+        <i class="bi bi-people-fill me-2"></i>Gerenciamento de Usuários
+      </h2>
     </div>
   </div>
+
+  <!-- Filtros -->
+  <div class="card mb-4">
+    <div class="card-header bg-light">
+      <i class="bi bi-search me-2"></i>Pesquisar Usuários
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <!-- Pesquisa por Nome -->
+        <div class="col-md-5">
+          <label class="form-label">Pesquisar por Nome:</label>
+          <div class="input-group">
+            <input type="text" class="form-control"
+                   [(ngModel)]="nomePesquisa"
+                   placeholder="Digite o nome do usuário"
+                   (keyup.enter)="pesquisarPorNome()">
+            <button class="btn btn-outline-primary"
+                    (click)="pesquisarPorNome()">
+              <i class="bi bi-search"></i> Buscar
+            </button>
+          </div>
+        </div>
+
+        <!-- Pesquisa por Matrícula -->
+        <div class="col-md-5">
+          <label class="form-label">Pesquisar por Matrícula:</label>
+          <div class="input-group">
+            <input type="text" class="form-control"
+                   [(ngModel)]="matriculaPesquisa"
+                   placeholder="Digite a matrícula"
+                   (keyup.enter)="pesquisarPorMatricula()">
+            <button class="btn btn-outline-primary"
+                    (click)="pesquisarPorMatricula()">
+              <i class="bi bi-search"></i> Buscar
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="btn btn-outline-secondary w-100"
+                  (click)="limparFiltros()">
+            <i class="bi bi-x-circle"></i> Limpar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensagens -->
+  @if (mensagem) {
+  <div class="alert alert-success alert-dismissible fade show">
+    {{ mensagem }}
+    <button type="button" class="btn-close" (click)="mensagem = ''"></button>
+  </div>
+  }
+
+  @if (erro) {
+  <div class="alert alert-danger alert-dismissible fade show">
+    {{ erro }}
+    <button type="button" class="btn-close" (click)="erro = ''"></button>
+  </div>
+  }
+
+  <!-- Loading -->
+  @if (isLoading) {
+  <div class="text-center my-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Carregando...</span>
+    </div>
+    <p class="mt-2">Carregando usuários...</p>
+  </div>
+  }
+
+  <!-- Lista de Usuários -->
+  @if (!isLoading) {
+  <div class="card">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <span>
+        <i class="bi bi-people me-2"></i>
+        Usuários Encontrados: {{ usuariosFiltrados.length }}
+        @if (filtroAtivo) {
+          <span class="badge bg-info ms-2">Filtrado</span>
+        }
+      </span>
+
+      <button class="btn btn-success" (click)="cadastrarUsuario()">
+        <i class="bi bi-person-plus me-1"></i> Novo Usuário
+      </button>
+    </div>
+
+    <div class="card-body p-0">
+      @if (usuariosFiltrados.length > 0) {
+      <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>Matrícula</th>
+              <th>Setor</th>
+              <th>Nome do Usuário</th>
+              <th>CPF</th>
+              <th width="180px">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (usuario of usuariosFiltrados; track usuario.cpf) {
+            <tr>
+              <td>{{ usuario.matricula }}</td>
+              <td>{{ usuario.setor }}</td>
+              <td>{{ usuario.nome }}</td>
+              <td>{{ usuario.cpf }}</td>
+              <td>
+                <div class="btn-group" role="group">
+                  <button class="btn btn-outline-info btn-sm"
+                          (click)="visualizarUsuario(usuario)"
+                          title="Visualizar Usuário">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn btn-outline-primary btn-sm"
+                          (click)="editarUsuario(usuario)"
+                          title="Editar Usuário">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm"
+                          (click)="removerUsuario(usuario)"
+                          title="Remover Usuário">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      } @else {
+      <!-- Empty state -->
+      <div class="text-center py-5">
+        <i class="bi bi-person-x display-4 text-muted"></i>
+        <p class="text-muted mt-3">Nenhum usuário encontrado</p>
+        <p class="text-muted">Use os filtros acima para pesquisar usuários</p>
+      </div>
+      }
+    </div>
+  </div>
+  }
 </div>

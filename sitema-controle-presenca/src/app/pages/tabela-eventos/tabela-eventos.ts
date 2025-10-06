@@ -23,6 +23,11 @@ export class TabelaEventos implements OnInit, OnDestroy {
   isLoading: boolean = true;
   dataInicioFiltro: string | null = null;
   dataFimFiltro: string | null = null;
+  
+  // Novas propriedades para mensagens e controle de filtros
+  mensagem: string = '';
+  erro: string = '';
+  filtroAtivo: boolean = false;
 
   // Disponibilize o enum para o template
   StatusEvento = StatusEvento;
@@ -60,10 +65,12 @@ export class TabelaEventos implements OnInit, OnDestroy {
         this.eventos = eventos;
         this.eventosFiltrados = [...this.eventos];
         this.isLoading = false;
+        this.filtroAtivo = false;
         this.cd.detectChanges();
       },
       error: (error) => {
         console.error('Erro ao carregar eventos:', error);
+        this.erro = 'Erro ao carregar eventos. Tente novamente.';
         this.isLoading = false;
         this.cd.detectChanges();
       }
@@ -73,6 +80,9 @@ export class TabelaEventos implements OnInit, OnDestroy {
   filtrarEventos(): void {
     if (!this.dataInicioFiltro && !this.dataFimFiltro) {
       this.eventosFiltrados = [...this.eventos];
+      this.filtroAtivo = false;
+      this.mensagem = 'Filtro removido. Mostrando todos os eventos.';
+      setTimeout(() => this.mensagem = '', 3000);
       return;
     }
 
@@ -84,7 +94,8 @@ export class TabelaEventos implements OnInit, OnDestroy {
     const diffDias = diffMs / (1000 * 60 * 60 * 24);
 
     if (diffDias > 30) {
-      alert('O intervalo máximo permitido para o filtro é de 30 dias.');
+      this.erro = 'O intervalo máximo permitido para o filtro é de 30 dias.';
+      setTimeout(() => this.erro = '', 5000);
       return;
     }
 
@@ -92,6 +103,19 @@ export class TabelaEventos implements OnInit, OnDestroy {
       const dataEvento = new Date(evento.dataHora);
       return dataEvento >= inicio && dataEvento <= fim;
     });
+
+    this.filtroAtivo = true;
+    this.mensagem = `Filtro aplicado. ${this.eventosFiltrados.length} evento(s) encontrado(s).`;
+    setTimeout(() => this.mensagem = '', 3000);
+  }
+
+  limparFiltros(): void {
+    this.dataInicioFiltro = null;
+    this.dataFimFiltro = null;
+    this.eventosFiltrados = [...this.eventos];
+    this.filtroAtivo = false;
+    this.mensagem = 'Filtros limpos. Mostrando todos os eventos.';
+    setTimeout(() => this.mensagem = '', 3000);
   }
 
   editarEvento(evento: Evento): void {
@@ -105,11 +129,14 @@ export class TabelaEventos implements OnInit, OnDestroy {
           next: () => {
             this.eventos = this.eventos.filter(e => e.eventoId !== evento.eventoId);
             this.eventosFiltrados = [...this.eventos];
+            this.mensagem = `Evento "${evento.titulo}" removido com sucesso.`;
+            setTimeout(() => this.mensagem = '', 3000);
             this.cd.detectChanges();
           },
           error: (error) => {
             console.error('Erro ao remover evento:', error);
-            alert('Erro ao remover evento.');
+            this.erro = 'Erro ao remover evento.';
+            setTimeout(() => this.erro = '', 5000);
           }
         });
       }
@@ -118,20 +145,27 @@ export class TabelaEventos implements OnInit, OnDestroy {
 
   baixarRelatorio(evento: Evento): void {
     console.log('Baixar relatório:', evento);
+    // TODO: Implementar download do relatório
+    this.mensagem = `Relatório do evento "${evento.titulo}" será baixado em breve.`;
+    setTimeout(() => this.mensagem = '', 3000);
   }
 
   encerrarEvento(evento: Evento): void {
-    if (evento.eventoId) {
-      this.eventoService.encerrarEvento(evento.eventoId).subscribe({
-        next: (mensagem) => {
-          alert(mensagem);
-          this.carregarEventos(); // Recarrega os eventos para atualizar o status
-        },
-        error: (error) => {
-          console.error('Erro ao encerrar evento:', error);
-          alert('Erro ao encerrar evento.');
-        }
-      });
+    if (confirm(`Tem certeza que deseja encerrar o evento "${evento.titulo}"?`)) {
+      if (evento.eventoId) {
+        this.eventoService.encerrarEvento(evento.eventoId).subscribe({
+          next: (mensagem) => {
+            this.mensagem = mensagem;
+            setTimeout(() => this.mensagem = '', 3000);
+            this.carregarEventos(); // Recarrega os eventos para atualizar o status
+          },
+          error: (error) => {
+            console.error('Erro ao encerrar evento:', error);
+            this.erro = 'Erro ao encerrar evento.';
+            setTimeout(() => this.erro = '', 5000);
+          }
+        });
+      }
     }
   }
 
