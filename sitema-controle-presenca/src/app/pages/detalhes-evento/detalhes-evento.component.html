@@ -1,125 +1,148 @@
-<div class="gradient-custom min-vh-100 p-4">
-  <div class="background-glass p-4">
+<div class="container mt-4">
 
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="text-center py-4">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Carregando...</span>
-      </div>
-      <p class="mt-2">Carregando detalhes do evento...</p>
+  <!-- Loading -->
+  @if (isLoading) {
+  <div class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Carregando...</span>
     </div>
+    <p class="mt-2">Carregando detalhes do evento...</p>
+  </div>
+  }
 
-    <!-- Conteúdo principal -->
-    <div *ngIf="!isLoading && evento">
+  <!-- Conteúdo principal -->
+  @if (!isLoading && evento) {
 
-      <!-- Cabeçalho com título e botões de ação -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 class="system-title mb-1">{{ evento.titulo }}</h2>
-          <p class="text-muted mb-0">ID: {{ evento.eventoId }}</p>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-outline-secondary" (click)="voltarParaLista()">
-            <i class="fas fa-arrow-left me-1"></i> Voltar
-          </button>
-          <!-- REMOVIDO: Botão Editar daqui -->
-        </div>
+  <!-- Cabeçalho -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="text-center mb-0">
+          <i class="bi bi-calendar-event me-2"></i>Detalhes do Evento
+        </h2>
+        <button class="btn btn-outline-secondary" (click)="voltarParaLista()">
+          <i class="bi bi-arrow-left me-1"></i> Voltar
+        </button>
       </div>
+      <p class="text-muted text-center mt-2">ID: {{ evento.eventoId }}</p>
+    </div>
+  </div>
 
-      <!-- Seção: Controles de Status do Evento -->
-      <div class="card mb-4 no-hover">
-        <div class="card-header">
-          <h5 class="card-title mb-0">Controles do Evento</h5>
-        </div>
-        <div class="card-body">
-          <div class="d-flex gap-2 flex-wrap">
-            <!-- Botão Editar Evento -->
-            <button class="btn btn-outline-primary"
-                    (click)="editarEvento()"
-                    *ngIf="evento.status !== statusEvento.FINALIZADO && evento.status !== statusEvento.CANCELADO"
-                    [disabled]="isLoadingAction">
-              <i class="fas fa-edit me-1"></i> Editar
-            </button>
+  <!-- Mensagens -->
+  @if (actionMessage) {
+  <div class="alert alert-info alert-dismissible fade show">
+    {{ actionMessage }}
+    <button type="button" class="btn-close" (click)="actionMessage = ''"></button>
+  </div>
+  }
 
-            <!-- Botão Iniciar Evento -->
-            <button class="btn btn-success"
-                    (click)="iniciarEvento()"
-                    *ngIf="evento.status === statusEvento.AGENDADO || evento.status === statusEvento.PAUSADO"
-                    [disabled]="isLoadingAction">
-              <i class="fas fa-play me-1"></i> Iniciar Evento
-            </button>
+  @if (biometryError) {
+  <div class="alert alert-danger alert-dismissible fade show">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ biometryError }}
+    <button type="button" class="btn-close" (click)="biometryError = ''"></button>
+  </div>
+  }
 
-            <!-- Botão Realizar Check-in Biométrico -->
-            <button class="btn btn-primary"
-                    (click)="realizarCheckInBiometrico()"
-                    *ngIf="evento.status === statusEvento.EM_ANDAMENTO"
-                    [disabled]="isLoadingAction || isCapturingBiometry">
-              <i class="fas fa-fingerprint me-1"></i>
-              {{ isCapturingBiometry ? 'Capturando...' : 'Realizar Check-in' }}
-            </button>
+  <!-- Seção: Controles de Status do Evento -->
+  <div class="card mb-4">
+    <div class="card-header bg-light">
+      <i class="bi bi-gear me-2"></i>Controles do Evento
+    </div>
+    <div class="card-body">
+      <div class="d-flex gap-2 flex-wrap">
+        <!-- Botão Editar Evento -->
+        <button class="btn btn-outline-primary"
+                (click)="editarEvento()"
+                *ngIf="evento.status !== statusEvento.FINALIZADO && evento.status !== statusEvento.CANCELADO"
+                [disabled]="isLoadingAction">
+          <i class="bi bi-pencil me-1"></i> Editar
+        </button>
 
-            <!-- Botão Encerrar Evento -->
-            <button class="btn btn-warning"
-                    (click)="encerrarEvento()"
-                    *ngIf="evento.status === statusEvento.EM_ANDAMENTO"
-                    [disabled]="isLoadingAction">
-              <i class="fas fa-flag-checkered me-1"></i> Encerrar Evento
-            </button>
+        <!-- Botão Iniciar Evento -->
+        <button class="btn btn-success"
+                (click)="iniciarEvento()"
+                *ngIf="evento.status === statusEvento.AGENDADO || evento.status === statusEvento.PAUSADO"
+                [disabled]="isLoadingAction">
+          <i class="bi bi-play-circle me-1"></i> Iniciar Evento
+        </button>
 
-            <!-- Botão Cancelar Evento -->
-            <button class="btn btn-danger"
-                    (click)="cancelarEvento()"
-                    *ngIf="evento.status !== statusEvento.FINALIZADO && evento.status !== statusEvento.CANCELADO"
-                    [disabled]="isLoadingAction">
-              <i class="fas fa-times me-1"></i> Cancelar Evento
-            </button>
+        <!-- Botão Realizar Check-in Biométrico -->
+        <button class="btn btn-primary"
+                (click)="realizarCheckInBiometrico()"
+                *ngIf="evento.status === statusEvento.EM_ANDAMENTO"
+                [disabled]="isLoadingAction || isCapturingBiometry">
+          <i class="bi bi-fingerprint me-1"></i>
+          {{ isCapturingBiometry ? 'Capturando...' : 'Realizar Check-in' }}
+        </button>
 
-            <!-- Botão Pausar/Retomar Evento -->
-            <button class="btn btn-info"
-                    (click)="evento.status === statusEvento.PAUSADO ? retomarEvento() : pausarEvento()"
-                    *ngIf="evento.status === statusEvento.EM_ANDAMENTO || evento.status === statusEvento.PAUSADO"
-                    [disabled]="isLoadingAction">
-              <i class="fas fa-pause me-1" *ngIf="evento.status === statusEvento.EM_ANDAMENTO"></i>
-              <i class="fas fa-play me-1" *ngIf="evento.status === statusEvento.PAUSADO"></i>
-              {{ evento.status === statusEvento.EM_ANDAMENTO ? 'Pausar Evento' : 'Retomar Evento' }}
-            </button>
-          </div>
+        <!-- Botão Encerrar Evento -->
+        <button class="btn btn-warning"
+                (click)="encerrarEvento()"
+                *ngIf="evento.status === statusEvento.EM_ANDAMENTO"
+                [disabled]="isLoadingAction">
+          <i class="bi bi-flag me-1"></i> Encerrar Evento
+        </button>
 
-          <!-- Mensagem de status da ação -->
-          <div *ngIf="actionMessage" class="alert alert-info mt-3 mb-0">
-            {{ actionMessage }}
-          </div>
+        <!-- Botão Cancelar Evento -->
+        <button class="btn btn-danger"
+                (click)="cancelarEvento()"
+                *ngIf="evento.status !== statusEvento.FINALIZADO && evento.status !== statusEvento.CANCELADO"
+                [disabled]="isLoadingAction">
+          <i class="bi bi-x-circle me-1"></i> Cancelar Evento
+        </button>
 
-          <!-- Mensagem de erro da biometria -->
-          <div *ngIf="biometryError" class="alert alert-danger mt-3 mb-0">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            {{ biometryError }}
-          </div>
-        </div>
+        <!-- Botão Pausar/Retomar Evento -->
+        <button class="btn btn-info"
+                (click)="evento.status === statusEvento.PAUSADO ? retomarEvento() : pausarEvento()"
+                *ngIf="evento.status === statusEvento.EM_ANDAMENTO || evento.status === statusEvento.PAUSADO"
+                [disabled]="isLoadingAction">
+          <i class="bi bi-pause-circle me-1" *ngIf="evento.status === statusEvento.EM_ANDAMENTO"></i>
+          <i class="bi bi-play-circle me-1" *ngIf="evento.status === statusEvento.PAUSADO"></i>
+          {{ evento.status === statusEvento.EM_ANDAMENTO ? 'Pausar Evento' : 'Retomar Evento' }}
+        </button>
       </div>
+    </div>
+  </div>
 
-      <!-- Seção 1: Informações do Evento -->
-      <div class="card mb-4 no-hover">
-        <div class="card-header">
-          <h5 class="card-title mb-0">Informações do Evento</h5>
+  <!-- Seção: Informações do Evento -->
+  <div class="card mb-4">
+    <div class="card-header bg-light">
+      <i class="bi bi-info-circle me-2"></i>Informações do Evento
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Título:</label>
+            <p class="text-muted">{{ evento.titulo }}</p>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-bold">Descrição:</label>
+            <p class="text-muted">{{ evento.descricao }}</p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Data e Hora:</label>
+            <p class="text-muted">{{ formatarDataHora(evento.dataHora) }}</p>
+          </div>
         </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6">
-              <p><strong>Descrição:</strong></p>
-              <p class="text-muted">{{ evento.descricao }}</p>
+        
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Categoria:</label>
+            <p class="text-muted">{{ evento.categoria }}</p>
+          </div>
 
-              <p><strong>Data e Hora:</strong></p>
-              <p class="text-muted">{{ formatarDataHora(evento.dataHora) }}</p>
-            </div>
-            <div class="col-md-6">
-              <p><strong>Categoria:</strong></p>
-              <p class="text-muted">{{ evento.categoria }}</p>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Carga Horária:</label>
+            <p class="text-muted">{{ evento.cargaHoraria }} horas</p>
+          </div>
 
-              <p><strong>Carga Horária:</strong></p>
-              <p class="text-muted">{{ evento.cargaHoraria }} horas</p>
-
-              <p><strong>Status:</strong></p>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Status:</label>
+            <div>
               <span class="badge" [ngClass]="getStatusBadgeClass(evento.status)">
                 {{ getStatusDescricao(evento.status) }}
               </span>
@@ -127,58 +150,70 @@
           </div>
         </div>
       </div>
-
-      <!-- Seção 2: Check-ins Realizados -->
-      <div class="card no-hover">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0">Check-ins Realizados</h5>
-          <span class="badge bg-primary">{{ checkIns.length }}</span>
-        </div>
-        <div class="card-body">
-          <div *ngIf="checkIns.length > 0; else semCheckIns">
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th>Nome</th>
-                    <th>CPF</th>
-                    <th>Data/Hora</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let checkIn of checkIns">
-                    <td>{{ checkIn.usuarioNome }}</td>
-                    <td>{{ formatarCPF(checkIn.usuarioCpf) }}</td>
-                    <td>{{ formatarDataHora(checkIn.dataHoraCheckin) }}</td>
-                    <td>
-                      <span class="badge" [ngClass]="{
-                        'bg-success': checkIn.status === statusCheckIn.PRESENTE,
-                        'bg-danger': checkIn.status === statusCheckIn.AUSENTE,
-                        'bg-warning': checkIn.status === statusCheckIn.PENDENTE,
-                        'bg-secondary': checkIn.status === statusCheckIn.CANCELADO
-                      }">
-                        {{ getStatusCheckInDescricao(checkIn.status) }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <ng-template #semCheckIns>
-            <p class="text-muted text-center mb-0">Nenhum check-in realizado ainda.</p>
-          </ng-template>
-        </div>
-      </div>
-
     </div>
-
-    <!-- Mensagem de erro -->
-    <div *ngIf="!isLoading && !evento" class="alert alert-danger text-center">
-      <p>Evento não encontrado.</p>
-      <button class="btn btn-primary" (click)="voltarParaLista()">Voltar para a lista</button>
-    </div>
-
   </div>
+
+  <!-- Seção: Check-ins Realizados -->
+  <div class="card">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <span>
+        <i class="bi bi-list-check me-2"></i>Check-ins Realizados
+      </span>
+      <span class="badge bg-primary">{{ checkIns.length }}</span>
+    </div>
+    
+    <div class="card-body p-0">
+      @if (checkIns.length > 0) {
+      <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Data/Hora</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (checkIn of checkIns; track checkIn.id) {
+            <tr>
+              <td>{{ checkIn.usuarioNome }}</td>
+              <td>{{ formatarCPF(checkIn.usuarioCpf) }}</td>
+              <td>{{ formatarDataHora(checkIn.dataHoraCheckin) }}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'bg-success': checkIn.status === statusCheckIn.PRESENTE,
+                  'bg-danger': checkIn.status === statusCheckIn.AUSENTE,
+                  'bg-warning': checkIn.status === statusCheckIn.PENDENTE,
+                  'bg-secondary': checkIn.status === statusCheckIn.CANCELADO
+                }">
+                  {{ getStatusCheckInDescricao(checkIn.status) }}
+                </span>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      } @else {
+      <!-- Empty state -->
+      <div class="text-center py-5">
+        <i class="bi bi-person-x display-4 text-muted"></i>
+        <p class="text-muted mt-3">Nenhum check-in realizado ainda</p>
+        <p class="text-muted">Os check-ins aparecerão aqui quando realizados</p>
+      </div>
+      }
+    </div>
+  </div>
+
+  }
+
+  <!-- Mensagem de erro -->
+  @if (!isLoading && !evento) {
+  <div class="alert alert-danger text-center">
+    <p>Evento não encontrado.</p>
+    <button class="btn btn-primary" (click)="voltarParaLista()">Voltar para a lista</button>
+  </div>
+  }
+
 </div>

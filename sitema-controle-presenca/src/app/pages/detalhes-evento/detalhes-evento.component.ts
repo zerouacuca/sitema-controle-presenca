@@ -13,7 +13,7 @@ import { BiometricService } from '../../servicos/biometric-service';
 @Component({
   selector: 'app-detalhes-evento',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, RouterModule, FormsModule ],
+  imports: [CommonModule, HttpClientModule, RouterModule, FormsModule],
   templateUrl: './detalhes-evento.component.html',
   styleUrls: ['./detalhes-evento.component.css']
 })
@@ -190,7 +190,7 @@ export class DetalhesEventoComponent implements OnInit {
     }
   }
 
-  // === CHECK-IN BIOMÉTRICO (SIMPLIFICADO) ===
+  // === CHECK-IN BIOMÉTRICO ===
 
   realizarCheckInBiometrico(): void {
     if (!this.evento?.eventoId) return;
@@ -200,7 +200,6 @@ export class DetalhesEventoComponent implements OnInit {
     this.actionMessage = 'Aguardando leitura biométrica...';
     this.cd.detectChanges();
 
-    // Versão simplificada - verificação 1:1 com o backend
     this.biometricService.realizarCheckInBiometrico(this.evento.eventoId).subscribe({
       next: (response: any) => {
         this.isCapturingBiometry = false;

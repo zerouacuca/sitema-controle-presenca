@@ -85,7 +85,7 @@ export class NovoSuperusuarioComponent {
         console.log('✅ Superusuário criado com sucesso:', response);
         this.successMessage = 'Superusuário criado com sucesso!';
         
-        // 🔥 CORREÇÃO: Redirecionar após 2 segundos para mostrar a mensagem de sucesso
+        // Redirecionar após 2 segundos para mostrar a mensagem de sucesso
         setTimeout(() => {
           this.redirecionarParaHome();
         }, 2000);
@@ -107,11 +107,10 @@ export class NovoSuperusuarioComponent {
     });
   }
 
-  // 🔥 NOVO MÉTODO: Redirecionar para a página inicial
   private redirecionarParaHome(): void {
     console.log('🏠 Redirecionando para a página inicial...');
     
-    // Tenta navegar para a página inicial (ajuste a rota conforme sua aplicação)
+    // Tenta navegar para a página inicial
     this.router.navigate(['/']).then(success => {
       if (!success) {
         console.log('⚠️ Não foi possível navegar para "/", tentando "/eventos"...');
