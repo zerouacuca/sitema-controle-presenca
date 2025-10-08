@@ -277,4 +277,81 @@ export class DetalhesEventoComponent implements OnInit {
       default: return 'bg-secondary';
     }
   }
+
+  // === EXPORTAÇÃO DE RELATÓRIO ===
+  abrirModalExportacao(): void {
+    if (!this.evento) return;
+
+    // Abre o modal usando Bootstrap JavaScript
+    const modalElement = document.getElementById('modalExportacaoDetalhes');
+    if (modalElement) {
+      const modal = new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  exportarJSON(): void {
+    if (!this.evento) return;
+
+    this.isLoadingAction = true;
+    
+    // Fecha o modal
+    const modalElement = document.getElementById('modalExportacaoDetalhes');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+    }
+
+    // Cria o objeto de exportação com dados completos do evento
+    const dadosExportacao = {
+      metadata: {
+        geradoEm: new Date().toISOString(),
+        eventoId: this.evento.eventoId,
+        formato: 'JSON',
+        versao: '1.0'
+      },
+      evento: {
+        ...this.evento,
+        statusDescricao: this.getStatusDescricao(this.evento.status)
+      },
+      checkIns: this.checkIns.map(checkIn => ({
+        ...checkIn,
+        cpfFormatado: this.formatarCPF(checkIn.usuarioCpf),
+        dataHoraFormatada: this.formatarDataHora(checkIn.dataHoraCheckin)
+      })),
+      resumo: {
+        totalCheckIns: this.checkIns.length,
+        cargaHoraria: this.evento.cargaHoraria,
+        dataEvento: this.formatarDataHora(this.evento.dataHora)
+      }
+    };
+
+    // Simulação de processamento
+    setTimeout(() => {
+      // Cria e dispara o download do arquivo JSON
+      const eventoId = this.evento?.eventoId || 'unknown';
+      const eventoTitulo = this.evento?.titulo || 'Evento';
+      this.downloadJSON(dadosExportacao, `evento-${eventoId}-relatorio.json`);
+      
+      this.isLoadingAction = false;
+      this.actionMessage = `Relatório do evento "${eventoTitulo}" exportado com sucesso!`;
+      
+      setTimeout(() => this.actionMessage = '', 5000);
+      this.cd.detectChanges();
+    }, 1000);
+  }
+
+  private downloadJSON(data: any, filename: string): void {
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
 }

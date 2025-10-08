@@ -94,12 +94,11 @@
       <div class="d-flex gap-2">
         <!-- Botão Gerar Relatório Múltiplo -->
         @if (eventosSelecionados.size > 0) {
-        <button class="btn btn-warning" (click)="gerarRelatorioMultiplo()" [disabled]="isGerandoRelatorio">
+        <button class="btn btn-warning" (click)="abrirModalExportacao()" [disabled]="isGerandoRelatorio">
           <i class="bi bi-file-earmark-text me-1"></i>
-          {{ isGerandoRelatorio ? 'Gerando...' : 'Gerar Relatório (' + eventosSelecionados.size + ')' }}
+          {{ isGerandoRelatorio ? 'Gerando...' : 'Exportar (' + eventosSelecionados.size + ')' }}
         </button>
         }
-
         <button class="btn btn-success" (click)="cadastrarEvento()">
           <i class="bi bi-plus-circle me-1"></i> Novo Evento
         </button>
@@ -187,11 +186,6 @@
                           title="Remover">
                     <i class="bi bi-trash"></i>
                   </button>
-                  <button class="btn btn-outline-secondary btn-sm"
-                          (click)="baixarRelatorio(evento)"
-                          title="Download Relatório">
-                    <i class="bi bi-download"></i>
-                  </button>
                   @if (evento.status !== StatusEvento.FINALIZADO && evento.status !== StatusEvento.CANCELADO) {
                   <button class="btn btn-outline-success btn-sm"
                           (click)="encerrarEvento(evento)"
@@ -217,4 +211,62 @@
     </div>
   </div>
   }
+</div>
+
+<!-- Modal de Exportação -->
+<div class="modal fade" id="modalExportacao" tabindex="-1" aria-labelledby="modalExportacaoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalExportacaoLabel">
+          <i class="bi bi-download me-2"></i>Exportar Relatório
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted">Selecione o formato para exportar os {{ eventosSelecionados.size }} evento(s) selecionado(s):</p>
+        
+        <div class="row g-3">
+          <!-- Opção JSON -->
+          <div class="col-md-6">
+            <div class="card h-100 border-primary">
+              <div class="card-body text-center">
+                <i class="bi bi-filetype-json display-4 text-primary mb-3"></i>
+                <h5 class="card-title">JSON</h5>
+                <p class="card-text text-muted small">
+                  Formato estruturado para análise de dados e integração com outras aplicações
+                </p>
+                <button class="btn btn-primary w-100" 
+                        (click)="exportarJSON()"
+                        [disabled]="isGerandoRelatorio">
+                  <i class="bi bi-download me-1"></i>
+                  {{ isGerandoRelatorio ? 'Exportando...' : 'Exportar JSON' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Opção PowerBI (em breve) -->
+          <div class="col-md-6">
+            <div class="card h-100 border-secondary">
+              <div class="card-body text-center">
+                <i class="bi bi-bar-chart-line display-4 text-secondary mb-3"></i>
+                <h5 class="card-title">Power BI</h5>
+                <p class="card-text text-muted small">
+                  Formato otimizado para dashboards e relatórios visuais (em breve)
+                </p>
+                <button class="btn btn-outline-secondary w-100" disabled>
+                  <i class="bi bi-clock me-1"></i>
+                  Em Breve
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
 </div>

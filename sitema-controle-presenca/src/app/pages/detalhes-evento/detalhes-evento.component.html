@@ -104,6 +104,7 @@
 
         <!-- Botão Gerar Relatório (após evento finalizado) -->
         <button class="btn btn-secondary"
+                (click)="abrirModalExportacao()"
                 *ngIf="evento.status === statusEvento.FINALIZADO"
                 [disabled]="isLoadingAction">
           <i class="bi bi-file-earmark-text me-1"></i> Gerar Relatório
@@ -212,4 +213,62 @@
   </div>
   }
 
+</div>
+
+<!-- Modal de Exportação -->
+<div class="modal fade" id="modalExportacaoDetalhes" tabindex="-1" aria-labelledby="modalExportacaoDetalhesLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalExportacaoDetalhesLabel">
+          <i class="bi bi-download me-2"></i>Exportar Relatório do Evento
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted">Exportar dados do evento "{{evento?.titulo}}" e seus {{checkIns.length}} check-in(s):</p>
+        
+        <div class="row g-3">
+          <!-- Opção JSON -->
+          <div class="col-md-6">
+            <div class="card h-100 border-primary">
+              <div class="card-body text-center">
+                <i class="bi bi-filetype-json display-4 text-primary mb-3"></i>
+                <h5 class="card-title">JSON</h5>
+                <p class="card-text text-muted small">
+                  Formato estruturado com dados completos do evento e participantes
+                </p>
+                <button class="btn btn-primary w-100" 
+                        (click)="exportarJSON()"
+                        [disabled]="isLoadingAction">
+                  <i class="bi bi-download me-1"></i>
+                  {{ isLoadingAction ? 'Exportando...' : 'Exportar JSON' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Opção PowerBI (em breve) -->
+          <div class="col-md-6">
+            <div class="card h-100 border-secondary">
+              <div class="card-body text-center">
+                <i class="bi bi-bar-chart-line display-4 text-secondary mb-3"></i>
+                <h5 class="card-title">Power BI</h5>
+                <p class="card-text text-muted small">
+                  Formato otimizado para dashboards e relatórios visuais (em breve)
+                </p>
+                <button class="btn btn-outline-secondary w-100" disabled>
+                  <i class="bi bi-clock me-1"></i>
+                  Em Breve
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
 </div>

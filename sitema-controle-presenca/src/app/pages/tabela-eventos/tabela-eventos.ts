@@ -294,4 +294,77 @@ export class TabelaEventos implements OnInit, OnDestroy {
       default: return 'status-padrao';
     }
   }
+
+  // === MODAL E EXPORTAÇÃO ===
+
+  abrirModalExportacao(): void {
+    if (this.eventosSelecionados.size === 0) {
+      this.erro = 'Selecione pelo menos um evento para exportar.';
+      setTimeout(() => this.erro = '', 5000);
+      return;
+    }
+
+    // Abre o modal usando Bootstrap JavaScript
+    const modalElement = document.getElementById('modalExportacao');
+    if (modalElement) {
+      const modal = new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  exportarJSON(): void {
+    this.isGerandoRelatorio = true;
+    
+    // Fecha o modal
+    const modalElement = document.getElementById('modalExportacao');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+    }
+
+    // Obtém os eventos selecionados
+    const eventosParaExportar = this.eventos.filter(evento => 
+      evento.eventoId && this.eventosSelecionados.has(evento.eventoId)
+    );
+
+    // Cria o objeto de exportação
+    const dadosExportacao = {
+      metadata: {
+        geradoEm: new Date().toISOString(),
+        totalEventos: eventosParaExportar.length,
+        formato: 'JSON',
+        versao: '1.0'
+      },
+      eventos: eventosParaExportar
+    };
+
+    // Simulação de processamento
+    setTimeout(() => {
+      // Cria e dispara o download do arquivo JSON
+      this.downloadJSON(dadosExportacao, 'relatorio-eventos.json');
+      
+      this.isGerandoRelatorio = false;
+      this.mensagem = `Relatório JSON exportado com sucesso! ${eventosParaExportar.length} evento(s) exportado(s).`;
+      
+      // Limpa seleção após exportar
+      this.eventosSelecionados.clear();
+      
+      setTimeout(() => this.mensagem = '', 5000);
+      this.cd.detectChanges();
+    }, 1000);
+  }
+
+  private downloadJSON(data: any, filename: string): void {
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
 }
