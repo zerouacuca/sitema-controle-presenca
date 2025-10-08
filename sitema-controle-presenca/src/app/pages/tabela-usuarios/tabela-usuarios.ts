@@ -21,9 +21,11 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
   usuariosFiltrados: UsuarioListDTO[] = [];
   isLoading: boolean = true;
   
-  // Novas propriedades para filtros e mensagens
   nomePesquisa: string = '';
   matriculaPesquisa: string = '';
+  cpfPesquisa: string = '';
+  setorPesquisa: string = '';
+  
   mensagem: string = '';
   erro: string = '';
   filtroAtivo: boolean = false;
@@ -54,12 +56,13 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
     }
   }
 
+  // === CARREGAMENTO DE DADOS ===
   carregarUsuarios(): void {
     this.isLoading = true;
     this.usuarioService.buscarTodosUsuarios().subscribe({
       next: (data) => {
         this.usuarios = data;
-        this.usuariosFiltrados = [...this.usuarios];
+        this.aplicarFiltros();
         this.isLoading = false;
         this.filtroAtivo = false;
         this.cd.detectChanges();
@@ -73,58 +76,79 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
     });
   }
 
-  pesquisarPorNome(): void {
-    if (!this.nomePesquisa.trim()) {
-      this.usuariosFiltrados = [...this.usuarios];
-      this.filtroAtivo = false;
-      return;
+  // === FILTROS DINÂMICOS ===
+  aplicarFiltros(): void {
+    let usuariosFiltrados = [...this.usuarios];
+
+    if (this.nomePesquisa.trim()) {
+      const termo = this.nomePesquisa.toLowerCase().trim();
+      usuariosFiltrados = usuariosFiltrados.filter(usuario =>
+        usuario.nome.toLowerCase().includes(termo)
+      );
     }
 
-    const termo = this.nomePesquisa.toLowerCase().trim();
-    this.usuariosFiltrados = this.usuarios.filter(usuario =>
-      usuario.nome.toLowerCase().includes(termo)
-    );
+    if (this.matriculaPesquisa.trim()) {
+      const termo = this.matriculaPesquisa.trim();
+      usuariosFiltrados = usuariosFiltrados.filter(usuario =>
+        usuario.matricula.includes(termo)
+      );
+    }
 
-    this.filtroAtivo = true;
-    this.mensagem = `Pesquisa por nome: ${this.usuariosFiltrados.length} usuário(s) encontrado(s).`;
-    setTimeout(() => this.mensagem = '', 3000);
+    if (this.cpfPesquisa.trim()) {
+      const termo = this.cpfPesquisa.trim();
+      usuariosFiltrados = usuariosFiltrados.filter(usuario =>
+        usuario.cpf.includes(termo)
+      );
+    }
+
+    if (this.setorPesquisa.trim()) {
+      const termo = this.setorPesquisa.toLowerCase().trim();
+      usuariosFiltrados = usuariosFiltrados.filter(usuario =>
+        usuario.setor.toLowerCase().includes(termo)
+      );
+    }
+
+    this.usuariosFiltrados = usuariosFiltrados;
+    
+    this.filtroAtivo = !!(this.nomePesquisa.trim() || this.matriculaPesquisa.trim() || 
+                          this.cpfPesquisa.trim() || this.setorPesquisa.trim());
+  }
+
+  pesquisarPorNome(): void {
+    this.aplicarFiltros();
+    if (this.nomePesquisa.trim()) {
+      this.mensagem = `Pesquisa por nome: ${this.usuariosFiltrados.length} usuário(s) encontrado(s).`;
+      setTimeout(() => this.mensagem = '', 3000);
+    }
   }
 
   pesquisarPorMatricula(): void {
-    if (!this.matriculaPesquisa.trim()) {
-      this.usuariosFiltrados = [...this.usuarios];
-      this.filtroAtivo = false;
-      return;
+    this.aplicarFiltros();
+    if (this.matriculaPesquisa.trim()) {
+      this.mensagem = `Pesquisa por matrícula: ${this.usuariosFiltrados.length} usuário(s) encontrado(s).`;
+      setTimeout(() => this.mensagem = '', 3000);
     }
-
-    const termo = this.matriculaPesquisa.trim();
-    this.usuariosFiltrados = this.usuarios.filter(usuario =>
-      usuario.matricula.includes(termo)
-    );
-
-    this.filtroAtivo = true;
-    this.mensagem = `Pesquisa por matrícula: ${this.usuariosFiltrados.length} usuário(s) encontrado(s).`;
-    setTimeout(() => this.mensagem = '', 3000);
   }
 
   limparFiltros(): void {
     this.nomePesquisa = '';
     this.matriculaPesquisa = '';
+    this.cpfPesquisa = '';
+    this.setorPesquisa = '';
     this.usuariosFiltrados = [...this.usuarios];
     this.filtroAtivo = false;
     this.mensagem = 'Filtros limpos. Mostrando todos os usuários.';
     setTimeout(() => this.mensagem = '', 3000);
   }
 
+  // === AÇÕES INDIVIDUAIS ===
   visualizarUsuario(usuario: UsuarioListDTO): void {
     console.log('Visualizar:', usuario);
-    // Navega para a página de detalhes do usuário
     this.navegarParaRota('/detalhes-usuario', usuario.cpf);
   }
 
   editarUsuario(usuario: UsuarioListDTO): void {
     console.log('Editando usuário:', usuario);
-    // Navega para a página de edição do usuário
     this.navegarParaRota('/editar-usuario', usuario.cpf);
   }
 
@@ -132,10 +156,8 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
     if (confirm(`Tem certeza que deseja remover o usuário "${usuario.nome}" (${usuario.matricula})? Esta ação não pode ser desfeita.`)) {
       this.isLoading = true;
       
-      // CORREÇÃO: Usar deletarUsuario em vez de removerUsuario
       this.usuarioService.deletarUsuario(usuario.cpf).subscribe({
         next: () => {
-          // Remove o usuário da lista local
           this.usuarios = this.usuarios.filter(u => u.cpf !== usuario.cpf);
           this.usuariosFiltrados = [...this.usuarios];
           this.mensagem = `Usuário "${usuario.nome}" removido com sucesso.`;
@@ -158,9 +180,7 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
     this.navegarParaRota('/cadastrar-usuario');
   }
 
-  /**
-   * Método auxiliar para navegação que trata possíveis erros
-   */
+  // === NAVEGAÇÃO E UTILITÁRIOS ===
   private navegarParaRota(rota: string, parametro?: string): void {
     try {
       if (parametro) {
@@ -183,9 +203,6 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Método para obter mensagens de erro amigáveis
-   */
   private obterMensagemErroRemocao(error: any): string {
     if (error.status === 404) {
       return 'Usuário não encontrado.';

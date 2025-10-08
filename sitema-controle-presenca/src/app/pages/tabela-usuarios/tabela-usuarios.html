@@ -17,33 +17,39 @@
     <div class="card-body">
       <div class="row g-3">
         <!-- Pesquisa por Nome -->
-        <div class="col-md-5">
-          <label class="form-label">Pesquisar por Nome:</label>
-          <div class="input-group">
-            <input type="text" class="form-control"
-                   [(ngModel)]="nomePesquisa"
-                   placeholder="Digite o nome do usuário"
-                   (keyup.enter)="pesquisarPorNome()">
-            <button class="btn btn-outline-primary"
-                    (click)="pesquisarPorNome()">
-              <i class="bi bi-search"></i> Buscar
-            </button>
-          </div>
+        <div class="col-md-3">
+          <label class="form-label">Nome:</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="nomePesquisa"
+                 placeholder="Filtrar por nome"
+                 (input)="aplicarFiltros()">
         </div>
 
         <!-- Pesquisa por Matrícula -->
-        <div class="col-md-5">
-          <label class="form-label">Pesquisar por Matrícula:</label>
-          <div class="input-group">
-            <input type="text" class="form-control"
-                   [(ngModel)]="matriculaPesquisa"
-                   placeholder="Digite a matrícula"
-                   (keyup.enter)="pesquisarPorMatricula()">
-            <button class="btn btn-outline-primary"
-                    (click)="pesquisarPorMatricula()">
-              <i class="bi bi-search"></i> Buscar
-            </button>
-          </div>
+        <div class="col-md-2">
+          <label class="form-label">Matrícula:</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="matriculaPesquisa"
+                 placeholder="Filtrar por matrícula"
+                 (input)="aplicarFiltros()">
+        </div>
+
+        <!-- Pesquisa por CPF -->
+        <div class="col-md-2">
+          <label class="form-label">CPF:</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="cpfPesquisa"
+                 placeholder="Filtrar por CPF"
+                 (input)="aplicarFiltros()">
+        </div>
+
+        <!-- Pesquisa por Setor -->
+        <div class="col-md-3">
+          <label class="form-label">Setor:</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="setorPesquisa"
+                 placeholder="Filtrar por setor"
+                 (input)="aplicarFiltros()">
         </div>
 
         <div class="col-md-2 d-flex align-items-end">

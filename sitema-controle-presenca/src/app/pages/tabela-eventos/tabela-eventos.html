@@ -17,40 +17,73 @@
     <div class="card-body">
       <div class="row g-3">
         <!-- Filtro por data -->
-        <div class="col-md-4">
+        <div class="col-md-2">
           <label class="form-label">Data Inicial:</label>
           <input
             type="date"
             [(ngModel)]="dataInicioFiltro"
             class="form-control"
             placeholder="Data inicial"
+            (change)="onFiltroChange()"
           />
         </div>
         
-        <div class="col-md-4">
+        <div class="col-md-2">
           <label class="form-label">Data Final:</label>
           <input
             type="date"
             [(ngModel)]="dataFimFiltro"
             class="form-control"
             placeholder="Data final"
+            (change)="onFiltroChange()"
           />
         </div>
-        
-        <div class="col-md-4 d-flex align-items-end">
-          <div class="d-flex gap-2 w-100">
-            <button class="btn btn-outline-primary flex-grow-1" (click)="filtrarEventos()">
-              <i class="bi bi-funnel"></i> Filtrar
-            </button>
-            <button class="btn btn-outline-secondary" (click)="limparFiltros()">
-              <i class="bi bi-x-circle"></i> Limpar
-            </button>
-          </div>
+
+        <!-- Filtro por título -->
+        <div class="col-md-2">
+          <label class="form-label">Título:</label>
+          <input
+            type="text"
+            [(ngModel)]="tituloFiltro"
+            class="form-control"
+            placeholder="Filtrar por título"
+            (input)="onFiltroChange()"
+          />
+        </div>
+
+        <!-- Filtro por descrição -->
+        <div class="col-md-2">
+          <label class="form-label">Descrição:</label>
+          <input
+            type="text"
+            [(ngModel)]="descricaoFiltro"
+            class="form-control"
+            placeholder="Filtrar por descrição"
+            (input)="onFiltroChange()"
+          />
+        </div>
+
+        <!-- Filtro por categoria -->
+        <div class="col-md-2">
+          <label class="form-label">Categoria:</label>
+          <input
+            type="text"
+            [(ngModel)]="categoriaFiltro"
+            class="form-control"
+            placeholder="Filtrar por categoria"
+            (input)="onFiltroChange()"
+          />
+        </div>
+
+        <!-- Botão Limpar Filtros -->
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="btn btn-outline-secondary w-100" (click)="limparFiltros()">
+            <i class="bi bi-x-circle"></i> Limpar
+          </button>
         </div>
       </div>
     </div>
   </div>
-
   <!-- Mensagens -->
   @if (mensagem) {
   <div class="alert alert-success alert-dismissible fade show">
@@ -124,7 +157,6 @@
                   <label class="form-check-label" for="selecionarTodos"></label>
                 </div>
               </th>
-              <th class="text-dark">ID</th>
               <th class="text-dark">Data</th>
               <th class="text-dark">Título</th>
               <th class="text-dark">Descrição</th>
@@ -151,7 +183,6 @@
                   />
                 </div>
               </td>
-              <td>{{ evento.eventoId }}</td>
               <td>{{ formatarData(evento.dataHora) }}</td>
               <td>{{ evento.titulo }}</td>
               <td>{{ evento.descricao }}</td>
@@ -212,7 +243,6 @@
   </div>
   }
 </div>
-
 <!-- Modal de Exportação -->
 <div class="modal fade" id="modalExportacao" tabindex="-1" aria-labelledby="modalExportacaoLabel" aria-hidden="true">
   <div class="modal-dialog">

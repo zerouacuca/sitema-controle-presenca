@@ -23,15 +23,17 @@ export class TabelaEventos implements OnInit, OnDestroy {
   eventosSelecionados: Set<number> = new Set<number>();
   isLoading: boolean = true;
   isGerandoRelatorio: boolean = false;
+  
   dataInicioFiltro: string | null = null;
   dataFimFiltro: string | null = null;
+  tituloFiltro: string = '';
+  descricaoFiltro: string = '';
+  categoriaFiltro: string = '';
   
-  // Novas propriedades para mensagens e controle de filtros
   mensagem: string = '';
   erro: string = '';
   filtroAtivo: boolean = false;
 
-  // Disponibilize o enum para o template
   StatusEvento = StatusEvento;
 
   private routerSubscription!: Subscription;
@@ -60,9 +62,10 @@ export class TabelaEventos implements OnInit, OnDestroy {
     }
   }
 
+  // === CARREGAMENTO DE DADOS ===
   carregarEventos(): void {
     this.isLoading = true;
-    this.eventosSelecionados.clear(); // Limpa seleção ao recarregar
+    this.eventosSelecionados.clear();
     this.eventoService.getAllEventos().subscribe({
       next: (eventos) => {
         this.eventos = eventos;
@@ -80,8 +83,89 @@ export class TabelaEventos implements OnInit, OnDestroy {
     });
   }
 
-  // === SELEÇÃO DE EVENTOS ===
+  // === FILTROS DINÂMICOS ===
+  onFiltroChange(): void {
+    this.aplicarFiltros();
+  }
 
+  private aplicarFiltros(): void {
+    this.erro = '';
+
+    let eventosFiltrados = [...this.eventos];
+
+    // Filtro por data
+    if (this.dataInicioFiltro || this.dataFimFiltro) {
+      const inicio = this.dataInicioFiltro ? new Date(this.dataInicioFiltro) : null;
+      const fim = this.dataFimFiltro ? new Date(this.dataFimFiltro) : null;
+
+      if (fim) {
+        fim.setHours(23, 59, 59, 999);
+      }
+
+      eventosFiltrados = eventosFiltrados.filter(evento => {
+        const dataEvento = new Date(evento.dataHora);
+        
+        let passaInicio = true;
+        let passaFim = true;
+
+        if (inicio) {
+          passaInicio = dataEvento >= inicio;
+        }
+
+        if (fim) {
+          passaFim = dataEvento <= fim;
+        }
+
+        return passaInicio && passaFim;
+      });
+    }
+
+    // Filtro por título
+    if (this.tituloFiltro.trim()) {
+      const termoTitulo = this.tituloFiltro.toLowerCase().trim();
+      eventosFiltrados = eventosFiltrados.filter(evento =>
+        evento.titulo.toLowerCase().includes(termoTitulo)
+      );
+    }
+
+    // Filtro por descrição
+    if (this.descricaoFiltro.trim()) {
+      const termoDescricao = this.descricaoFiltro.toLowerCase().trim();
+      eventosFiltrados = eventosFiltrados.filter(evento =>
+        evento.descricao.toLowerCase().includes(termoDescricao)
+      );
+    }
+
+    // Filtro por categoria
+    if (this.categoriaFiltro.trim()) {
+      const termoCategoria = this.categoriaFiltro.toLowerCase().trim();
+      eventosFiltrados = eventosFiltrados.filter(evento =>
+        evento.categoria.toLowerCase().includes(termoCategoria)
+      );
+    }
+
+    this.eventosFiltrados = eventosFiltrados;
+    
+    this.filtroAtivo = !!(this.dataInicioFiltro || this.dataFimFiltro || 
+                          this.tituloFiltro.trim() || this.descricaoFiltro.trim() || 
+                          this.categoriaFiltro.trim());
+  }
+
+  limparFiltros(): void {
+    this.dataInicioFiltro = null;
+    this.dataFimFiltro = null;
+    this.tituloFiltro = '';
+    this.descricaoFiltro = '';
+    this.categoriaFiltro = '';
+    this.eventosFiltrados = [...this.eventos];
+    this.filtroAtivo = false;
+    this.eventosSelecionados.clear();
+    this.erro = '';
+    this.mensagem = 'Filtros limpos. Mostrando todos os eventos.';
+    setTimeout(() => this.mensagem = '', 3000);
+  }
+
+  // === SELEÇÃO DE EVENTOS ===
   toggleSelecaoEvento(eventoId: number): void {
     if (this.eventosSelecionados.has(eventoId)) {
       this.eventosSelecionados.delete(eventoId);
@@ -99,14 +183,12 @@ export class TabelaEventos implements OnInit, OnDestroy {
     const checked = event.target.checked;
     
     if (checked) {
-      // Seleciona todos os eventos visíveis
       this.eventosFiltrados.forEach(evento => {
         if (evento.eventoId) {
           this.eventosSelecionados.add(evento.eventoId);
         }
       });
     } else {
-      // Remove todos os eventos da seleção
       this.eventosSelecionados.clear();
     }
     this.cd.detectChanges();
@@ -120,81 +202,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
     );
   }
 
-  // === RELATÓRIOS MÚLTIPLOS ===
-
-  gerarRelatorioMultiplo(): void {
-    if (this.eventosSelecionados.size === 0) {
-      this.erro = 'Selecione pelo menos um evento para gerar o relatório.';
-      setTimeout(() => this.erro = '', 5000);
-      return;
-    }
-
-    this.isGerandoRelatorio = true;
-    const eventosIds = Array.from(this.eventosSelecionados);
-    
-    // TODO: Implementar chamada real para o serviço de relatórios
-    console.log('Gerando relatório para eventos:', eventosIds);
-    
-    // Simulação de geração de relatório
-    setTimeout(() => {
-      this.isGerandoRelatorio = false;
-      const quantidade = this.eventosSelecionados.size;
-      this.mensagem = `Relatório gerado com sucesso para ${quantidade} evento(s)!`;
-      
-      // Limpa seleção após gerar relatório
-      this.eventosSelecionados.clear();
-      
-      setTimeout(() => this.mensagem = '', 5000);
-      this.cd.detectChanges();
-    }, 2000);
-  }
-
-  // === FILTROS ===
-
-  filtrarEventos(): void {
-    if (!this.dataInicioFiltro && !this.dataFimFiltro) {
-      this.eventosFiltrados = [...this.eventos];
-      this.filtroAtivo = false;
-      this.mensagem = 'Filtro removido. Mostrando todos os eventos.';
-      setTimeout(() => this.mensagem = '', 3000);
-      return;
-    }
-
-    const inicio = this.dataInicioFiltro ? new Date(this.dataInicioFiltro) : new Date('1970-01-01');
-    const fim = this.dataFimFiltro ? new Date(this.dataFimFiltro) : new Date('9999-12-31');
-    fim.setHours(23, 59, 59, 999);
-
-    const diffMs = fim.getTime() - inicio.getTime();
-    const diffDias = diffMs / (1000 * 60 * 60 * 24);
-
-    if (diffDias > 30) {
-      this.erro = 'O intervalo máximo permitido para o filtro é de 30 dias.';
-      setTimeout(() => this.erro = '', 5000);
-      return;
-    }
-
-    this.eventosFiltrados = this.eventos.filter(evento => {
-      const dataEvento = new Date(evento.dataHora);
-      return dataEvento >= inicio && dataEvento <= fim;
-    });
-
-    this.filtroAtivo = true;
-    this.mensagem = `Filtro aplicado. ${this.eventosFiltrados.length} evento(s) encontrado(s).`;
-    setTimeout(() => this.mensagem = '', 3000);
-  }
-
-  limparFiltros(): void {
-    this.dataInicioFiltro = null;
-    this.dataFimFiltro = null;
-    this.eventosFiltrados = [...this.eventos];
-    this.filtroAtivo = false;
-    this.eventosSelecionados.clear(); // Limpa seleção ao limpar filtros
-    this.mensagem = 'Filtros limpos. Mostrando todos os eventos.';
-    setTimeout(() => this.mensagem = '', 3000);
-  }
-
   // === AÇÕES INDIVIDUAIS ===
-
   editarEvento(evento: Evento): void {
     if (evento.eventoId) {
       this.router.navigate(['/editar-evento', evento.eventoId]);
@@ -208,7 +216,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
           next: () => {
             this.eventos = this.eventos.filter(e => e.eventoId !== evento.eventoId);
             this.eventosFiltrados = [...this.eventos];
-            // Remove da seleção se estava selecionado
             if (evento.eventoId) {
               this.eventosSelecionados.delete(evento.eventoId);
             }
@@ -226,13 +233,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
     }
   }
 
-  baixarRelatorio(evento: Evento): void {
-    console.log('Baixar relatório individual:', evento);
-    // TODO: Implementar download do relatório individual
-    this.mensagem = `Relatório do evento "${evento.titulo}" será baixado em breve.`;
-    setTimeout(() => this.mensagem = '', 3000);
-  }
-
   encerrarEvento(evento: Evento): void {
     if (confirm(`Tem certeza que deseja encerrar o evento "${evento.titulo}"?`)) {
       if (evento.eventoId) {
@@ -240,7 +240,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
           next: (mensagem) => {
             this.mensagem = mensagem;
             setTimeout(() => this.mensagem = '', 3000);
-            this.carregarEventos(); // Recarrega os eventos para atualizar o status
+            this.carregarEventos();
           },
           error: (error) => {
             console.error('Erro ao encerrar evento:', error);
@@ -262,12 +262,12 @@ export class TabelaEventos implements OnInit, OnDestroy {
     }
   }
 
+  // === FORMATAÇÃO E UTILITÁRIOS ===
   formatarData(data: string | Date): string {
     const date = new Date(data);
     return date.toLocaleDateString('pt-BR');
   }
 
-  // Método para obter a descrição do status
   getStatusDescricao(status: StatusEvento | undefined): string {
     if (!status) return 'Não definido';
 
@@ -281,22 +281,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
     }
   }
 
-  // Método para obter a classe CSS baseada no status
-  getStatusClass(status: StatusEvento | undefined): string {
-    if (!status) return 'status-padrao';
-
-    switch (status) {
-      case StatusEvento.EM_ANDAMENTO: return 'status-andamento';
-      case StatusEvento.FINALIZADO: return 'status-finalizada';
-      case StatusEvento.CANCELADO: return 'status-cancelada';
-      case StatusEvento.AGENDADO: return 'status-agendado';
-      case StatusEvento.PAUSADO: return 'status-pausado';
-      default: return 'status-padrao';
-    }
-  }
-
-  // === MODAL E EXPORTAÇÃO ===
-
+  // === EXPORTAÇÃO E RELATÓRIOS ===
   abrirModalExportacao(): void {
     if (this.eventosSelecionados.size === 0) {
       this.erro = 'Selecione pelo menos um evento para exportar.';
@@ -304,7 +289,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
       return;
     }
 
-    // Abre o modal usando Bootstrap JavaScript
     const modalElement = document.getElementById('modalExportacao');
     if (modalElement) {
       const modal = new (window as any).bootstrap.Modal(modalElement);
@@ -315,19 +299,16 @@ export class TabelaEventos implements OnInit, OnDestroy {
   exportarJSON(): void {
     this.isGerandoRelatorio = true;
     
-    // Fecha o modal
     const modalElement = document.getElementById('modalExportacao');
     if (modalElement) {
       const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
       modal.hide();
     }
 
-    // Obtém os eventos selecionados
     const eventosParaExportar = this.eventos.filter(evento => 
       evento.eventoId && this.eventosSelecionados.has(evento.eventoId)
     );
 
-    // Cria o objeto de exportação
     const dadosExportacao = {
       metadata: {
         geradoEm: new Date().toISOString(),
@@ -338,15 +319,12 @@ export class TabelaEventos implements OnInit, OnDestroy {
       eventos: eventosParaExportar
     };
 
-    // Simulação de processamento
     setTimeout(() => {
-      // Cria e dispara o download do arquivo JSON
       this.downloadJSON(dadosExportacao, 'relatorio-eventos.json');
       
       this.isGerandoRelatorio = false;
       this.mensagem = `Relatório JSON exportado com sucesso! ${eventosParaExportar.length} evento(s) exportado(s).`;
       
-      // Limpa seleção após exportar
       this.eventosSelecionados.clear();
       
       setTimeout(() => this.mensagem = '', 5000);
