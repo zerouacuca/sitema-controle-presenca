@@ -101,6 +101,13 @@
           <i class="bi bi-play-circle me-1" *ngIf="evento.status === statusEvento.PAUSADO"></i>
           {{ evento.status === statusEvento.EM_ANDAMENTO ? 'Pausar Evento' : 'Retomar Evento' }}
         </button>
+
+        <!-- Botão Gerar Relatório (após evento finalizado) -->
+        <button class="btn btn-secondary"
+                *ngIf="evento.status === statusEvento.FINALIZADO"
+                [disabled]="isLoadingAction">
+          <i class="bi bi-file-earmark-text me-1"></i> Gerar Relatório
+        </button>
       </div>
     </div>
   </div>
@@ -171,7 +178,6 @@
               <th>Nome</th>
               <th>CPF</th>
               <th>Data/Hora</th>
-              <th>Status</th>
             </tr>
           </thead>
           <tbody>
@@ -180,16 +186,6 @@
               <td>{{ checkIn.usuarioNome }}</td>
               <td>{{ formatarCPF(checkIn.usuarioCpf) }}</td>
               <td>{{ formatarDataHora(checkIn.dataHoraCheckin) }}</td>
-              <td>
-                <span class="badge" [ngClass]="{
-                  'bg-success': checkIn.status === statusCheckIn.PRESENTE,
-                  'bg-danger': checkIn.status === statusCheckIn.AUSENTE,
-                  'bg-warning': checkIn.status === statusCheckIn.PENDENTE,
-                  'bg-secondary': checkIn.status === statusCheckIn.CANCELADO
-                }">
-                  {{ getStatusCheckInDescricao(checkIn.status) }}
-                </span>
-              </td>
             </tr>
             }
           </tbody>

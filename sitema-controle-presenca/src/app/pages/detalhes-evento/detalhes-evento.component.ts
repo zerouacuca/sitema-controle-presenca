@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { Evento, StatusEvento } from '../../models/evento.model';
-import { CheckIn, StatusCheckIn } from '../../models/checkin.model';
+import { CheckIn } from '../../models/checkin.model';
 import { EventoService } from '../../servicos/evento-service';
 import { CheckInService } from '../../servicos/checkin-service';
 import { BiometricService } from '../../servicos/biometric-service';
@@ -28,7 +28,6 @@ export class DetalhesEventoComponent implements OnInit {
   biometryError: string = '';
 
   statusEvento = StatusEvento;
-  statusCheckIn = StatusCheckIn;
 
   constructor(
     private route: ActivatedRoute,
@@ -276,16 +275,6 @@ export class DetalhesEventoComponent implements OnInit {
       case StatusEvento.CANCELADO: return 'bg-danger';
       case StatusEvento.PAUSADO: return 'bg-secondary';
       default: return 'bg-secondary';
-    }
-  }
-
-  getStatusCheckInDescricao(status: StatusCheckIn): string {
-    switch (status) {
-      case StatusCheckIn.PRESENTE: return 'Presente';
-      case StatusCheckIn.AUSENTE: return 'Ausente';
-      case StatusCheckIn.PENDENTE: return 'Pendente';
-      case StatusCheckIn.CANCELADO: return 'Cancelado';
-      default: return 'Não definido';
     }
   }
 }

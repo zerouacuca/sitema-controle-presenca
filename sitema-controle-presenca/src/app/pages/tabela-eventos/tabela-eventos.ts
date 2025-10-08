@@ -20,7 +20,9 @@ export class TabelaEventos implements OnInit, OnDestroy {
 
   eventos: Evento[] = [];
   eventosFiltrados: Evento[] = [];
+  eventosSelecionados: Set<number> = new Set<number>();
   isLoading: boolean = true;
+  isGerandoRelatorio: boolean = false;
   dataInicioFiltro: string | null = null;
   dataFimFiltro: string | null = null;
   
@@ -60,6 +62,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
 
   carregarEventos(): void {
     this.isLoading = true;
+    this.eventosSelecionados.clear(); // Limpa seleção ao recarregar
     this.eventoService.getAllEventos().subscribe({
       next: (eventos) => {
         this.eventos = eventos;
@@ -76,6 +79,77 @@ export class TabelaEventos implements OnInit, OnDestroy {
       }
     });
   }
+
+  // === SELEÇÃO DE EVENTOS ===
+
+  toggleSelecaoEvento(eventoId: number): void {
+    if (this.eventosSelecionados.has(eventoId)) {
+      this.eventosSelecionados.delete(eventoId);
+    } else {
+      this.eventosSelecionados.add(eventoId);
+    }
+    this.cd.detectChanges();
+  }
+
+  estaSelecionado(eventoId: number | undefined): boolean {
+    return eventoId ? this.eventosSelecionados.has(eventoId) : false;
+  }
+
+  selecionarTodos(event: any): void {
+    const checked = event.target.checked;
+    
+    if (checked) {
+      // Seleciona todos os eventos visíveis
+      this.eventosFiltrados.forEach(evento => {
+        if (evento.eventoId) {
+          this.eventosSelecionados.add(evento.eventoId);
+        }
+      });
+    } else {
+      // Remove todos os eventos da seleção
+      this.eventosSelecionados.clear();
+    }
+    this.cd.detectChanges();
+  }
+
+  estaTodosSelecionados(): boolean {
+    if (this.eventosFiltrados.length === 0) return false;
+    
+    return this.eventosFiltrados.every(evento => 
+      evento.eventoId && this.eventosSelecionados.has(evento.eventoId)
+    );
+  }
+
+  // === RELATÓRIOS MÚLTIPLOS ===
+
+  gerarRelatorioMultiplo(): void {
+    if (this.eventosSelecionados.size === 0) {
+      this.erro = 'Selecione pelo menos um evento para gerar o relatório.';
+      setTimeout(() => this.erro = '', 5000);
+      return;
+    }
+
+    this.isGerandoRelatorio = true;
+    const eventosIds = Array.from(this.eventosSelecionados);
+    
+    // TODO: Implementar chamada real para o serviço de relatórios
+    console.log('Gerando relatório para eventos:', eventosIds);
+    
+    // Simulação de geração de relatório
+    setTimeout(() => {
+      this.isGerandoRelatorio = false;
+      const quantidade = this.eventosSelecionados.size;
+      this.mensagem = `Relatório gerado com sucesso para ${quantidade} evento(s)!`;
+      
+      // Limpa seleção após gerar relatório
+      this.eventosSelecionados.clear();
+      
+      setTimeout(() => this.mensagem = '', 5000);
+      this.cd.detectChanges();
+    }, 2000);
+  }
+
+  // === FILTROS ===
 
   filtrarEventos(): void {
     if (!this.dataInicioFiltro && !this.dataFimFiltro) {
@@ -114,12 +188,17 @@ export class TabelaEventos implements OnInit, OnDestroy {
     this.dataFimFiltro = null;
     this.eventosFiltrados = [...this.eventos];
     this.filtroAtivo = false;
+    this.eventosSelecionados.clear(); // Limpa seleção ao limpar filtros
     this.mensagem = 'Filtros limpos. Mostrando todos os eventos.';
     setTimeout(() => this.mensagem = '', 3000);
   }
 
+  // === AÇÕES INDIVIDUAIS ===
+
   editarEvento(evento: Evento): void {
-    this.router.navigate(['/editar-evento', evento.eventoId]);
+    if (evento.eventoId) {
+      this.router.navigate(['/editar-evento', evento.eventoId]);
+    }
   }
 
   removerEvento(evento: Evento): void {
@@ -129,6 +208,10 @@ export class TabelaEventos implements OnInit, OnDestroy {
           next: () => {
             this.eventos = this.eventos.filter(e => e.eventoId !== evento.eventoId);
             this.eventosFiltrados = [...this.eventos];
+            // Remove da seleção se estava selecionado
+            if (evento.eventoId) {
+              this.eventosSelecionados.delete(evento.eventoId);
+            }
             this.mensagem = `Evento "${evento.titulo}" removido com sucesso.`;
             setTimeout(() => this.mensagem = '', 3000);
             this.cd.detectChanges();
@@ -144,8 +227,8 @@ export class TabelaEventos implements OnInit, OnDestroy {
   }
 
   baixarRelatorio(evento: Evento): void {
-    console.log('Baixar relatório:', evento);
-    // TODO: Implementar download do relatório
+    console.log('Baixar relatório individual:', evento);
+    // TODO: Implementar download do relatório individual
     this.mensagem = `Relatório do evento "${evento.titulo}" será baixado em breve.`;
     setTimeout(() => this.mensagem = '', 3000);
   }

@@ -1,111 +1,149 @@
-<div class="gradient-custom min-vh-100 p-4">
-  <div class="background-glass p-4">
-    <h2 class="system-title mb-4">
-      {{ isEditMode ? 'Editar Evento' : 'Cadastrar Novo Evento' }}
-    </h2>
+<!-- evento-crud.html (ATUALIZADO COM PADRÃO DA TABELA-EVENTOS) -->
+<div class="container mt-4">
+  <!-- Cabeçalho -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="text-center mb-4">
+        <i class="bi {{ isEditMode ? 'bi-pencil-square' : 'bi-calendar-plus' }} me-2"></i>
+        {{ isEditMode ? 'Editar Evento' : 'Cadastrar Novo Evento' }}
+      </h2>
+    </div>
+  </div>
 
-    <form #eventoForm="ngForm">
-      <div class="row">
-        <div class="col-md-12 mb-3">
-          <label for="titulo" class="form-label">Título *</label>
-          <input id="titulo" type="text" class="form-control"
-                 [(ngModel)]="evento.titulo" name="titulo" required>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label for="dataHora" class="form-label">Data e Hora *</label>
-          <input id="dataHora" type="datetime-local" class="form-control"
-                 [(ngModel)]="evento.dataHora" name="dataHora" required>
-        </div>
-
-        <div class="col-md-6 mb-3">
-          <label for="cargaHoraria" class="form-label">Carga Horária (horas) *</label>
-          <input id="cargaHoraria" type="number" class="form-control"
-                 [(ngModel)]="evento.cargaHoraria" name="cargaHoraria"
-                 step="0.5" min="0" required>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label for="categoria" class="form-label">Categoria *</label>
-          <input id="categoria" type="text" class="form-control"
-                 [(ngModel)]="evento.categoria" name="categoria" required>
-        </div>
-
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Status Previsto</label>
-          <div class="form-control-plaintext">
-            <span class="badge" [ngClass]="{
-              'bg-info': isEventoAgendado(),
-              'bg-warning': isEventoEmAndamento(),
-              'bg-success': isEventoFinalizado()
-            }">
-              {{ isEventoAgendado() ? 'Agendado' :
-                 isEventoEmAndamento() ? 'Em Andamento' :
-                 isEventoFinalizado() ? 'Finalizado' : 'Indefinido' }}
-            </span>
+  <!-- Card do Formulário -->
+  <div class="card">
+    <div class="card-header bg-light">
+      <i class="bi bi-card-checklist me-2"></i>
+      {{ isEditMode ? 'Editar Informações do Evento' : 'Preencha os Dados do Evento' }}
+    </div>
+    <div class="card-body">
+      <form #eventoForm="ngForm">
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label for="titulo" class="form-label">
+              <i class="bi me-2"></i>Título *
+            </label>
+            <input id="titulo" type="text" class="form-control"
+                   [(ngModel)]="evento.titulo" name="titulo" required
+                   placeholder="Digite o título do evento">
           </div>
         </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="dataHora" class="form-label">
+              <i class="bi me-2"></i>Data e Hora *
+            </label>
+            <input id="dataHora" type="datetime-local" class="form-control"
+                   [(ngModel)]="evento.dataHora" name="dataHora" required>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="cargaHoraria" class="form-label">
+              <i class="bi me-2"></i>Carga Horária (horas) *
+            </label>
+            <input id="cargaHoraria" type="number" class="form-control"
+                   [(ngModel)]="evento.cargaHoraria" name="cargaHoraria"
+                   step="0.5" min="0" required
+                   placeholder="Ex: 2.0">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="categoria" class="form-label">
+              <i class="bi me-2"></i>Categoria *
+            </label>
+            <input id="categoria" type="text" class="form-control"
+                   [(ngModel)]="evento.categoria" name="categoria" required
+                   placeholder="Ex: Workshop, Palestra, Curso">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">
+              <i class="bi me-2"></i>Status Previsto
+            </label>
+            <div class="form-control-plaintext">
+              <span class="badge" [ngClass]="{
+                'bg-info': isEventoAgendado(),
+                'bg-warning': isEventoEmAndamento(),
+                'bg-success': isEventoFinalizado(),
+                'bg-secondary': isEventoCancelado(),
+                'bg-light text-dark': isEventoPausado()
+              }">
+                <i class="bi me-1"></i>
+                {{ isEventoAgendado() ? 'Agendado' :
+                   isEventoEmAndamento() ? 'Em Andamento' :
+                   isEventoFinalizado() ? 'Finalizado' :
+                   isEventoCancelado() ? 'Cancelado' :
+                   isEventoPausado() ? 'Pausado' : 'Indefinido' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="descricao" class="form-label">
+            <i class="bi me-2"></i>Descrição *
+          </label>
+          <textarea id="descricao" class="form-control" rows="4"
+                    [(ngModel)]="evento.descricao" name="descricao" required
+                    placeholder="Descreva os detalhes do evento..."></textarea>
+        </div>
+      </form>
+
+      <!-- Ações -->
+      <div class="actions-container mt-4">
+        <!-- Modo Criação -->
+        <div *ngIf="!isEditMode" class="d-flex gap-2">
+          <button class="btn btn-success" 
+                  (click)="salvarEvento()"
+                  [disabled]="!eventoForm.valid">
+            <i class="bi bi-check-circle me-2"></i>Cadastrar Evento
+          </button>
+          <button class="btn btn-secondary" (click)="cancelar()">
+            <i class="bi bi-x-circle me-2"></i>Cancelar
+          </button>
+        </div>
+
+        <!-- Modo Edição -->
+        <div *ngIf="isEditMode" class="d-flex gap-2 flex-wrap">
+          <button class="btn btn-primary"
+                  (click)="salvarEvento()"
+                  [disabled]="!eventoForm.valid">
+            <i class="bi bi-check-circle me-2"></i>Salvar Alterações
+          </button>
+
+          <button class="btn btn-danger" (click)="removerEvento()">
+            <i class="bi bi-trash me-2"></i>Remover Evento
+          </button>
+
+          <button class="btn btn-warning" (click)="encerrarEvento()"
+                  *ngIf="isEventoEmAndamento()">
+            <i class="bi bi-flag me-2"></i>Encerrar Evento
+          </button>
+
+          <button class="btn btn-info"
+                  *ngIf="isEventoFinalizado()">
+            <i class="bi bi-graph-up me-2"></i>Gerar Relatório
+          </button>
+
+          <button class="btn btn-success"
+                  *ngIf="isEventoFinalizado()">
+            <i class="bi bi-file-earmark-text me-2"></i>Gerar Certificados
+          </button>
+
+          <button class="btn btn-secondary" (click)="cancelar()">
+            <i class="bi bi-arrow-left me-2"></i>Voltar
+          </button>
+        </div>
       </div>
 
-      <div class="mb-3">
-        <label for="descricao" class="form-label">Descrição *</label>
-        <textarea id="descricao" class="form-control" rows="4"
-                  [(ngModel)]="evento.descricao" name="descricao" required></textarea>
+      <div class="mt-3">
+        <small class="text-muted">
+          <i class="bi bi-asterisk me-1"></i>Campos obrigatórios
+        </small>
       </div>
-    </form>
-
-    <div class="actions-container mt-4">
-      <!-- Modo Criação -->
-      <div *ngIf="!isEditMode" class="d-flex gap-2">
-        <button class="btn btn-success"
-                (click)="salvarEvento()"
-                [disabled]="!eventoForm.valid">
-          Cadastrar Evento
-        </button>
-        <button class="btn btn-secondary" (click)="cancelar()">
-          Cancelar
-        </button>
-      </div>
-
-      <!-- Modo Edição -->
-      <div *ngIf="isEditMode" class="d-flex gap-2 flex-wrap">
-        <button class="btn btn-primary"
-                (click)="salvarEvento()"
-                [disabled]="!eventoForm.valid">
-          Salvar Alterações
-        </button>
-
-        <button class="btn btn-danger" (click)="removerEvento()">
-          Remover Evento
-        </button>
-
-        <button class="btn btn-warning" (click)="encerrarEvento()"
-                *ngIf="isEventoEmAndamento()">
-          Encerrar Evento
-        </button>
-
-        <button class="btn btn-info"
-                *ngIf="isEventoFinalizado()">
-          Gerar Relatório
-        </button>
-
-        <button class="btn btn-success"
-                *ngIf="isEventoFinalizado()">
-          Gerar Certificados
-        </button>
-
-        <button class="btn btn-secondary" (click)="cancelar()">
-          Voltar
-        </button>
-      </div>
-    </div>
-
-    <div class="mt-3">
-      <small class="text-muted">* Campos obrigatórios</small>
     </div>
   </div>
 </div>
