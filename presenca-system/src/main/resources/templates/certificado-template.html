@@ -15,14 +15,15 @@
             padding: 0;
             height: 210mm;
             width: 297mm;
-            background-image: url('data:image/png;base64,[[${backgroundImageBase64}]]');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
+            position: relative;
+            overflow: hidden;
             font-family: 'Arial', sans-serif;
-            display: flex; /* Mantido para centralizar o contêiner principal */
-            justify-content: center;
-            align-items: center;
+            /* 🔥 LOGO COMO BACKGROUND - CENTRALIZADA */
+            background-image: url('data:image/png;base64,[[${backgroundImageBase64}]]');
+            background-size: 1200px auto; /* 🔥 Tamanho controlado */
+            background-repeat: no-repeat;
+            background-position: center center; /* 🔥 CENTRALIZADA */
+            background-attachment: fixed; /* 🔥 Fixa no viewport */
         }
 
         .container {
@@ -30,6 +31,28 @@
             height: 100%;
             text-align: center;
             padding: 40px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .content-overlay {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 0;
+            border: 1px solid #000000;
+            max-width: 1000px;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+            max-height: 190mm;
+            margin: 0 auto;
+            overflow: hidden;
+            /* 🔥 GARANTIR QUE O FUNDO BRANCO CUBRA A LOGO */
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 100px rgba(255, 255, 255, 0.95); /* 🔥 Extra coverage */
         }
 
         .title {
@@ -38,12 +61,14 @@
             color: #000000;
             margin-bottom: 20px;
             text-transform: uppercase;
+            page-break-inside: avoid;
         }
 
         .subtitle {
             font-size: 16pt;
             color: #000000;
             margin-bottom: 10px;
+            page-break-inside: avoid;
         }
 
         .participant-name {
@@ -54,6 +79,7 @@
             margin: 20px 0;
             padding: 15px 40px;
             border-bottom: 2px solid #000000;
+            page-break-inside: avoid;
         }
 
         .completion-text {
@@ -61,6 +87,7 @@
             color: #000000;
             margin: 15px 0;
             line-height: 1.5;
+            page-break-inside: avoid;
         }
 
         .event-name {
@@ -69,16 +96,18 @@
             color: #000000;
             margin: 15px 0;
             text-transform: uppercase;
+            page-break-inside: avoid;
         }
 
         .certificate-text {
             font-size: 12pt;
             color: #000000;
             font-style: italic;
-            margin: 20px auto; /* Usando auto para centralizar o bloco */
+            margin: 20px auto;
             line-height: 1.4;
             max-width: 600px;
             text-align: center;
+            page-break-inside: avoid;
         }
 
         .footer {
@@ -87,6 +116,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
+            page-break-inside: avoid;
         }
 
         .signature {
@@ -130,42 +160,56 @@
             font-size: 11pt;
         }
 
-        .content-overlay {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 40px;
-            border-radius: 0;
-            border: 1px solid #000000;
-            max-width: 800px;
-            margin: auto; /* Centraliza a borda horizontal e verticalmente */
+        .page-break-avoid {
+            page-break-inside: avoid;
+            page-break-after: avoid;
+            page-break-before: avoid;
+        }
+
+        @media print {
+            body {
+                height: 210mm !important;
+                width: 297mm !important;
+                overflow: hidden !important;
+                background-image: url('data:image/png;base64,[[${backgroundImageBase64}]]') !important;
+                background-size: 400px auto !important;
+                background-repeat: no-repeat !important;
+                background-position: center center !important;
+            }
+            .container {
+                page-break-inside: avoid !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="content-overlay">
-            <h1 class="title">CERTIFICATE OF TRAINING</h1>
+    <!-- 🔥 REMOVIDA A TAG IMG - AGORA É BACKGROUND CSS -->
+
+    <div class="container page-break-avoid">
+        <div class="content-overlay page-break-avoid">
+            <h1 class="title page-break-avoid">CERTIFICADO DE TREINAMENTO</h1>
             
-            <p class="subtitle">Concedido a</p>
+            <p class="subtitle page-break-avoid">Concedido a</p>
             
-            <h2 class="participant-name" th:text="${certificado.nomeUsuario}">Nome do Participante</h2>
+            <h2 class="participant-name page-break-avoid" th:text="${certificado.nomeUsuario}">Nome do Participante</h2>
             
-            <p class="completion-text">
+            <p class="completion-text page-break-avoid">
                 Por completar com sucesso 
-                <span th:text="${#numbers.formatInteger(certificado.evento.cargaHoraria, 0)}">0</span> 
+                <span th:text="${#numbers.formatInteger(certificado.cargaHorariaEvento, 0)}">0</span> 
                 horas de
             </p>
             
-            <h3 class="event-name" th:text="${certificado.evento.titulo}">Nome do Evento</h3>
+            <h3 class="event-name page-break-avoid" th:text="${certificado.tituloEvento}">Nome do Evento</h3>
             
-            <p class="certificate-text" th:text="${certificado.texto}">
+            <p class="certificate-text page-break-avoid" th:text="${certificado.texto}">
                 Certificado de participação com carga horária total de horas.
             </p>
 
-            <div class="footer">
+            <div class="footer page-break-avoid">
                 <div class="signature">
                     <div class="signature-line">
                         <p class="signature-name" th:text="${certificado.nomeSuperusuario}">Nome do Instrutor</p>
-                        <p class="signature-role">Instructor</p>
+                        <p class="signature-role">Instrutor</p>
                     </div>
                 </div>
                 
