@@ -21,7 +21,7 @@ public class CertificadoDTO {
     private String eventoTitulo;
     private Double eventoCargaHoraria;
 
-    // 🔥 CONSTRUTOR QUE RECEBE CERTIFICADO (usando métodos de conveniência)
+    //   CONSTRUTOR QUE RECEBE CERTIFICADO (usando métodos de conveniência)
     public CertificadoDTO(Certificado certificado) {
         this.id = certificado.getId();
         this.nomeUsuario = certificado.getNomeUsuario();           // Método automático

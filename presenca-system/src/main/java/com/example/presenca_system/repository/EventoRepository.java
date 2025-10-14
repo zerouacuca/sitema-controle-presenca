@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface EventoRepository extends JpaRepository<Evento, Long> {
 
-    // 🔐 NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
+    //   NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
     @Query("SELECT e FROM Evento e WHERE e.superusuario.email = :emailSuperusuario")
     List<Evento> findBySuperusuarioEmail(@Param("emailSuperusuario") String emailSuperusuario);
 

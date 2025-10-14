@@ -35,7 +35,7 @@ public class CertificadoServiceImpl implements CertificadoService {
     @Autowired
     private PDFService pdfService;
 
-    // 🔐 NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
+    //   NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
     @Override
     @Transactional(readOnly = true)
     public List<CertificadoDTO> findBySuperusuarioEmailDTO(String emailSuperusuario) {
@@ -93,7 +93,7 @@ public class CertificadoServiceImpl implements CertificadoService {
 
     @Override
     public List<byte[]> gerarPDFsPorIds(List<Long> certificadoIds) throws IOException, DocumentException {
-        // 🔧 CORREÇÃO: Use o método correto do JpaRepository
+        //   CORREÇÃO: Use o método correto do JpaRepository
         List<Certificado> certificados = certificadoRepository.findAllById(certificadoIds);
         List<byte[]> pdfs = new ArrayList<>();
         
@@ -179,7 +179,7 @@ public class CertificadoServiceImpl implements CertificadoService {
         certificado.setCodigoValidacao(generateValidationCode());
         certificado.setDataEmissao(LocalDate.now());
         
-        // 🔥 TEXTO GERADO AUTOMATICAMENTE COM DADOS DOS RELACIONAMENTOS
+        //   TEXTO GERADO AUTOMATICAMENTE COM DADOS DOS RELACIONAMENTOS
         certificado.setTexto("Certificado de participação no evento \"" + evento.getTitulo() + 
                         "\" com carga horária de " + evento.getCargaHoraria() + " horas. " +
                         "Emitido por " + superusuario.getNome() + ".");

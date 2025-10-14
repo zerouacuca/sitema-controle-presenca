@@ -23,7 +23,7 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
         this.jwtService = jwtService;
     }
 
-    // 🔐 NOVOS MÉTODOS PARA VALIDAÇÃO DE PERMISSÕES
+    //   NOVOS MÉTODOS PARA VALIDAÇÃO DE PERMISSÕES
     @Override
     public Superusuario cadastrarSuperusuario(Superusuario superusuario, String emailSuperusuarioAutenticado) {
         // Verificar se o superusuário autenticado tem permissão para criar outros

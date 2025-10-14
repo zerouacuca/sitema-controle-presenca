@@ -25,14 +25,14 @@ public class CertificadoController {
     @Autowired
     private CertificadoService certificadoService;
 
-    // 🔧 REMOVER - não é mais necessário pois usamos o serviço
+    //   REMOVER - não é mais necessário pois usamos o serviço
     // @Autowired
     // private CertificadoRepository certificadoRepository;
 
     @Autowired
     private EmailService emailService;
 
-    // 🔧 CORREÇÃO: Usar o nome correto do método
+    //   CORREÇÃO: Usar o nome correto do método
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> getCertificadoPDF(@PathVariable Long id, Authentication authentication) {
         String emailSuperusuario = authentication.getName();
@@ -56,14 +56,14 @@ public class CertificadoController {
         }
     }
 
-    // 🔧 CORREÇÃO: Usar o nome correto do método
+    //   CORREÇÃO: Usar o nome correto do método
     @GetMapping("/meus-certificados")
     public List<CertificadoDTO> getMeusCertificados(Authentication authentication) {
         String emailSuperusuario = authentication.getName();
         return certificadoService.findBySuperusuarioEmailDTO(emailSuperusuario);
     }
 
-    // 🔧 CORREÇÃO: Usar o nome correto do método
+    //   CORREÇÃO: Usar o nome correto do método
     @GetMapping("/evento/{eventoId}")
     public ResponseEntity<List<CertificadoDTO>> getCertificadosPorEvento(@PathVariable Long eventoId, Authentication authentication) {
         String emailSuperusuario = authentication.getName();
@@ -87,7 +87,7 @@ public class CertificadoController {
                 return ResponseEntity.badRequest().body("Dados inválidos");
             }
 
-            // 🔧 CORREÇÃO: Usar o nome correto do método
+            //   CORREÇÃO: Usar o nome correto do método
             boolean permissoesValidas = certificadoService.verificarPermissoesCertificados(certificadoIds, emailSuperusuario);
             if (!permissoesValidas) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acesso negado a um ou mais certificados");
@@ -100,7 +100,7 @@ public class CertificadoController {
         }
     }
 
-    // 🔧 MANTER os métodos públicos (sem autenticação) para acesso externo
+    //   MANTER os métodos públicos (sem autenticação) para acesso externo
     @GetMapping("/public/por-cpf/evento/{eventoId}/usuario/{cpf}")
     public ResponseEntity<byte[]> getCertificadoPDFPorCpf(
         @PathVariable String cpf,

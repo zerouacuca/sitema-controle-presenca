@@ -19,7 +19,7 @@ public class EventoServiceImpl implements EventoService {
     @Autowired
     private EventoRepository eventoRepository;
 
-    // 🔐 NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
+    //   NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
     @Override
     public List<EventoDTO> findBySuperusuarioEmail(String emailSuperusuario) {
         return eventoRepository.findBySuperusuarioEmail(emailSuperusuario).stream()

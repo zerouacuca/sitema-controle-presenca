@@ -23,7 +23,7 @@ public interface EventoService {
     void encerrarEvento(Long eventoId);
     void cancelarEvento(Long eventoId);
     
-    // 🔐 NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
+    //   NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
     List<EventoDTO> findBySuperusuarioEmail(String emailSuperusuario);
     Optional<EventoDTO> findByIdAndSuperusuarioEmail(Long id, String emailSuperusuario);
     Optional<Evento> findByIdAndSuperusuarioEmailEntity(Long id, String emailSuperusuario);

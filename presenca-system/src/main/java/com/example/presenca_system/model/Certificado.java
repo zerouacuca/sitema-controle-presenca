@@ -41,7 +41,7 @@ public class Certificado {
     @Column(name = "texto_certificado", columnDefinition = "TEXT")
     private String texto;
 
-    // 🔥 MÉTODOS CONVENIENCIA - NÃO SÃO GETTERS/SETTERS, SÃO MÉTODOS DE CONSULTA
+    //   MÉTODOS CONVENIENCIA - NÃO SÃO GETTERS/SETTERS, SÃO MÉTODOS DE CONSULTA
     public String getNomeUsuario() {
         return this.usuario != null ? this.usuario.getNome() : "";
     }

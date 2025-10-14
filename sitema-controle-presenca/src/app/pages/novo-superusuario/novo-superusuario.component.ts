@@ -82,7 +82,7 @@ export class NovoSuperusuarioComponent {
     this.superusuarioService.criarSuperusuario(dadosEnvio).subscribe({
       next: (response: any) => {
         this.isLoading = false;
-        console.log('✅ Superusuário criado com sucesso:', response);
+        console.log('  Superusuário criado com sucesso:', response);
         this.successMessage = 'Superusuário criado com sucesso!';
         
         // Redirecionar após 2 segundos para mostrar a mensagem de sucesso

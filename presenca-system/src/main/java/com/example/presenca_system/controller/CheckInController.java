@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/checkin") // ✅ Agora é protegido
+@RequestMapping("/checkin") //   Agora é protegido
 public class CheckInController {
 
     @Autowired
     private CheckInService checkInService;
 
-    // 🔓 Endpoint PÚBLICO - não exige autenticação
+    // Endpoint PÚBLICO - não exige autenticação
     @PostMapping("/biometrico")
     public ResponseEntity<String> registrarCheckInBiometrico(@RequestBody CheckInRequestDTO request) {
         try {
@@ -36,7 +36,7 @@ public class CheckInController {
         }
     }
 
-    // 🔐 Endpoint PROTEGIDO - requer autenticação de superusuário
+    //   Endpoint PROTEGIDO - requer autenticação de superusuário
     @GetMapping("/evento/{eventoId}")
     public ResponseEntity<List<CheckInResponseDTO>> getCheckInsPorEvento(
             @PathVariable Long eventoId, 

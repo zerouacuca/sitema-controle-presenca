@@ -22,7 +22,7 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    // 🔐 Todos os endpoints exigem autenticação de superusuário
+    //   Todos os endpoints exigem autenticação de superusuário
     @PostMapping
     public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody UsuarioDTO usuarioDto, Authentication authentication) {
         // Apenas valida que está autenticado

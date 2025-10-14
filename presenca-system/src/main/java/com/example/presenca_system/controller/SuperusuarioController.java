@@ -18,7 +18,7 @@ public class SuperusuarioController {
         this.superusuarioService = superusuarioService;
     }
 
-    // 🔐 Criar novo superusuário (apenas para superusuários autenticados)
+    //   Criar novo superusuário (apenas para superusuários autenticados)
     @PostMapping
     public ResponseEntity<Superusuario> cadastrarSuperusuario(@RequestBody Superusuario superusuario, Authentication authentication) {
         String emailAutenticado = authentication.getName();
@@ -26,7 +26,7 @@ public class SuperusuarioController {
         return ResponseEntity.ok(novoSuperusuario);
     }
 
-    // 🔐 Listar todos superusuários
+    //   Listar todos superusuários
     @GetMapping
     public ResponseEntity<List<Superusuario>> listarTodos(Authentication authentication) {
         String emailAutenticado = authentication.getName();
@@ -34,7 +34,7 @@ public class SuperusuarioController {
         return ResponseEntity.ok(superusuarios);
     }
 
-    // 🔐 Buscar perfil do usuário logado
+    //   Buscar perfil do usuário logado
     @GetMapping("/perfil")
     public ResponseEntity<Superusuario> getMeuPerfil(Authentication authentication) {
         String email = authentication.getName();
@@ -43,7 +43,7 @@ public class SuperusuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 🔐 Atualizar superusuário
+    //   Atualizar superusuário
     @PutMapping("/{cpf}")
     public ResponseEntity<Superusuario> alterarSuperusuario(@PathVariable String cpf, @RequestBody Superusuario superusuario, Authentication authentication) {
         try {
@@ -55,7 +55,7 @@ public class SuperusuarioController {
         }
     }
 
-    // 🔐 Excluir superusuário
+    //   Excluir superusuário
     @DeleteMapping("/{cpf}")
     public ResponseEntity<Void> excluirSuperusuario(@PathVariable String cpf, Authentication authentication) {
         String emailAutenticado = authentication.getName();

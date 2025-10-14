@@ -19,7 +19,7 @@ public interface CheckInRepository extends JpaRepository<CheckIn, Long> {
     List<CheckIn> findByEvento(Evento evento);
     List<CheckIn> findByEvento_EventoId(Long eventoId);
 
-    // 🔐 NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
+    //   NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
     @Query("SELECT ci FROM CheckIn ci WHERE ci.evento.eventoId = :eventoId AND ci.evento.superusuario.email = :emailSuperusuario")
     List<CheckIn> findByEventoAndSuperusuarioEmail(@Param("eventoId") Long eventoId, 
                                                   @Param("emailSuperusuario") String emailSuperusuario);

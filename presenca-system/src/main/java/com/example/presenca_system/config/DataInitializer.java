@@ -51,7 +51,7 @@ public class DataInitializer implements CommandLineRunner {
     private void criarSuperusuarioPadrao() {
         try {
             if (!superusuarioService.existeAlgumSuperusuario()) {
-                System.out.println("🔧 Criando superusuário padrão...");
+                System.out.println("  Criando superusuário padrão...");
                 
                 Superusuario admin = new Superusuario();
                 admin.setCpf("00000000000");
@@ -61,7 +61,7 @@ public class DataInitializer implements CommandLineRunner {
                 
                 superusuarioService.criarPrimeiroSuperusuario(admin);
                 
-                System.out.println("✅ Superusuário padrão criado com sucesso!");
+                System.out.println("  Superusuário padrão criado com sucesso!");
             } else {
                 System.out.println("ℹ️  Superusuários já existem no sistema. Pulando criação padrão.");
             }
@@ -72,7 +72,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private void criarSuperusuariosAdicionais() {
         try {
-            System.out.println("🔧 Criando superusuários adicionais...");
+            System.out.println("  Criando superusuários adicionais...");
             
             List<Superusuario> superusuarios = Arrays.asList(
                 criarSuperusuario("12345678901", "João Superusuario", "joao.super@email.com", "senha123"),
@@ -87,7 +87,7 @@ public class DataInitializer implements CommandLineRunner {
                 }
             }
             
-            System.out.println("✅ " + criados + " superusuários adicionais criados com sucesso!");
+            System.out.println("  " + criados + " superusuários adicionais criados com sucesso!");
         } catch (Exception e) {
             System.err.println("❌ Erro ao criar superusuários adicionais: " + e.getMessage());
         }
@@ -95,7 +95,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private void criarUsuariosComuns() {
         try {
-            System.out.println("🔧 Criando usuários comuns...");
+            System.out.println("  Criando usuários comuns...");
             
             List<Usuario> usuarios = Arrays.asList(
                 criarUsuario("56789012345", "João Silva", "joao.silva@email.com", "2023001", "TI", LocalDate.of(1990, 5, 15), "TemplateBiometrico1"),
@@ -120,7 +120,7 @@ public class DataInitializer implements CommandLineRunner {
                 }
             }
             
-            System.out.println("✅ " + criados + " usuários comuns criados com sucesso!");
+            System.out.println("  " + criados + " usuários comuns criados com sucesso!");
         } catch (Exception e) {
             System.err.println("❌ Erro ao criar usuários comuns: " + e.getMessage());
         }
@@ -128,22 +128,22 @@ public class DataInitializer implements CommandLineRunner {
 
     private void criarEventosParaAdmin() {
         try {
-            System.out.println("🔧 Criando eventos para o admin...");
+            System.out.println("  Criando eventos para o admin...");
             
             List<Evento> eventos = Arrays.asList(
-                // 🔥 EVENTO FINALIZADO - Pronto para gerar certificados
+                //   EVENTO FINALIZADO - Pronto para gerar certificados
                 criarEvento("Workshop Spring Boot Avançado", "Workshop completo sobre desenvolvimento com Spring Boot, Security e JPA", 
                            LocalDateTime.of(2024, 1, 10, 14, 0), "Tecnologia", 6.0, StatusEvento.FINALIZADO, "00000000000"),
                 
-                // 🔥 EVENTO EM ANDAMENTO - Com vários check-ins realizados
+                //   EVENTO EM ANDAMENTO - Com vários check-ins realizados
                 criarEvento("Treinamento Angular & TypeScript", "Desenvolvimento de aplicações web modernas com Angular e TypeScript", 
                            LocalDateTime.of(2024, 1, 25, 9, 0), "Tecnologia", 8.0, StatusEvento.EM_ANDAMENTO, "00000000000"),
                 
-                // 🔥 EVENTO AGENDADO - Sem check-ins ainda
+                //   EVENTO AGENDADO - Sem check-ins ainda
                 criarEvento("Palestra Cloud Computing AWS", "Introdução aos serviços AWS e computação em nuvem", 
                            LocalDateTime.of(2024, 2, 15, 16, 0), "Tecnologia", 4.0, StatusEvento.AGENDADO, "00000000000"),
                 
-                // 🔥 MAIS EVENTOS PARA DEMONSTRAÇÃO
+                //   MAIS EVENTOS PARA DEMONSTRAÇÃO
                 criarEvento("Workshop DevOps CI/CD", "Pipeline de integração e deploy contínuo com Jenkins e Docker", 
                            LocalDateTime.of(2024, 2, 28, 13, 0), "Tecnologia", 5.0, StatusEvento.AGENDADO, "00000000000"),
                 
@@ -167,7 +167,7 @@ public class DataInitializer implements CommandLineRunner {
                 }
             }
             
-            System.out.println("✅ " + criados + " eventos criados para o admin com sucesso!");
+            System.out.println("  " + criados + " eventos criados para o admin com sucesso!");
         } catch (Exception e) {
             System.err.println("❌ Erro ao criar eventos para admin: " + e.getMessage());
         }
@@ -175,9 +175,9 @@ public class DataInitializer implements CommandLineRunner {
 
     private void criarCheckInsParaEventosAdmin() {
         try {
-            System.out.println("🔧 Criando check-ins para eventos do admin...");
+            System.out.println("  Criando check-ins para eventos do admin...");
             
-            // 🔥 CHECK-INS PARA EVENTO FINALIZADO (Workshop Spring Boot Avançado - ID 1)
+            //   CHECK-INS PARA EVENTO FINALIZADO (Workshop Spring Boot Avançado - ID 1)
             criarCheckIn(1L, "56789012345", LocalDateTime.of(2024, 1, 10, 13, 55));
             criarCheckIn(1L, "67890123456", LocalDateTime.of(2024, 1, 10, 13, 58));
             criarCheckIn(1L, "78901234567", LocalDateTime.of(2024, 1, 10, 14, 2));
@@ -187,7 +187,7 @@ public class DataInitializer implements CommandLineRunner {
             criarCheckIn(1L, "11223344556", LocalDateTime.of(2024, 1, 10, 14, 12));
             criarCheckIn(1L, "22334455667", LocalDateTime.of(2024, 1, 10, 14, 15));
             
-            // 🔥 CHECK-INS PARA EVENTO EM ANDAMENTO (Treinamento Angular - ID 2)
+            //   CHECK-INS PARA EVENTO EM ANDAMENTO (Treinamento Angular - ID 2)
             criarCheckIn(2L, "56789012345", LocalDateTime.of(2024, 1, 25, 8, 55));
             criarCheckIn(2L, "67890123456", LocalDateTime.of(2024, 1, 25, 8, 58));
             criarCheckIn(2L, "78901234567", LocalDateTime.of(2024, 1, 25, 9, 2));
@@ -198,7 +198,7 @@ public class DataInitializer implements CommandLineRunner {
             criarCheckIn(2L, "55667788990", LocalDateTime.of(2024, 1, 25, 9, 15));
             criarCheckIn(2L, "66778899001", LocalDateTime.of(2024, 1, 25, 9, 18));
             
-            System.out.println("✅ Check-ins criados com sucesso para eventos do admin!");
+            System.out.println("  Check-ins criados com sucesso para eventos do admin!");
         } catch (Exception e) {
             System.err.println("❌ Erro ao criar check-ins para admin: " + e.getMessage());
         }
@@ -206,9 +206,9 @@ public class DataInitializer implements CommandLineRunner {
 
     private void criarCertificadosParaEventosFinalizados() {
         try {
-            System.out.println("🔧 Criando certificados para eventos finalizados...");
+            System.out.println("  Criando certificados para eventos finalizados...");
             
-            // 🔥 CERTIFICADOS PARA EVENTO FINALIZADO (Workshop Spring Boot Avançado - ID 1)
+            //   CERTIFICADOS PARA EVENTO FINALIZADO (Workshop Spring Boot Avançado - ID 1)
             criarCertificado("56789012345", 1L, "00000000000", "CERT-SPRING-001", LocalDate.of(2024, 1, 11));
             criarCertificado("67890123456", 1L, "00000000000", "CERT-SPRING-002", LocalDate.of(2024, 1, 11));
             criarCertificado("78901234567", 1L, "00000000000", "CERT-SPRING-003", LocalDate.of(2024, 1, 11));
@@ -218,7 +218,7 @@ public class DataInitializer implements CommandLineRunner {
             criarCertificado("11223344556", 1L, "00000000000", "CERT-SPRING-007", LocalDate.of(2024, 1, 11));
             criarCertificado("22334455667", 1L, "00000000000", "CERT-SPRING-008", LocalDate.of(2024, 1, 11));
             
-            System.out.println("✅ Certificados criados com sucesso para eventos finalizados!");
+            System.out.println("  Certificados criados com sucesso para eventos finalizados!");
         } catch (Exception e) {
             System.err.println("❌ Erro ao criar certificados: " + e.getMessage());
         }

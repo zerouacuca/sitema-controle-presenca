@@ -44,13 +44,13 @@ public class CheckInServiceImpl implements CheckInService {
         }
         Evento evento = eventoOpt.get();
 
-        // 🔥 VERIFICAÇÃO SIMPLIFICADA - apenas se já existe check-in
+        //   VERIFICAÇÃO SIMPLIFICADA - apenas se já existe check-in
         Optional<CheckIn> checkInExistente = checkInRepository.findByUsuarioAndEvento(usuario, evento);
         if (checkInExistente.isPresent()) {
             return "Usuário já realizou o check-in para este evento.";
         }
 
-        // 🔥 CHECKIN SIMPLIFICADO - sem status
+        //   CHECKIN SIMPLIFICADO - sem status
         CheckIn novoCheckIn = new CheckIn();
         novoCheckIn.setUsuario(usuario);
         novoCheckIn.setEvento(evento);
@@ -73,7 +73,7 @@ public class CheckInServiceImpl implements CheckInService {
             dto.setUsuarioCpf(checkIn.getUsuario().getCpf());
             dto.setUsuarioNome(checkIn.getUsuario().getNome());
             dto.setDataHoraCheckin(checkIn.getDataHoraCheckin());
-            // 🔥 STATUS REMOVIDO
+            //   STATUS REMOVIDO
             return dto;
         }).collect(Collectors.toList());
     }
