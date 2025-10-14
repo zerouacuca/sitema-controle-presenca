@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class Superusuario {
     
     @Id
-    private String cpf;  // Mantemos CPF como ID
+    private String cpf; 
     
     @Column(nullable = false, unique = true)
     private String email;

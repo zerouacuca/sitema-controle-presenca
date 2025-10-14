@@ -13,7 +13,7 @@ public interface SuperusuarioRepository extends JpaRepository<Superusuario, Stri
     
     Optional<Superusuario> findByEmail(String email);
 
-    //   NOVO MÉTODO PARA VERIFICAÇÃO DE EXISTÊNCIA
+    //   MÉTODO PARA VERIFICAÇÃO DE EXISTÊNCIA
     @Query("SELECT COUNT(s) > 0 FROM Superusuario s WHERE s.email = :email")
     boolean existsByEmail(@Param("email") String email);
 
