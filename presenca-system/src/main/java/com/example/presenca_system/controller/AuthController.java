@@ -25,9 +25,9 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
-    /**
-     * 🔓 ENDPOINT DE LOGIN
-     */
+
+     // ENDPOINT DE LOGIN
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         Optional<Superusuario> superusuarioOptional = superusuarioRepository.findByEmail(loginRequest.getEmail());
