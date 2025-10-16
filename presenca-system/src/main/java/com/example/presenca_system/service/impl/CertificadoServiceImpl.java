@@ -93,7 +93,6 @@ public class CertificadoServiceImpl implements CertificadoService {
 
     @Override
     public List<byte[]> gerarPDFsPorIds(List<Long> certificadoIds) throws IOException, DocumentException {
-        //   CORREÇÃO: Use o método correto do JpaRepository
         List<Certificado> certificados = certificadoRepository.findAllById(certificadoIds);
         List<byte[]> pdfs = new ArrayList<>();
         

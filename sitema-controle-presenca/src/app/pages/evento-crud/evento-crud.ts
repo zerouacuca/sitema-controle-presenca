@@ -47,7 +47,7 @@ export class EventoCrud implements OnInit {
   carregarEvento(id: number): void {
     this.eventoService.getEventoById(id).subscribe({
       next: (data) => {
-        //   CORREÇÃO: Converter data string para formato do form
+        //     Converter data string para formato do form
         this.evento = {
           ...data,
           dataHora: this.formatarDataParaInput(data.dataHora)
@@ -62,7 +62,7 @@ export class EventoCrud implements OnInit {
   }
 
   salvarEvento(): void {
-    //   CORREÇÃO: Preparar dados no formato exato do backend
+    //     Preparar dados no formato exato do backend
     const eventoParaEnviar = this.prepararDadosParaBackend();
 
     if (this.isEditMode && this.eventoId) {
@@ -91,7 +91,7 @@ export class EventoCrud implements OnInit {
   }
 
   private prepararDadosParaBackend(): any {
-    //   CORREÇÃO: Criar objeto IDÊNTICO ao modelo Java
+    //     Criar objeto IDÊNTICO ao modelo Java
     const dados = {
       titulo: this.evento.titulo,
       descricao: this.evento.descricao,
