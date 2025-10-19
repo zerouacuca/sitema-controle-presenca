@@ -12,10 +12,8 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, String> {
     
-    // MÉTODO EXISTENTE
     Optional<Usuario> findByTemplate(byte[] templateBiometrico);
 
-    //   NOVOS MÉTODOS ÚTEIS
     @Query("SELECT u FROM Usuario u WHERE u.email = :email")
     Optional<Usuario> findByEmail(@Param("email") String email);
 

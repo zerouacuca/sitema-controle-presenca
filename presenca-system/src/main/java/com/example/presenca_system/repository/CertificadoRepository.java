@@ -29,7 +29,7 @@ public interface CertificadoRepository extends JpaRepository<Certificado, Long> 
     List<Certificado> findByEventoAndSuperusuarioEmail(@Param("eventoId") Long eventoId, 
                                                       @Param("emailSuperusuario") String emailSuperusuario);
 
-    //   CONSULTAS DTO ATUALIZADAS (usando construtor do DTO)
+    //   CONSULTAS DTO (usando construtor do DTO)
     @Query("SELECT new com.example.presenca_system.model.dto.CertificadoDTO(" +
            "c.id, c.usuario.nome, c.usuario.cpf, c.superusuario.nome, " +
            "c.codigoValidacao, c.dataEmissao, c.texto, " +

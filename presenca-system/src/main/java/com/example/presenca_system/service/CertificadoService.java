@@ -46,7 +46,6 @@ public interface CertificadoService {
     // Métodos adicionais
     boolean existsByUsuarioCpfAndEventoEventoId(String cpf, Long eventoId);
     
-    //   MÉTODOS CORRIGIDOS
     List<CertificadoDTO> findBySuperusuarioEmailDTO(String emailSuperusuario);
     List<CertificadoDTO> findByEventoAndSuperusuarioEmailDTO(Long eventoId, String emailSuperusuario);
     Optional<Certificado> findByIdAndSuperusuarioEmail(Long id, String emailSuperusuario);
