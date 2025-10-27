@@ -1,4 +1,4 @@
-// evento-crud.ts
+// src/app/pages/evento-crud/evento-crud.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,10 +18,10 @@ export class EventoCrud implements OnInit {
   evento: Evento = {
     titulo: '',
     descricao: '',
-    dataHora: new Date().toISOString().slice(0, 16), // Para o form
+    dataHora: new Date().toISOString().slice(0, 16),
     categoria: '',
     cargaHoraria: 0,
-    status: StatusEvento.AGENDADO // Status inicial correto
+    status: StatusEvento.AGENDADO
   };
 
   isEditMode: boolean = false;
@@ -47,7 +47,6 @@ export class EventoCrud implements OnInit {
   carregarEvento(id: number): void {
     this.eventoService.getEventoById(id).subscribe({
       next: (data) => {
-        //     Converter data string para formato do form
         this.evento = {
           ...data,
           dataHora: this.formatarDataParaInput(data.dataHora)
@@ -62,7 +61,6 @@ export class EventoCrud implements OnInit {
   }
 
   salvarEvento(): void {
-    //     Preparar dados no formato exato do backend
     const eventoParaEnviar = this.prepararDadosParaBackend();
 
     if (this.isEditMode && this.eventoId) {
@@ -91,12 +89,11 @@ export class EventoCrud implements OnInit {
   }
 
   private prepararDadosParaBackend(): any {
-    //     Criar objeto IDÊNTICO ao modelo Java
     const dados = {
       titulo: this.evento.titulo,
       descricao: this.evento.descricao,
-      dataHora: new Date(this.evento.dataHora), // Envia como Date object
-      cargaHoraria: Number(this.evento.cargaHoraria), // Garante que é number
+      dataHora: new Date(this.evento.dataHora),
+      cargaHoraria: Number(this.evento.cargaHoraria),
       categoria: this.evento.categoria,
       status: this.evento.status || StatusEvento.AGENDADO
     };
@@ -150,7 +147,6 @@ export class EventoCrud implements OnInit {
     }
   }
 
-  // Métodos de navegação
   navegarParaLista(): void {
     this.router.navigate(['/eventos']);
   }
@@ -164,7 +160,6 @@ export class EventoCrud implements OnInit {
     return date.toISOString().slice(0, 16);
   }
 
-  // Métodos auxiliares para status visual (baseado no backend)
   isEventoAgendado(): boolean {
     return this.evento.status === StatusEvento.AGENDADO;
   }
@@ -179,9 +174,5 @@ export class EventoCrud implements OnInit {
 
   isEventoCancelado(): boolean {
     return this.evento.status === StatusEvento.CANCELADO;
-  }
-
-  isEventoPausado(): boolean {
-    return this.evento.status === StatusEvento.PAUSADO;
   }
 }

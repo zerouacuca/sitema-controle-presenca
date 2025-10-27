@@ -1,9 +1,9 @@
+// src/app/models/evento.model.ts
 export enum StatusEvento {
   AGENDADO = 'AGENDADO',
-  EM_ANDAMENTO = 'EM_ANDAMENTO', 
+  EM_ANDAMENTO = 'EM_ANDAMENTO',
   FINALIZADO = 'FINALIZADO',
-  CANCELADO = 'CANCELADO',
-  PAUSADO = 'PAUSADO'
+  CANCELADO = 'CANCELADO'
 }
 
 export interface Evento {

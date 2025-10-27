@@ -1,3 +1,4 @@
+// src/app/pages/detalhes-evento/detalhes-evento.component.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
@@ -83,8 +84,6 @@ export class DetalhesEventoComponent implements OnInit {
     });
   }
 
-  // === CONTROLES DE STATUS DO EVENTO ===
-
   iniciarEvento(): void {
     if (this.evento?.eventoId && confirm('Iniciar este evento?')) {
       this.isLoadingAction = true;
@@ -98,46 +97,6 @@ export class DetalhesEventoComponent implements OnInit {
         error: (error: any) => {
           console.error('Erro ao iniciar evento:', error);
           this.actionMessage = 'Erro ao iniciar evento.';
-          this.isLoadingAction = false;
-          this.cd.detectChanges();
-        }
-      });
-    }
-  }
-
-  pausarEvento(): void {
-    if (this.evento?.eventoId && confirm('Pausar este evento?')) {
-      this.isLoadingAction = true;
-      this.actionMessage = 'Pausando evento...';
-
-      this.eventoService.atualizarStatus(this.evento.eventoId, StatusEvento.PAUSADO).subscribe({
-        next: () => {
-          this.actionMessage = 'Evento pausado com sucesso!';
-          this.carregarDetalhesEvento();
-        },
-        error: (error: any) => {
-          console.error('Erro ao pausar evento:', error);
-          this.actionMessage = 'Erro ao pausar evento.';
-          this.isLoadingAction = false;
-          this.cd.detectChanges();
-        }
-      });
-    }
-  }
-
-  retomarEvento(): void {
-    if (this.evento?.eventoId && confirm('Retomar este evento?')) {
-      this.isLoadingAction = true;
-      this.actionMessage = 'Retomando evento...';
-
-      this.eventoService.atualizarStatus(this.evento.eventoId, StatusEvento.EM_ANDAMENTO).subscribe({
-        next: () => {
-          this.actionMessage = 'Evento retomado com sucesso!';
-          this.carregarDetalhesEvento();
-        },
-        error: (error: any) => {
-          console.error('Erro ao retomar evento:', error);
-          this.actionMessage = 'Erro ao retomar evento.';
           this.isLoadingAction = false;
           this.cd.detectChanges();
         }
@@ -189,8 +148,6 @@ export class DetalhesEventoComponent implements OnInit {
     }
   }
 
-  // === CHECK-IN BIOMÉTRICO ===
-
   realizarCheckInBiometrico(): void {
     if (!this.evento?.eventoId) return;
 
@@ -231,8 +188,6 @@ export class DetalhesEventoComponent implements OnInit {
     }
   }
 
-  // === NAVEGAÇÃO E FORMATAÇÃO ===
-
   voltarParaLista(): void {
     this.router.navigate(['/eventos']);
   }
@@ -261,7 +216,6 @@ export class DetalhesEventoComponent implements OnInit {
       case StatusEvento.EM_ANDAMENTO: return 'Em Andamento';
       case StatusEvento.FINALIZADO: return 'Finalizado';
       case StatusEvento.CANCELADO: return 'Cancelado';
-      case StatusEvento.PAUSADO: return 'Pausado';
       default: return 'Não definido';
     }
   }
@@ -273,16 +227,13 @@ export class DetalhesEventoComponent implements OnInit {
       case StatusEvento.EM_ANDAMENTO: return 'bg-warning';
       case StatusEvento.FINALIZADO: return 'bg-success';
       case StatusEvento.CANCELADO: return 'bg-danger';
-      case StatusEvento.PAUSADO: return 'bg-secondary';
       default: return 'bg-secondary';
     }
   }
 
-  // === EXPORTAÇÃO DE RELATÓRIO ===
   abrirModalExportacao(): void {
     if (!this.evento) return;
 
-    // Abre o modal usando Bootstrap JavaScript
     const modalElement = document.getElementById('modalExportacaoDetalhes');
     if (modalElement) {
       const modal = new (window as any).bootstrap.Modal(modalElement);
@@ -294,15 +245,13 @@ export class DetalhesEventoComponent implements OnInit {
     if (!this.evento) return;
 
     this.isLoadingAction = true;
-    
-    // Fecha o modal
+
     const modalElement = document.getElementById('modalExportacaoDetalhes');
     if (modalElement) {
       const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
       modal.hide();
     }
 
-    // Cria o objeto de exportação com dados completos do evento
     const dadosExportacao = {
       metadata: {
         geradoEm: new Date().toISOString(),
@@ -326,16 +275,14 @@ export class DetalhesEventoComponent implements OnInit {
       }
     };
 
-    // Simulação de processamento
     setTimeout(() => {
-      // Cria e dispara o download do arquivo JSON
       const eventoId = this.evento?.eventoId || 'unknown';
       const eventoTitulo = this.evento?.titulo || 'Evento';
       this.downloadJSON(dadosExportacao, `evento-${eventoId}-relatorio.json`);
-      
+
       this.isLoadingAction = false;
       this.actionMessage = `Relatório do evento "${eventoTitulo}" exportado com sucesso!`;
-      
+
       setTimeout(() => this.actionMessage = '', 5000);
       this.cd.detectChanges();
     }, 1000);
@@ -345,7 +292,7 @@ export class DetalhesEventoComponent implements OnInit {
     const jsonString = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;

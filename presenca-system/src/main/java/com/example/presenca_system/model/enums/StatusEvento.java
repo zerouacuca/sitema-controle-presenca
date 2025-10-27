@@ -2,10 +2,9 @@ package com.example.presenca_system.model.enums;
 
 public enum StatusEvento {
     AGENDADO("agendado"),
-    EM_ANDAMENTO("em andamento"), 
+    EM_ANDAMENTO("em andamento"),
     FINALIZADO("finalizado"),
     CANCELADO("cancelado");
-    //   PAUSADO REMOVIDO para simplificar
 
     private final String descricao;
 

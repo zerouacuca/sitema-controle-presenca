@@ -1,3 +1,4 @@
+// src/app/pages/tabela-eventos/tabela-eventos.ts
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
@@ -23,13 +24,13 @@ export class TabelaEventos implements OnInit, OnDestroy {
   eventosSelecionados: Set<number> = new Set<number>();
   isLoading: boolean = true;
   isGerandoRelatorio: boolean = false;
-  
+
   dataInicioFiltro: string | null = null;
   dataFimFiltro: string | null = null;
   tituloFiltro: string = '';
   descricaoFiltro: string = '';
   categoriaFiltro: string = '';
-  
+
   mensagem: string = '';
   erro: string = '';
   filtroAtivo: boolean = false;
@@ -62,7 +63,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
     }
   }
 
-  // === CARREGAMENTO DE DADOS ===
   carregarEventos(): void {
     this.isLoading = true;
     this.eventosSelecionados.clear();
@@ -83,7 +83,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
     });
   }
 
-  // === FILTROS DINÂMICOS ===
   onFiltroChange(): void {
     this.aplicarFiltros();
   }
@@ -93,7 +92,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
 
     let eventosFiltrados = [...this.eventos];
 
-    // Filtro por data
     if (this.dataInicioFiltro || this.dataFimFiltro) {
       const inicio = this.dataInicioFiltro ? new Date(this.dataInicioFiltro) : null;
       const fim = this.dataFimFiltro ? new Date(this.dataFimFiltro) : null;
@@ -104,7 +102,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
 
       eventosFiltrados = eventosFiltrados.filter(evento => {
         const dataEvento = new Date(evento.dataHora);
-        
+
         let passaInicio = true;
         let passaFim = true;
 
@@ -120,7 +118,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
       });
     }
 
-    // Filtro por título
     if (this.tituloFiltro.trim()) {
       const termoTitulo = this.tituloFiltro.toLowerCase().trim();
       eventosFiltrados = eventosFiltrados.filter(evento =>
@@ -128,7 +125,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
       );
     }
 
-    // Filtro por descrição
     if (this.descricaoFiltro.trim()) {
       const termoDescricao = this.descricaoFiltro.toLowerCase().trim();
       eventosFiltrados = eventosFiltrados.filter(evento =>
@@ -136,7 +132,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
       );
     }
 
-    // Filtro por categoria
     if (this.categoriaFiltro.trim()) {
       const termoCategoria = this.categoriaFiltro.toLowerCase().trim();
       eventosFiltrados = eventosFiltrados.filter(evento =>
@@ -145,9 +140,9 @@ export class TabelaEventos implements OnInit, OnDestroy {
     }
 
     this.eventosFiltrados = eventosFiltrados;
-    
-    this.filtroAtivo = !!(this.dataInicioFiltro || this.dataFimFiltro || 
-                          this.tituloFiltro.trim() || this.descricaoFiltro.trim() || 
+
+    this.filtroAtivo = !!(this.dataInicioFiltro || this.dataFimFiltro ||
+                          this.tituloFiltro.trim() || this.descricaoFiltro.trim() ||
                           this.categoriaFiltro.trim());
   }
 
@@ -165,7 +160,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
     setTimeout(() => this.mensagem = '', 3000);
   }
 
-  // === SELEÇÃO DE EVENTOS ===
   toggleSelecaoEvento(eventoId: number): void {
     if (this.eventosSelecionados.has(eventoId)) {
       this.eventosSelecionados.delete(eventoId);
@@ -181,7 +175,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
 
   selecionarTodos(event: any): void {
     const checked = event.target.checked;
-    
+
     if (checked) {
       this.eventosFiltrados.forEach(evento => {
         if (evento.eventoId) {
@@ -196,13 +190,12 @@ export class TabelaEventos implements OnInit, OnDestroy {
 
   estaTodosSelecionados(): boolean {
     if (this.eventosFiltrados.length === 0) return false;
-    
-    return this.eventosFiltrados.every(evento => 
+
+    return this.eventosFiltrados.every(evento =>
       evento.eventoId && this.eventosSelecionados.has(evento.eventoId)
     );
   }
 
-  // === AÇÕES INDIVIDUAIS ===
   editarEvento(evento: Evento): void {
     if (evento.eventoId) {
       this.router.navigate(['/editar-evento', evento.eventoId]);
@@ -262,7 +255,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
     }
   }
 
-  // === FORMATAÇÃO E UTILITÁRIOS ===
   formatarData(data: string | Date): string {
     const date = new Date(data);
     return date.toLocaleDateString('pt-BR');
@@ -276,12 +268,10 @@ export class TabelaEventos implements OnInit, OnDestroy {
       case StatusEvento.EM_ANDAMENTO: return 'Em Andamento';
       case StatusEvento.FINALIZADO: return 'Finalizado';
       case StatusEvento.CANCELADO: return 'Cancelado';
-      case StatusEvento.PAUSADO: return 'Pausado';
       default: return 'Não definido';
     }
   }
 
-  // === EXPORTAÇÃO E RELATÓRIOS ===
   abrirModalExportacao(): void {
     if (this.eventosSelecionados.size === 0) {
       this.erro = 'Selecione pelo menos um evento para exportar.';
@@ -298,14 +288,14 @@ export class TabelaEventos implements OnInit, OnDestroy {
 
   exportarJSON(): void {
     this.isGerandoRelatorio = true;
-    
+
     const modalElement = document.getElementById('modalExportacao');
     if (modalElement) {
       const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
       modal.hide();
     }
 
-    const eventosParaExportar = this.eventos.filter(evento => 
+    const eventosParaExportar = this.eventos.filter(evento =>
       evento.eventoId && this.eventosSelecionados.has(evento.eventoId)
     );
 
@@ -321,12 +311,12 @@ export class TabelaEventos implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.downloadJSON(dadosExportacao, 'relatorio-eventos.json');
-      
+
       this.isGerandoRelatorio = false;
       this.mensagem = `Relatório JSON exportado com sucesso! ${eventosParaExportar.length} evento(s) exportado(s).`;
-      
+
       this.eventosSelecionados.clear();
-      
+
       setTimeout(() => this.mensagem = '', 5000);
       this.cd.detectChanges();
     }, 1000);
@@ -336,7 +326,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
     const jsonString = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;

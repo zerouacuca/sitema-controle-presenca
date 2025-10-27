@@ -1,6 +1,4 @@
-<!-- evento-crud.html (ATUALIZADO COM PADRÃO DA TABELA-EVENTOS) -->
 <div class="container mt-4">
-  <!-- Cabeçalho -->
   <div class="row mb-4">
     <div class="col-12">
       <h2 class="text-center mb-4">
@@ -10,7 +8,6 @@
     </div>
   </div>
 
-  <!-- Card do Formulário -->
   <div class="card">
     <div class="card-header bg-light">
       <i class="bi bi-card-checklist me-2"></i>
@@ -69,14 +66,14 @@
                 'bg-warning': isEventoEmAndamento(),
                 'bg-success': isEventoFinalizado(),
                 'bg-secondary': isEventoCancelado(),
-                'bg-light text-dark': isEventoPausado()
+                'bg-light text-dark': false
               }">
                 <i class="bi me-1"></i>
                 {{ isEventoAgendado() ? 'Agendado' :
                    isEventoEmAndamento() ? 'Em Andamento' :
                    isEventoFinalizado() ? 'Finalizado' :
                    isEventoCancelado() ? 'Cancelado' :
-                   isEventoPausado() ? 'Pausado' : 'Indefinido' }}
+                   'Indefinido' }}
               </span>
             </div>
           </div>
@@ -92,11 +89,9 @@
         </div>
       </form>
 
-      <!-- Ações -->
       <div class="actions-container mt-4">
-        <!-- Modo Criação -->
         <div *ngIf="!isEditMode" class="d-flex gap-2">
-          <button class="btn btn-success" 
+          <button class="btn btn-success"
                   (click)="salvarEvento()"
                   [disabled]="!eventoForm.valid">
             <i class="bi bi-check-circle me-2"></i>Cadastrar Evento
@@ -106,7 +101,6 @@
           </button>
         </div>
 
-        <!-- Modo Edição -->
         <div *ngIf="isEditMode" class="d-flex gap-2 flex-wrap">
           <button class="btn btn-primary"
                   (click)="salvarEvento()"

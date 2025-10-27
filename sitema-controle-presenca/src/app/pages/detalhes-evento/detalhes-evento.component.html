@@ -1,6 +1,5 @@
 <div class="container mt-4">
 
-  <!-- Loading -->
   @if (isLoading) {
   <div class="text-center py-4">
     <div class="spinner-border text-primary" role="status">
@@ -10,10 +9,8 @@
   </div>
   }
 
-  <!-- Conteúdo principal -->
   @if (!isLoading && evento) {
 
-  <!-- Cabeçalho -->
   <div class="row mb-4">
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center">
@@ -28,7 +25,6 @@
     </div>
   </div>
 
-  <!-- Mensagens -->
   @if (actionMessage) {
   <div class="alert alert-info alert-dismissible fade show">
     {{ actionMessage }}
@@ -44,14 +40,12 @@
   </div>
   }
 
-  <!-- Seção: Controles de Status do Evento -->
   <div class="card mb-4">
     <div class="card-header bg-light">
       <i class="bi bi-gear me-2"></i>Controles do Evento
     </div>
     <div class="card-body">
       <div class="d-flex gap-2 flex-wrap">
-        <!-- Botão Editar Evento -->
         <button class="btn btn-outline-primary"
                 (click)="editarEvento()"
                 *ngIf="evento.status !== statusEvento.FINALIZADO && evento.status !== statusEvento.CANCELADO"
@@ -59,15 +53,13 @@
           <i class="bi bi-pencil me-1"></i> Editar
         </button>
 
-        <!-- Botão Iniciar Evento -->
         <button class="btn btn-success"
                 (click)="iniciarEvento()"
-                *ngIf="evento.status === statusEvento.AGENDADO || evento.status === statusEvento.PAUSADO"
+                *ngIf="evento.status === statusEvento.AGENDADO"
                 [disabled]="isLoadingAction">
           <i class="bi bi-play-circle me-1"></i> Iniciar Evento
         </button>
 
-        <!-- Botão Realizar Check-in Biométrico -->
         <button class="btn btn-primary"
                 (click)="realizarCheckInBiometrico()"
                 *ngIf="evento.status === statusEvento.EM_ANDAMENTO"
@@ -76,7 +68,6 @@
           {{ isCapturingBiometry ? 'Capturando...' : 'Realizar Check-in' }}
         </button>
 
-        <!-- Botão Encerrar Evento -->
         <button class="btn btn-warning"
                 (click)="encerrarEvento()"
                 *ngIf="evento.status === statusEvento.EM_ANDAMENTO"
@@ -84,7 +75,6 @@
           <i class="bi bi-flag me-1"></i> Encerrar Evento
         </button>
 
-        <!-- Botão Cancelar Evento -->
         <button class="btn btn-danger"
                 (click)="cancelarEvento()"
                 *ngIf="evento.status !== statusEvento.FINALIZADO && evento.status !== statusEvento.CANCELADO"
@@ -92,17 +82,6 @@
           <i class="bi bi-x-circle me-1"></i> Cancelar Evento
         </button>
 
-        <!-- Botão Pausar/Retomar Evento -->
-        <button class="btn btn-info"
-                (click)="evento.status === statusEvento.PAUSADO ? retomarEvento() : pausarEvento()"
-                *ngIf="evento.status === statusEvento.EM_ANDAMENTO || evento.status === statusEvento.PAUSADO"
-                [disabled]="isLoadingAction">
-          <i class="bi bi-pause-circle me-1" *ngIf="evento.status === statusEvento.EM_ANDAMENTO"></i>
-          <i class="bi bi-play-circle me-1" *ngIf="evento.status === statusEvento.PAUSADO"></i>
-          {{ evento.status === statusEvento.EM_ANDAMENTO ? 'Pausar Evento' : 'Retomar Evento' }}
-        </button>
-
-        <!-- Botão Gerar Relatório (após evento finalizado) -->
         <button class="btn btn-secondary"
                 (click)="abrirModalExportacao()"
                 *ngIf="evento.status === statusEvento.FINALIZADO"
@@ -113,7 +92,6 @@
     </div>
   </div>
 
-  <!-- Seção: Informações do Evento -->
   <div class="card mb-4">
     <div class="card-header bg-light">
       <i class="bi bi-info-circle me-2"></i>Informações do Evento
@@ -125,7 +103,7 @@
             <label class="form-label fw-bold">Título:</label>
             <p class="text-muted">{{ evento.titulo }}</p>
           </div>
-          
+
           <div class="mb-3">
             <label class="form-label fw-bold">Descrição:</label>
             <p class="text-muted">{{ evento.descricao }}</p>
@@ -136,7 +114,7 @@
             <p class="text-muted">{{ formatarDataHora(evento.dataHora) }}</p>
           </div>
         </div>
-        
+
         <div class="col-md-6">
           <div class="mb-3">
             <label class="form-label fw-bold">Categoria:</label>
@@ -161,7 +139,6 @@
     </div>
   </div>
 
-  <!-- Seção: Check-ins Realizados -->
   <div class="card">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
       <span>
@@ -169,7 +146,7 @@
       </span>
       <span class="badge bg-primary">{{ checkIns.length }}</span>
     </div>
-    
+
     <div class="card-body p-0">
       @if (checkIns.length > 0) {
       <div class="table-responsive">
@@ -193,7 +170,6 @@
         </table>
       </div>
       } @else {
-      <!-- Empty state -->
       <div class="text-center py-5">
         <i class="bi bi-person-x display-4 text-muted"></i>
         <p class="text-muted mt-3">Nenhum check-in realizado ainda</p>
@@ -205,7 +181,6 @@
 
   }
 
-  <!-- Mensagem de erro -->
   @if (!isLoading && !evento) {
   <div class="alert alert-danger text-center">
     <p>Evento não encontrado.</p>
@@ -215,7 +190,6 @@
 
 </div>
 
-<!-- Modal de Exportação -->
 <div class="modal fade" id="modalExportacaoDetalhes" tabindex="-1" aria-labelledby="modalExportacaoDetalhesLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -227,9 +201,8 @@
       </div>
       <div class="modal-body">
         <p class="text-muted">Exportar dados do evento "{{evento?.titulo}}" e seus {{checkIns.length}} check-in(s):</p>
-        
+
         <div class="row g-3">
-          <!-- Opção JSON -->
           <div class="col-md-6">
             <div class="card h-100 border-primary">
               <div class="card-body text-center">
@@ -238,7 +211,7 @@
                 <p class="card-text text-muted small">
                   Formato estruturado com dados completos do evento e participantes
                 </p>
-                <button class="btn btn-primary w-100" 
+                <button class="btn btn-primary w-100"
                         (click)="exportarJSON()"
                         [disabled]="isLoadingAction">
                   <i class="bi bi-download me-1"></i>
@@ -248,7 +221,6 @@
             </div>
           </div>
 
-          <!-- Opção PowerBI (em breve) -->
           <div class="col-md-6">
             <div class="card h-100 border-secondary">
               <div class="card-body text-center">
