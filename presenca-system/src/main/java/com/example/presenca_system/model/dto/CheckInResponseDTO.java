@@ -6,7 +6,7 @@ import java.util.Date;
 @Data
 public class CheckInResponseDTO {
     private Long id;
-    private String usuarioCpf;
+    private String usuarioMatricula;
     private String usuarioNome;
     private Date dataHoraCheckin;
     private String eventoTitulo;
@@ -15,9 +15,9 @@ public class CheckInResponseDTO {
     public CheckInResponseDTO() {
     }
 
-    public CheckInResponseDTO(Long id, String usuarioCpf, String usuarioNome, Date dataHoraCheckin, String eventoTitulo) {
+    public CheckInResponseDTO(Long id, String usuarioMatricula, String usuarioNome, Date dataHoraCheckin, String eventoTitulo) {
         this.id = id;
-        this.usuarioCpf = usuarioCpf;
+        this.usuarioMatricula = usuarioMatricula;
         this.usuarioNome = usuarioNome;
         this.dataHoraCheckin = dataHoraCheckin;
         this.eventoTitulo = eventoTitulo;

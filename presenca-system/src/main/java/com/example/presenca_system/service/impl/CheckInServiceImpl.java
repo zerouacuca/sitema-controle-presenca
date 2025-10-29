@@ -70,10 +70,9 @@ public class CheckInServiceImpl implements CheckInService {
             dto.setId(checkIn.getId());
             dto.setEventoId(checkIn.getEvento().getEventoId());
             dto.setEventoTitulo(checkIn.getEvento().getTitulo());
-            dto.setUsuarioCpf(checkIn.getUsuario().getCpf());
+            dto.setUsuarioMatricula(checkIn.getUsuario().getMatricula());
             dto.setUsuarioNome(checkIn.getUsuario().getNome());
             dto.setDataHoraCheckin(checkIn.getDataHoraCheckin());
-            //   STATUS REMOVIDO
             return dto;
         }).collect(Collectors.toList());
     }
@@ -87,7 +86,7 @@ public class CheckInServiceImpl implements CheckInService {
                 .map(checkin -> {
                     CheckInResponseDTO dto = new CheckInResponseDTO();
                     dto.setId(checkin.getId());
-                    dto.setUsuarioCpf(checkin.getUsuario().getCpf());
+                    dto.setUsuarioMatricula(checkin.getUsuario().getMatricula());
                     dto.setUsuarioNome(checkin.getUsuario().getNome());
                     dto.setDataHoraCheckin(checkin.getDataHoraCheckin());
                     dto.setEventoTitulo(checkin.getEvento().getTitulo());

@@ -10,10 +10,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioListDTO {
-    private String cpf;
     private String nome;
     private String matricula;
     private String setor;
+    private String email;
     private LocalDate dataNascimento;
 }
-

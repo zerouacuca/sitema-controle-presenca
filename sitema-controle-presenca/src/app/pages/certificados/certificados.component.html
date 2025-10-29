@@ -1,6 +1,5 @@
 <div class="container mt-4">
 
-  <!-- Cabeçalho -->
   <div class="row mb-4">
     <div class="col-12">
       <h2 class="text-center mb-4">
@@ -9,20 +8,18 @@
     </div>
   </div>
 
-  <!-- Filtros -->
   <div class="card mb-4">
     <div class="card-header bg-light">
       <i class="bi bi-list-check me-2"></i>Pesquisar Certificados
     </div>
     <div class="card-body">
       <div class="row g-3">
-        <!-- Pesquisa por CPF -->
         <div class="col-md-5">
-          <label class="form-label">Pesquisar por CPF:</label>
+          <label class="form-label">Pesquisar por Matrícula:</label>
           <div class="input-group">
             <input type="text" class="form-control"
-                   [(ngModel)]="cpfPesquisa"
-                   placeholder="Digite o CPF do usuário"
+                   [(ngModel)]="matriculaPesquisa"
+                   placeholder="Digite a matrícula do usuário"
                    (keyup.enter)="pesquisarPorUsuario()">
             <button class="btn btn-outline-primary"
                     (click)="pesquisarPorUsuario()">
@@ -31,7 +28,6 @@
           </div>
         </div>
 
-        <!-- Pesquisa por Evento -->
         <div class="col-md-5">
           <label class="form-label">Pesquisar por Evento (ID):</label>
           <div class="input-group">
@@ -56,7 +52,6 @@
     </div>
   </div>
 
-  <!-- Mensagens -->
   @if (mensagem) {
   <div class="alert alert-success alert-dismissible fade show">
     {{ mensagem }}
@@ -71,7 +66,6 @@
   </div>
   }
 
-  <!-- Loading -->
   @if (carregando) {
   <div class="text-center my-4">
     <div class="spinner-border text-primary" role="status">
@@ -81,7 +75,6 @@
   </div>
   }
 
-  <!-- Lista de Certificados -->
   @if (!carregando) {
   <div class="card">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -93,7 +86,6 @@
         }
       </span>
 
-      <!-- Ações em Lote -->
       @if (algumSelecionado()) {
       <div class="btn-group">
         <button class="btn btn-success btn-sm"
@@ -107,7 +99,6 @@
       </div>
       }
 
-      <!-- Download todos do evento -->
       @if (filtroAtivo === 'evento' && eventoIdPesquisa) {
       <button class="btn btn-primary btn-sm"
               (click)="baixarTodosEvento()">
@@ -128,7 +119,7 @@
                        (change)="toggleSelecionarTodos($event)">
               </th>
               <th>Nome do Participante</th>
-              <th>CPF</th>
+              <th>Matrícula</th>
               <th>Evento</th>
               <th>Carga Horária</th>
               <th>Data Emissão</th>
@@ -145,7 +136,7 @@
                        (change)="toggleSelecionar(certificado)">
               </td>
               <td>{{ certificado.nomeUsuario }}</td>
-              <td>{{ certificado.cpfUsuario }}</td>
+              <td>{{ certificado.matriculaUsuario }}</td>
               <td>{{ certificado.eventoTitulo }}</td>
               <td>{{ certificado.eventoCargaHoraria }}h</td>
               <td>{{ formatarData(certificado.dataEmissao) }}</td>
@@ -165,7 +156,6 @@
         </table>
       </div>
       } @else {
-      <!-- Empty state -->
       <div class="text-center py-5">
         <i class="bi bi-inbox display-4 text-muted"></i>
         <p class="text-muted mt-3">Nenhum certificado encontrado</p>

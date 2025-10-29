@@ -1,4 +1,3 @@
-// src/app/servicos/checkin-service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of } from 'rxjs';
@@ -22,10 +21,6 @@ export class CheckInService {
         })
     );
     }
-
-  getCheckInsPorUsuario(cpf: string): Observable<CheckIn[]> {
-    return this.http.get<CheckIn[]>(`${this.apiUrl}/usuario/${cpf}`);
-  }
 
   registrarCheckIn(checkIn: CheckIn): Observable<CheckIn> {
     return this.http.post<CheckIn>(this.apiUrl, checkIn);

@@ -14,56 +14,53 @@ import java.util.Optional;
 public interface CertificadoRepository extends JpaRepository<Certificado, Long> {
 
     List<Certificado> findByEventoEventoId(Long eventoId);
-    Optional<Certificado> findByUsuarioCpfAndEventoEventoId(String usuarioCpf, Long eventoId);
-    List<Certificado> findByUsuarioCpf(String cpf);
-    
-    // Métodos para validação por superusuário
+    Optional<Certificado> findByUsuarioMatriculaAndEventoEventoId(String usuarioMatricula, Long eventoId);
+    List<Certificado> findByUsuarioMatricula(String matricula);
+
     @Query("SELECT c FROM Certificado c WHERE c.superusuario.email = :emailSuperusuario")
     List<Certificado> findBySuperusuarioEmail(@Param("emailSuperusuario") String emailSuperusuario);
 
     @Query("SELECT c FROM Certificado c WHERE c.id = :id AND c.superusuario.email = :emailSuperusuario")
-    Optional<Certificado> findByIdAndSuperusuarioEmail(@Param("id") Long id, 
+    Optional<Certificado> findByIdAndSuperusuarioEmail(@Param("id") Long id,
                                                       @Param("emailSuperusuario") String emailSuperusuario);
 
     @Query("SELECT c FROM Certificado c WHERE c.evento.eventoId = :eventoId AND c.superusuario.email = :emailSuperusuario")
-    List<Certificado> findByEventoAndSuperusuarioEmail(@Param("eventoId") Long eventoId, 
+    List<Certificado> findByEventoAndSuperusuarioEmail(@Param("eventoId") Long eventoId,
                                                       @Param("emailSuperusuario") String emailSuperusuario);
 
-    //   CONSULTAS DTO (usando construtor do DTO)
     @Query("SELECT new com.example.presenca_system.model.dto.CertificadoDTO(" +
-           "c.id, c.usuario.nome, c.usuario.cpf, c.superusuario.nome, " +
+           "c.id, c.usuario.nome, c.usuario.matricula, c.superusuario.nome, " +
            "c.codigoValidacao, c.dataEmissao, c.texto, " +
            "c.evento.eventoId, c.evento.titulo, c.evento.cargaHoraria) " +
            "FROM Certificado c")
     List<CertificadoDTO> findAllDTO();
-    
+
     @Query("SELECT new com.example.presenca_system.model.dto.CertificadoDTO(" +
-           "c.id, c.usuario.nome, c.usuario.cpf, c.superusuario.nome, " +
+           "c.id, c.usuario.nome, c.usuario.matricula, c.superusuario.nome, " +
            "c.codigoValidacao, c.dataEmissao, c.texto, " +
            "c.evento.eventoId, c.evento.titulo, c.evento.cargaHoraria) " +
-           "FROM Certificado c WHERE c.usuario.cpf = :cpf")
-    List<CertificadoDTO> findByUsuarioCpfDTO(@Param("cpf") String cpf);
-    
+           "FROM Certificado c WHERE c.usuario.matricula = :matricula")
+    List<CertificadoDTO> findByUsuarioMatriculaDTO(@Param("matricula") String matricula);
+
     @Query("SELECT new com.example.presenca_system.model.dto.CertificadoDTO(" +
-           "c.id, c.usuario.nome, c.usuario.cpf, c.superusuario.nome, " +
+           "c.id, c.usuario.nome, c.usuario.matricula, c.superusuario.nome, " +
            "c.codigoValidacao, c.dataEmissao, c.texto, " +
            "c.evento.eventoId, c.evento.titulo, c.evento.cargaHoraria) " +
            "FROM Certificado c WHERE c.evento.eventoId = :eventoId")
     List<CertificadoDTO> findByEventoEventoIdDTO(@Param("eventoId") Long eventoId);
 
-    //   CONSULTAS DTO PARA SUPERUSUÁRIO
     @Query("SELECT new com.example.presenca_system.model.dto.CertificadoDTO(" +
-           "c.id, c.usuario.nome, c.usuario.cpf, c.superusuario.nome, " +
+           "c.id, c.usuario.nome, c.usuario.matricula, c.superusuario.nome, " +
            "c.codigoValidacao, c.dataEmissao, c.texto, " +
            "c.evento.eventoId, c.evento.titulo, c.evento.cargaHoraria) " +
            "FROM Certificado c WHERE c.superusuario.email = :emailSuperusuario")
     List<CertificadoDTO> findBySuperusuarioEmailDTO(@Param("emailSuperusuario") String emailSuperusuario);
 
     @Query("SELECT new com.example.presenca_system.model.dto.CertificadoDTO(" +
-           "c.id, c.usuario.nome, c.usuario.cpf, c.superusuario.nome, " +
+           "c.id, c.usuario.nome, c.usuario.matricula, c.superusuario.nome, " +
            "c.codigoValidacao, c.dataEmissao, c.texto, " +
            "c.evento.eventoId, c.evento.titulo, c.evento.cargaHoraria) " +
            "FROM Certificado c WHERE c.evento.eventoId = :eventoId AND c.superusuario.email = :emailSuperusuario")
-    List<CertificadoDTO> findByEventoAndSuperusuarioEmailDTO(@Param("eventoId") Long eventoId, 
+    List<CertificadoDTO> findByEventoAndSuperusuarioEmailDTO(@Param("eventoId") Long eventoId,
                                                             @Param("emailSuperusuario") String emailSuperusuario);
 }

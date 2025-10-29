@@ -1,6 +1,5 @@
 <div class="container mt-4">
 
-  <!-- Cabeçalho -->
   <div class="row mb-4">
     <div class="col-12">
       <h2 class="text-center mb-4">
@@ -9,14 +8,12 @@
     </div>
   </div>
 
-  <!-- Filtros -->
   <div class="card mb-4">
     <div class="card-header bg-light">
       <i class="bi bi-search me-2"></i>Pesquisar Usuários
     </div>
     <div class="card-body">
       <div class="row g-3">
-        <!-- Pesquisa por Nome -->
         <div class="col-md-3">
           <label class="form-label">Nome:</label>
           <input type="text" class="form-control"
@@ -25,7 +22,6 @@
                  (input)="aplicarFiltros()">
         </div>
 
-        <!-- Pesquisa por Matrícula -->
         <div class="col-md-2">
           <label class="form-label">Matrícula:</label>
           <input type="text" class="form-control"
@@ -34,17 +30,16 @@
                  (input)="aplicarFiltros()">
         </div>
 
-        <!-- Pesquisa por CPF -->
-        <div class="col-md-2">
-          <label class="form-label">CPF:</label>
-          <input type="text" class="form-control"
-                 [(ngModel)]="cpfPesquisa"
-                 placeholder="Filtrar por CPF"
-                 (input)="aplicarFiltros()">
-        </div>
+         <div class="col-md-3">
+           <label class="form-label">E-mail:</label>
+           <input type="email" class="form-control"
+                  [(ngModel)]="emailPesquisa"
+                  placeholder="Filtrar por e-mail"
+                  (input)="aplicarFiltros()">
+         </div>
 
-        <!-- Pesquisa por Setor -->
-        <div class="col-md-3">
+
+        <div class="col-md-2">
           <label class="form-label">Setor:</label>
           <input type="text" class="form-control"
                  [(ngModel)]="setorPesquisa"
@@ -62,7 +57,6 @@
     </div>
   </div>
 
-  <!-- Mensagens -->
   @if (mensagem) {
   <div class="alert alert-success alert-dismissible fade show">
     {{ mensagem }}
@@ -77,7 +71,6 @@
   </div>
   }
 
-  <!-- Loading -->
   @if (isLoading) {
   <div class="text-center my-4">
     <div class="spinner-border text-primary" role="status">
@@ -87,7 +80,6 @@
   </div>
   }
 
-  <!-- Lista de Usuários -->
   @if (!isLoading) {
   <div class="card">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -111,19 +103,19 @@
           <thead class="table-dark">
             <tr>
               <th class="text-dark">Matrícula</th>
-              <th class="text-dark">Setor</th>
               <th class="text-dark">Nome do Usuário</th>
-              <th class="text-dark">CPF</th>
+              <th class="text-dark">E-mail</th>
+              <th class="text-dark">Setor</th>
               <th class="text-dark" width="180px">Ações</th>
             </tr>
           </thead>
           <tbody>
-            @for (usuario of usuariosFiltrados; track usuario.cpf) {
+            @for (usuario of usuariosFiltrados; track usuario.matricula) {
             <tr>
               <td>{{ usuario.matricula }}</td>
-              <td>{{ usuario.setor }}</td>
               <td>{{ usuario.nome }}</td>
-              <td>{{ usuario.cpf }}</td>
+              <td>{{ usuario.email }}</td>
+              <td>{{ usuario.setor }}</td>
               <td>
                 <div class="btn-group" role="group">
                   <button class="btn btn-outline-info btn-sm"
@@ -149,7 +141,6 @@
         </table>
       </div>
       } @else {
-      <!-- Empty state -->
       <div class="text-center py-5">
         <i class="bi bi-person-x display-4 text-muted"></i>
         <p class="text-muted mt-3">Nenhum usuário encontrado</p>

@@ -17,17 +17,14 @@ public class Certificado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relacionamento com o Usuário
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_cpf", nullable = false)
+    @JoinColumn(name = "usuario_matricula", referencedColumnName = "matricula", nullable = false)
     private Usuario usuario;
 
-    // Relacionamento com o Evento
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "evento_id", nullable = false)
     private Evento evento;
 
-    // Relacionamento com o Superusuario
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "superusuario_cpf", nullable = false)
     private Superusuario superusuario;
@@ -41,14 +38,14 @@ public class Certificado {
     @Column(name = "texto_certificado", columnDefinition = "TEXT")
     private String texto;
 
-    //   MÉTODOS CONVENIENCIA - NÃO SÃO GETTERS/SETTERS, SÃO MÉTODOS DE CONSULTA
     public String getNomeUsuario() {
         return this.usuario != null ? this.usuario.getNome() : "";
     }
 
-    public String getCpfUsuario() {
-        return this.usuario != null ? this.usuario.getCpf() : "";
+    public String getMatriculaUsuario() {
+        return this.usuario != null ? this.usuario.getMatricula() : "";
     }
+
 
     public String getNomeSuperusuario() {
         return this.superusuario != null ? this.superusuario.getNome() : "";

@@ -1,10 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgxMaskDirective } from 'ngx-mask';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { CpfValidatorService } from '../../servicos/cpf-validator';
 import { UsuarioService } from '../../servicos/usuario-service';
 import { BiometricService } from '../../servicos/biometric-service';
 import { Usuario } from '../../models/usuario.model';
@@ -14,18 +12,17 @@ import { Usuario } from '../../models/usuario.model';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    NgxMaskDirective
+    FormsModule
   ],
   templateUrl: './usuario-crud.html',
   styleUrls: ['./usuario-crud.css']
 })
 export class UsuarioCrud implements OnInit {
   usuario: Usuario = {
-    cpf: '',
     nome: '',
     matricula: '',
     setor: '',
+    email: '',
     template: '',
     dataNascimento: ''
   };
@@ -36,10 +33,9 @@ export class UsuarioCrud implements OnInit {
   mensagem: string = '';
   erro: string = '';
   biometryError: string = '';
-  cpfInvalido: boolean = false;
+  matriculaInvalida: boolean = false;
 
   constructor(
-    private cpfValidator: CpfValidatorService,
     private usuarioService: UsuarioService,
     private biometricService: BiometricService,
     private route: ActivatedRoute,
@@ -48,23 +44,23 @@ export class UsuarioCrud implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const cpf = this.route.snapshot.paramMap.get('cpf');
+    const matricula = this.route.snapshot.paramMap.get('matricula');
 
-    if (cpf) {
+    if (matricula) {
       this.isEditMode = true;
-      this.carregarUsuario(cpf);
+      this.carregarUsuario(matricula);
     }
   }
 
-  carregarUsuario(cpf: string): void {
+  carregarUsuario(matricula: string): void {
     this.isLoading = true;
-    this.usuarioService.buscarPorCpf(cpf).subscribe({
+    this.usuarioService.buscarPorMatricula(matricula).subscribe({
       next: (data) => {
         this.usuario = {
-          cpf: data.cpf,
           nome: data.nome,
           matricula: data.matricula,
           setor: data.setor || '',
+          email: data.email || '',
           template: data.template || '',
           dataNascimento: data.dataNascimento
         };
@@ -91,7 +87,7 @@ export class UsuarioCrud implements OnInit {
     this.erro = '';
 
     if (this.isEditMode) {
-      this.usuarioService.atualizarUsuario(this.usuario.cpf, this.usuario).subscribe({
+      this.usuarioService.atualizarUsuario(this.usuario.matricula, this.usuario).subscribe({
         next: () => {
           this.mensagem = 'Usuário atualizado com sucesso!';
           this.isLoading = false;
@@ -100,7 +96,7 @@ export class UsuarioCrud implements OnInit {
         },
         error: (err) => {
           console.error('Erro ao atualizar usuário:', err);
-          this.erro = 'Erro ao atualizar usuário.';
+          this.erro = this.formatarMensagemErro(err, 'Erro ao atualizar usuário.');
           this.isLoading = false;
           this.cd.detectChanges();
         }
@@ -115,14 +111,8 @@ export class UsuarioCrud implements OnInit {
         },
         error: (err) => {
           console.error('Erro ao cadastrar usuário:', err);
-          
-          if (err.status === 409) {
-            this.erro = 'CPF já cadastrado no sistema.';
-            this.cpfInvalido = true;
-          } else {
-            this.erro = 'Erro ao cadastrar usuário.';
-          }
-          
+          this.erro = this.formatarMensagemErro(err, 'Erro ao cadastrar usuário.');
+          this.matriculaInvalida = err.status === 409;
           this.isLoading = false;
           this.cd.detectChanges();
         }
@@ -131,9 +121,9 @@ export class UsuarioCrud implements OnInit {
   }
 
   remover(): void {
-    if (this.usuario.cpf && confirm('Tem certeza que deseja remover este usuário?')) {
+    if (this.usuario.matricula && confirm('Tem certeza que deseja remover este usuário?')) {
       this.isLoading = true;
-      this.usuarioService.deletarUsuario(this.usuario.cpf).subscribe({
+      this.usuarioService.deletarUsuario(this.usuario.matricula).subscribe({
         next: () => {
           this.mensagem = 'Usuário removido com sucesso!';
           this.isLoading = false;
@@ -142,7 +132,7 @@ export class UsuarioCrud implements OnInit {
         },
         error: (err) => {
           console.error('Erro ao remover usuário:', err);
-          this.erro = 'Erro ao remover usuário.';
+          this.erro = this.formatarMensagemErro(err, 'Erro ao remover usuário.');
           this.isLoading = false;
           this.cd.detectChanges();
         }
@@ -162,6 +152,7 @@ export class UsuarioCrud implements OnInit {
         if (response.success) {
           this.usuario.template = response.template;
           this.mensagem = 'Biometria capturada com sucesso!';
+          this.erro = '';
           this.cd.detectChanges();
         } else {
           this.biometryError = response.message || 'Falha na captura da biometria';
@@ -178,23 +169,40 @@ export class UsuarioCrud implements OnInit {
   }
 
   private validarFormulario(): boolean {
-    // Validação do CPF
-    if (!this.cpfValidator.validarCPF(this.usuario.cpf)) {
-      this.erro = 'CPF inválido!';
-      this.cpfInvalido = true;
-      this.cd.detectChanges();
-      return false;
+    this.erro = '';
+    this.matriculaInvalida = false;
+
+    if (!this.usuario.matricula || !this.usuario.nome || !this.usuario.email || !this.usuario.dataNascimento) {
+       this.erro = 'Preencha todos os campos obrigatórios (*)';
+       this.cd.detectChanges();
+       return false;
     }
 
-    // Valida se a biometria foi cadastrada (apenas para criação)
+     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+     if (!emailRegex.test(this.usuario.email)) {
+       this.erro = 'Formato de e-mail inválido.';
+       this.cd.detectChanges();
+       return false;
+     }
+
     if (!this.isEditMode && !this.usuario.template) {
       this.erro = 'É necessário capturar a biometria antes de salvar!';
       this.cd.detectChanges();
       return false;
     }
 
-    this.cpfInvalido = false;
     return true;
+  }
+
+   private formatarMensagemErro(err: any, mensagemPadrao: string): string {
+    if (err.error && typeof err.error === 'string') {
+      return err.error;
+    } else if (err.error && err.error.message) {
+      return err.error.message;
+    } else if (err.status === 409) {
+      return 'Matrícula ou E-mail já cadastrado.';
+    }
+    return mensagemPadrao;
   }
 
   private getErrorMessage(error: any): string {

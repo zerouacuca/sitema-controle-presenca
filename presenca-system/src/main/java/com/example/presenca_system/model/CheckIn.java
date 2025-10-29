@@ -22,7 +22,7 @@ public class CheckIn {
     private Evento evento;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_cpf", nullable = false)
+    @JoinColumn(name = "usuario_matricula", referencedColumnName = "matricula", nullable = false)
     private Usuario usuario;
 
     @Column(name = "data_hora_checkin", nullable = false)

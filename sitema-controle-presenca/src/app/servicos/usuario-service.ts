@@ -26,32 +26,26 @@ export class UsuarioService {
     return bytes;
   }
 
-  // CREATE: Cadastrar um novo usuário
   cadastrarUsuario(usuario: Usuario): Observable<Usuario> {
     return this.http.post<Usuario>(this.backendApiUrl, usuario);
   }
 
-  // READ: Buscar todos os usuários
   buscarTodosUsuarios(): Observable<UsuarioListDTO[]> {
     return this.http.get<UsuarioListDTO[]>(this.backendApiUrl);
   }
 
-  // READ: Buscar um usuário por CPF
-  buscarPorCpf(cpf: string): Observable<Usuario> {
-    return this.http.get<Usuario>(`${this.backendApiUrl}/${cpf}`);
+  buscarPorMatricula(matricula: string): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.backendApiUrl}/${matricula}`);
   }
 
-  // UPDATE: Atualizar um usuário existente
-  atualizarUsuario(cpf: string, usuario: Usuario): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.backendApiUrl}/${cpf}`, usuario);
+  atualizarUsuario(matricula: string, usuario: Usuario): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.backendApiUrl}/${matricula}`, usuario);
   }
 
-  // DELETE: Deletar um usuário por CPF
-  deletarUsuario(cpf: string): Observable<void> {
-    return this.http.delete<void>(`${this.backendApiUrl}/${cpf}`);
+  deletarUsuario(matricula: string): Observable<void> {
+    return this.http.delete<void>(`${this.backendApiUrl}/${matricula}`);
   }
 
-  // Validação de biometria
   validarBiometria(template: Uint8Array): Observable<Usuario> {
     return this.http.post<Usuario>(`${this.backendApiUrl}/validar-biometria`, template);
   }

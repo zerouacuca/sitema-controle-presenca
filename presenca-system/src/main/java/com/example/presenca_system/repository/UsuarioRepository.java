@@ -11,14 +11,11 @@ import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, String> {
-    
+
     Optional<Usuario> findByTemplate(byte[] templateBiometrico);
 
     @Query("SELECT u FROM Usuario u WHERE u.email = :email")
     Optional<Usuario> findByEmail(@Param("email") String email);
-
-    @Query("SELECT u FROM Usuario u WHERE u.matricula = :matricula")
-    Optional<Usuario> findByMatricula(@Param("matricula") String matricula);
 
     @Query("SELECT COUNT(u) > 0 FROM Usuario u WHERE u.email = :email")
     boolean existsByEmail(@Param("email") String email);
@@ -26,10 +23,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String> {
     @Query("SELECT COUNT(u) > 0 FROM Usuario u WHERE u.matricula = :matricula")
     boolean existsByMatricula(@Param("matricula") String matricula);
 
-    // Método para buscar usuários com check-ins em eventos de um superusuário específico
     @Query("SELECT DISTINCT ci.usuario FROM CheckIn ci WHERE ci.evento.superusuario.email = :emailSuperusuario")
     List<Usuario> findUsuariosComCheckInPorSuperusuario(@Param("emailSuperusuario") String emailSuperusuario);
 
-    // Método para buscar usuários por setor
     List<Usuario> findBySetor(String setor);
 }

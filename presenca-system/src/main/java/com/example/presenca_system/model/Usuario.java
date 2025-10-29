@@ -10,24 +10,28 @@ import java.util.List;
 @Data
 @Table(name = "usuarios")
 public class Usuario {
-    
+
     @Id
-    private String cpf;
-    
+    @Column(unique = true, nullable = false)
+    private String matricula;
+
     @Column(nullable = false)
     private String nome;
-    
+
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
 
     @Column(nullable = false, unique = true)
     private String email;
-    private String matricula;
+
     private String setor;
-    
+
     @Column(nullable = false)
     private byte[] template;
-    
+
     @OneToMany(mappedBy = "usuario")
     private List<CheckIn> checkIns;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Certificado> certificados;
 }

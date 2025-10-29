@@ -204,11 +204,6 @@ export class DetalhesEventoComponent implements OnInit {
     return isNaN(date.getTime()) ? 'Data inválida' : date.toLocaleString('pt-BR');
   }
 
-  formatarCPF(cpf: string): string {
-    if (!cpf) return '';
-    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-  }
-
   getStatusDescricao(status: StatusEvento | undefined): string {
     if (!status) return 'Não definido';
     switch (status) {
@@ -265,7 +260,6 @@ export class DetalhesEventoComponent implements OnInit {
       },
       checkIns: this.checkIns.map(checkIn => ({
         ...checkIn,
-        cpfFormatado: this.formatarCPF(checkIn.usuarioCpf),
         dataHoraFormatada: this.formatarDataHora(checkIn.dataHoraCheckin)
       })),
       resumo: {

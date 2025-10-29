@@ -154,7 +154,7 @@
           <thead class="table-dark">
             <tr>
               <th>Nome</th>
-              <th>CPF</th>
+              <th>Matrícula</th>
               <th>Data/Hora</th>
             </tr>
           </thead>
@@ -162,7 +162,7 @@
             @for (checkIn of checkIns; track checkIn.id) {
             <tr>
               <td>{{ checkIn.usuarioNome }}</td>
-              <td>{{ formatarCPF(checkIn.usuarioCpf) }}</td>
+              <td>{{ checkIn.usuarioMatricula }}</td>
               <td>{{ formatarDataHora(checkIn.dataHoraCheckin) }}</td>
             </tr>
             }

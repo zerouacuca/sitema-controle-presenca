@@ -1,8 +1,7 @@
-// src/app/models/certificado.model.ts
 export interface Certificado {
   id: number;
   nomeUsuario: string;
-  cpfUsuario: string;
+  matriculaUsuario: string;
   nomeSuperusuario: string;
   codigoValidacao: string;
   dataEmissao: string;

@@ -32,18 +32,18 @@ public class CertificadoController {
     public ResponseEntity<byte[]> getCertificadoPDF(@PathVariable Long id, Authentication authentication) {
         String emailSuperusuario = authentication.getName();
         Optional<Certificado> certificadoOptional = certificadoService.findByIdAndSuperusuarioEmail(id, emailSuperusuario);
-        
+
         if (certificadoOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        
+
         Certificado certificado = certificadoOptional.get();
-        
+
         try {
             byte[] pdfBytes = certificadoService.gerarCertificadoPDF(certificado);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            String filename = "certificado_" + certificado.getCpfUsuario() + ".pdf";
+            String filename = "certificado_" + certificado.getMatriculaUsuario() + ".pdf"; // Changed getCpfUsuario to getMatriculaUsuario
             headers.setContentDispositionFormData(filename, filename);
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
         } catch (IOException | DocumentException e) {
@@ -75,7 +75,7 @@ public class CertificadoController {
             @SuppressWarnings("unchecked")
             List<Long> certificadoIds = (List<Long>) request.get("certificadoIds");
             String emailDestinatario = (String) request.get("email");
-            
+
             if (certificadoIds == null || certificadoIds.isEmpty() || emailDestinatario == null) {
                 return ResponseEntity.badRequest().body("Dados inválidos");
             }
@@ -92,25 +92,24 @@ public class CertificadoController {
         }
     }
 
-    //  métodos públicos (sem autenticação) para acesso externo
-    @GetMapping("/public/por-cpf/evento/{eventoId}/usuario/{cpf}")
-    public ResponseEntity<byte[]> getCertificadoPDFPorCpf(
-        @PathVariable String cpf,
+    @GetMapping("/public/por-matricula/evento/{eventoId}/usuario/{matricula}")
+    public ResponseEntity<byte[]> getCertificadoPDFPorMatricula(
+        @PathVariable String matricula,
         @PathVariable Long eventoId) {
 
-        Optional<Certificado> certificadoOptional = certificadoService.findByUsuarioCpfAndEventoEventoId(cpf, eventoId);
-        
+        Optional<Certificado> certificadoOptional = certificadoService.findByUsuarioMatriculaAndEventoEventoId(matricula, eventoId);
+
         if (certificadoOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        
+
         Certificado certificado = certificadoOptional.get();
-        
+
         try {
             byte[] pdfBytes = certificadoService.gerarCertificadoPDF(certificado);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            String filename = "certificado_" + cpf + ".pdf";
+            String filename = "certificado_" + matricula + ".pdf";
             headers.setContentDispositionFormData(filename, filename);
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
         } catch (IOException | DocumentException e) {

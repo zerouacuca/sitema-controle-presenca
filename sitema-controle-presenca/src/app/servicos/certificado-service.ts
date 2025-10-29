@@ -16,9 +16,10 @@ export class CertificadoService {
     return this.http.get<Certificado[]>(`${this.backendApiUrl}/meus-certificados`);
   }
 
-  getCertificadosPorUsuario(cpf: string): Observable<Certificado[]> {
-    return this.http.get<Certificado[]>(`${this.backendApiUrl}/usuario/${cpf}`);
+  getCertificadosPorMatricula(matricula: string): Observable<Certificado[]> {
+    return this.http.get<Certificado[]>(`${this.backendApiUrl}/usuario/${matricula}`);
   }
+
 
   getCertificadosPorEvento(eventoId: number): Observable<Certificado[]> {
     return this.http.get<Certificado[]>(`${this.backendApiUrl}/evento/${eventoId}`);

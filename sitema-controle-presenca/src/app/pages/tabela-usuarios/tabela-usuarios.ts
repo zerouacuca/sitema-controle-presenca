@@ -20,12 +20,12 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
   usuarios: UsuarioListDTO[] = [];
   usuariosFiltrados: UsuarioListDTO[] = [];
   isLoading: boolean = true;
-  
+
   nomePesquisa: string = '';
   matriculaPesquisa: string = '';
-  cpfPesquisa: string = '';
+  emailPesquisa: string = '';
   setorPesquisa: string = '';
-  
+
   mensagem: string = '';
   erro: string = '';
   filtroAtivo: boolean = false;
@@ -56,7 +56,6 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
     }
   }
 
-  // === CARREGAMENTO DE DADOS ===
   carregarUsuarios(): void {
     this.isLoading = true;
     this.usuarioService.buscarTodosUsuarios().subscribe({
@@ -76,7 +75,6 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
     });
   }
 
-  // === FILTROS DINÂMICOS ===
   aplicarFiltros(): void {
     let usuariosFiltrados = [...this.usuarios];
 
@@ -94,46 +92,33 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
       );
     }
 
-    if (this.cpfPesquisa.trim()) {
-      const termo = this.cpfPesquisa.trim();
-      usuariosFiltrados = usuariosFiltrados.filter(usuario =>
-        usuario.cpf.includes(termo)
-      );
-    }
+    if (this.emailPesquisa.trim()) {
+       const termo = this.emailPesquisa.toLowerCase().trim();
+       usuariosFiltrados = usuariosFiltrados.filter(usuario =>
+         usuario.email.toLowerCase().includes(termo)
+       );
+     }
+
 
     if (this.setorPesquisa.trim()) {
       const termo = this.setorPesquisa.toLowerCase().trim();
       usuariosFiltrados = usuariosFiltrados.filter(usuario =>
-        usuario.setor.toLowerCase().includes(termo)
+        usuario.setor && usuario.setor.toLowerCase().includes(termo)
       );
     }
 
+
     this.usuariosFiltrados = usuariosFiltrados;
-    
-    this.filtroAtivo = !!(this.nomePesquisa.trim() || this.matriculaPesquisa.trim() || 
-                          this.cpfPesquisa.trim() || this.setorPesquisa.trim());
+
+    this.filtroAtivo = !!(this.nomePesquisa.trim() || this.matriculaPesquisa.trim() ||
+                          this.emailPesquisa.trim() || this.setorPesquisa.trim());
   }
 
-  pesquisarPorNome(): void {
-    this.aplicarFiltros();
-    if (this.nomePesquisa.trim()) {
-      this.mensagem = `Pesquisa por nome: ${this.usuariosFiltrados.length} usuário(s) encontrado(s).`;
-      setTimeout(() => this.mensagem = '', 3000);
-    }
-  }
-
-  pesquisarPorMatricula(): void {
-    this.aplicarFiltros();
-    if (this.matriculaPesquisa.trim()) {
-      this.mensagem = `Pesquisa por matrícula: ${this.usuariosFiltrados.length} usuário(s) encontrado(s).`;
-      setTimeout(() => this.mensagem = '', 3000);
-    }
-  }
 
   limparFiltros(): void {
     this.nomePesquisa = '';
     this.matriculaPesquisa = '';
-    this.cpfPesquisa = '';
+    this.emailPesquisa = '';
     this.setorPesquisa = '';
     this.usuariosFiltrados = [...this.usuarios];
     this.filtroAtivo = false;
@@ -141,24 +126,23 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
     setTimeout(() => this.mensagem = '', 3000);
   }
 
-  // === AÇÕES INDIVIDUAIS ===
   visualizarUsuario(usuario: UsuarioListDTO): void {
     console.log('Visualizar:', usuario);
-    this.navegarParaRota('/detalhes-usuario', usuario.cpf);
+    this.navegarParaRota('/detalhes-usuario', usuario.matricula);
   }
 
   editarUsuario(usuario: UsuarioListDTO): void {
     console.log('Editando usuário:', usuario);
-    this.navegarParaRota('/editar-usuario', usuario.cpf);
+    this.navegarParaRota('/editar-usuario', usuario.matricula);
   }
 
   removerUsuario(usuario: UsuarioListDTO): void {
     if (confirm(`Tem certeza que deseja remover o usuário "${usuario.nome}" (${usuario.matricula})? Esta ação não pode ser desfeita.`)) {
       this.isLoading = true;
-      
-      this.usuarioService.deletarUsuario(usuario.cpf).subscribe({
+
+      this.usuarioService.deletarUsuario(usuario.matricula).subscribe({
         next: () => {
-          this.usuarios = this.usuarios.filter(u => u.cpf !== usuario.cpf);
+          this.usuarios = this.usuarios.filter(u => u.matricula !== usuario.matricula);
           this.usuariosFiltrados = [...this.usuarios];
           this.mensagem = `Usuário "${usuario.nome}" removido com sucesso.`;
           this.isLoading = false;
@@ -180,7 +164,6 @@ export class TabelaUsuarios implements OnInit, OnDestroy {
     this.navegarParaRota('/cadastrar-usuario');
   }
 
-  // === NAVEGAÇÃO E UTILITÁRIOS ===
   private navegarParaRota(rota: string, parametro?: string): void {
     try {
       if (parametro) {

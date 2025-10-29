@@ -3,6 +3,7 @@ package com.example.presenca_system.service.impl;
 import com.example.presenca_system.model.CheckIn;
 import com.example.presenca_system.model.Certificado;
 import com.example.presenca_system.model.Usuario;
+import com.example.presenca_system.model.dto.UsuarioDTO;
 import com.example.presenca_system.model.dto.UsuarioListDTO;
 import com.example.presenca_system.model.dto.UsuarioTemplateDTO;
 import com.example.presenca_system.repository.CertificadoRepository;
@@ -10,11 +11,11 @@ import com.example.presenca_system.repository.CheckInRepository;
 import com.example.presenca_system.repository.UsuarioRepository;
 import com.example.presenca_system.service.UsuarioService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,7 +27,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final CheckInRepository checkInRepository;
     private final CertificadoRepository certificadoRepository;
 
-    @Autowired
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository,
                               CheckInRepository checkInRepository,
                               CertificadoRepository certificadoRepository) {
@@ -36,14 +36,67 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional
+    public Usuario cadastrarNovoUsuario(UsuarioDTO usuarioDto) {
+        if (usuarioRepository.existsById(usuarioDto.getMatricula())) {
+            throw new RuntimeException("Matrícula já cadastrada no sistema.");
+        }
+        if (usuarioRepository.existsByEmail(usuarioDto.getEmail())) {
+            throw new RuntimeException("Email já cadastrado no sistema.");
+        }
+
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setMatricula(usuarioDto.getMatricula());
+        novoUsuario.setNome(usuarioDto.getNome());
+        novoUsuario.setEmail(usuarioDto.getEmail());
+        novoUsuario.setSetor(usuarioDto.getSetor());
+        novoUsuario.setDataNascimento(usuarioDto.getDataNascimento() != null ?
+                usuarioDto.getDataNascimento().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate() : null);
+
+        try {
+            byte[] biometriaBytes = Base64.getDecoder().decode(usuarioDto.getTemplate());
+            novoUsuario.setTemplate(biometriaBytes);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Template biométrico inválido.", e);
+        }
+
+        return usuarioRepository.save(novoUsuario);
+    }
+
+    @Override
+    @Transactional
+    public Usuario atualizarUsuarioExistente(String matricula, UsuarioDTO usuarioDto) {
+        Usuario usuarioExistente = usuarioRepository.findById(matricula)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com a matrícula: " + matricula));
+
+        usuarioExistente.setNome(usuarioDto.getNome());
+        usuarioExistente.setEmail(usuarioDto.getEmail());
+        usuarioExistente.setSetor(usuarioDto.getSetor());
+        usuarioExistente.setDataNascimento(usuarioDto.getDataNascimento() != null ?
+                usuarioDto.getDataNascimento().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate() : null);
+
+        if (usuarioDto.getTemplate() != null && !usuarioDto.getTemplate().isEmpty()) {
+            try {
+                byte[] biometriaBytes = Base64.getDecoder().decode(usuarioDto.getTemplate());
+                usuarioExistente.setTemplate(biometriaBytes);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Template biométrico inválido.", e);
+            }
+        }
+        
+        return usuarioRepository.save(usuarioExistente);
+    }
+
+    @Override
+    @Transactional
     public Usuario salvarUsuario(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Usuario> buscarPorCpf(String cpf) {
-        return usuarioRepository.findById(cpf);
+    public Optional<Usuario> buscarPorMatricula(String matricula) {
+        return usuarioRepository.findById(matricula);
     }
 
     @Override
@@ -54,28 +107,21 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public void deletarUsuario(String cpf) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findById(cpf);
-        if (usuarioOpt.isPresent()) {
-            Usuario usuario = usuarioOpt.get();
+    public void deletarUsuario(String matricula) {
+        Usuario usuario = usuarioRepository.findById(matricula)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com a matrícula: " + matricula));
 
-            List<CheckIn> checkIns = usuario.getCheckIns();
-            if (checkIns != null && !checkIns.isEmpty()) {
-                 checkInRepository.deleteAll(checkIns);
-
-            }
-
-            List<Certificado> certificados = certificadoRepository.findByUsuarioCpf(cpf);
-            if (!certificados.isEmpty()) {
-                certificadoRepository.deleteAll(certificados);
-
-            }
-
-            usuarioRepository.deleteById(cpf);
-        } else {
-
-            System.err.println("Tentativa de excluir usuário inexistente com CPF: " + cpf);
+        List<CheckIn> checkIns = usuario.getCheckIns();
+        if (checkIns != null && !checkIns.isEmpty()) {
+            checkInRepository.deleteAll(checkIns);
         }
+
+        List<Certificado> certificados = certificadoRepository.findByUsuarioMatricula(matricula);
+        if (certificados != null && !certificados.isEmpty()) {
+            certificadoRepository.deleteAll(certificados);
+        }
+
+        usuarioRepository.delete(usuario);
     }
 
     @Override
@@ -98,7 +144,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional(readOnly = true)
     public Optional<Usuario> validarBiometria(byte[] hashParaValidar) {
-
         List<Usuario> todosUsuarios = usuarioRepository.findAll();
 
         for (Usuario usuario : todosUsuarios) {
@@ -111,9 +156,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private UsuarioListDTO converterParaUsuarioListDTO(Usuario usuario) {
         UsuarioListDTO dto = new UsuarioListDTO();
-        dto.setCpf(usuario.getCpf());
-        dto.setNome(usuario.getNome());
         dto.setMatricula(usuario.getMatricula());
+        dto.setNome(usuario.getNome());
+        dto.setEmail(usuario.getEmail());
         dto.setSetor(usuario.getSetor());
         dto.setDataNascimento(usuario.getDataNascimento());
         return dto;
@@ -121,9 +166,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private UsuarioTemplateDTO converterParaUsuarioTemplateDTO(Usuario usuario) {
         UsuarioTemplateDTO dto = new UsuarioTemplateDTO();
-        dto.setId(usuario.getCpf());
+        dto.setId(usuario.getMatricula());
         dto.setTemplate(usuario.getTemplate());
         return dto;
     }
-
 }

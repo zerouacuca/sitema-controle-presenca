@@ -1,6 +1,5 @@
 <div class="container mt-4">
 
-  <!-- Cabeçalho -->
   <div class="row mb-4">
     <div class="col-12">
       <h2 class="text-center mb-4">
@@ -9,7 +8,6 @@
     </div>
   </div>
 
-  <!-- Mensagens -->
   @if (mensagem) {
   <div class="alert alert-success alert-dismissible fade show">
     {{ mensagem }}
@@ -24,7 +22,6 @@
   </div>
   }
 
-  <!-- Loading principal -->
   @if (isLoading && !isCapturingBiometry) {
   <div class="text-center my-4">
     <div class="spinner-border text-primary" role="status">
@@ -36,7 +33,6 @@
   </div>
   }
 
-  <!-- Loading para captura de biometria -->
   @if (isCapturingBiometry) {
   <div class="card mb-4">
     <div class="card-body text-center py-5">
@@ -48,13 +44,11 @@
         Aguarde... Capturando biometria. Coloque o dedo no leitor.
       </p>
 
-      <!-- Botão para cancelar a captura -->
       <button class="btn btn-outline-danger btn-sm"
               (click)="cancelarCapturaBiometria()">
         <i class="bi bi-x-circle me-1"></i> Cancelar Captura
       </button>
 
-      <!-- Mensagem de erro durante a captura -->
       @if (biometryError) {
       <div class="alert alert-danger mt-3">
         <small>{{ biometryError }}</small>
@@ -64,7 +58,6 @@
   </div>
   }
 
-  <!-- Conteúdo principal -->
   @if (!isLoading) {
   <div class="card">
     <div class="card-header bg-light">
@@ -73,31 +66,21 @@
     <div class="card-body">
       <form #usuarioForm="ngForm">
         <div class="row g-3">
-          
-          <!-- CPF -->
+
           <div class="col-md-6">
-            <label for="cpf" class="form-label">CPF <span class="text-danger">*</span></label>
-            <input id="cpf" type="text" class="form-control"
-                  [(ngModel)]="usuario.cpf" name="cpf"
-                  mask="000.000.000-00" required
+            <label for="matricula" class="form-label">Matrícula <span class="text-danger">*</span></label>
+            <input id="matricula" type="text" class="form-control"
+                  [(ngModel)]="usuario.matricula" name="matricula" required
                   [disabled]="isEditMode"
-                  placeholder="000.000.000-00"
-                  [class.is-invalid]="cpfInvalido">
-            @if (cpfInvalido) {
-            <div class="invalid-feedback">
-              CPF inválido.
-            </div>
-            }
+                  placeholder="Digite a matrícula">
           </div>
 
-          <!-- Data de Nascimento -->
           <div class="col-md-6">
             <label for="dataNascimento" class="form-label">Data de Nascimento <span class="text-danger">*</span></label>
             <input id="dataNascimento" type="date" class="form-control"
                   [(ngModel)]="usuario.dataNascimento" name="dataNascimento" required>
           </div>
 
-          <!-- Nome -->
           <div class="col-md-6">
             <label for="nome" class="form-label">Nome Completo <span class="text-danger">*</span></label>
             <input id="nome" type="text" class="form-control"
@@ -105,15 +88,14 @@
                   placeholder="Digite o nome completo">
           </div>
 
-          <!-- Matrícula -->
-          <div class="col-md-6">
-            <label for="matricula" class="form-label">Matrícula <span class="text-danger">*</span></label>
-            <input id="matricula" type="text" class="form-control"
-                  [(ngModel)]="usuario.matricula" name="matricula" required
-                  placeholder="Digite a matrícula">
-          </div>
+           <div class="col-md-6">
+             <label for="email" class="form-label">E-mail <span class="text-danger">*</span></label>
+             <input id="email" type="email" class="form-control"
+                   [(ngModel)]="usuario.email" name="email" required email
+                   placeholder="Digite o e-mail">
+           </div>
 
-          <!-- Setor -->
+
           <div class="col-md-6">
             <label for="setor" class="form-label">Setor</label>
             <input id="setor" type="text" class="form-control"
@@ -121,7 +103,6 @@
                   placeholder="Opcional">
           </div>
 
-          <!-- Biometria - Mantido como estava -->
           <div class="col-md-6">
             <label for="biometria" class="form-label">Biometria <span class="text-danger">*</span></label>
             <div class="input-group">
@@ -135,8 +116,7 @@
               </button>
             </div>
             <small class="text-muted">Clique no botão para capturar a biometria</small>
-            
-            <!-- Status da biometria -->
+
             @if (usuario.template && !isCapturingBiometry) {
             <div class="mt-2">
               <span class="badge bg-success">
@@ -146,10 +126,8 @@
             }
           </div>
 
-          <!-- Botões -->
           <div class="col-12">
             <div class="d-flex gap-2 justify-content-end pt-3">
-              <!-- Modo Criação -->
               @if (!isEditMode) {
               <button type="button" class="btn btn-outline-secondary"
                       (click)="cancelar()">
@@ -162,19 +140,18 @@
               </button>
               }
 
-              <!-- Modo Edição -->
               @if (isEditMode) {
               <button type="button" class="btn btn-outline-secondary"
                       (click)="cancelar()">
                 <i class="bi bi-arrow-left me-1"></i> Voltar
               </button>
               <button type="button" class="btn btn-outline-info"
-                      (click)="obterBiometria()" 
+                      (click)="obterBiometria()"
                       [disabled]="isLoading">
                 <i class="bi bi-fingerprint me-1"></i> Atualizar Biometria
               </button>
               <button type="button" class="btn btn-outline-danger"
-                      (click)="remover()" 
+                      (click)="remover()"
                       [disabled]="isLoading">
                 <i class="bi bi-trash me-1"></i> Remover
               </button>
@@ -187,7 +164,6 @@
             </div>
           </div>
 
-          <!-- Campos obrigatórios -->
           <div class="col-12">
             <small class="text-muted">* Campos obrigatórios</small>
           </div>
