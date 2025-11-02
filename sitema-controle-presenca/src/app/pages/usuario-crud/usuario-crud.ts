@@ -146,14 +146,23 @@ export class UsuarioCrud implements OnInit {
     this.cd.detectChanges();
 
     this.biometricService.captureHash(false).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.isCapturingBiometry = false;
 
-        if (response.success) {
-          this.usuario.template = response.template;
+        if (response.success && response.template) {
+          
+          const templateString = response.template as string;
+
+          const standardBase64String = templateString
+                                          .replace(/\*/g, '+')
+                                          .replace(/_/g, '/');
+          
+          this.usuario.template = standardBase64String;
+          
           this.mensagem = 'Biometria capturada com sucesso!';
           this.erro = '';
           this.cd.detectChanges();
+
         } else {
           this.biometryError = response.message || 'Falha na captura da biometria';
           this.cd.detectChanges();
