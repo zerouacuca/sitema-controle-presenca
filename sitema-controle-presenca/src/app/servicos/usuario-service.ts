@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Usuario, UsuarioListDTO } from '../models/usuario.model';
 import { environment } from '../environments/environment';
+import { Usuario, UsuarioListDTO, UsuarioTemplateDTO } from '../models/usuario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +32,10 @@ export class UsuarioService {
 
   buscarTodosUsuarios(): Observable<UsuarioListDTO[]> {
     return this.http.get<UsuarioListDTO[]>(this.backendApiUrl);
+  }
+
+  buscarTodosTemplates(): Observable<UsuarioTemplateDTO[]> {
+    return this.http.get<UsuarioTemplateDTO[]>(`${this.backendApiUrl}/templates`);
   }
 
   buscarPorMatricula(matricula: string): Observable<Usuario> {

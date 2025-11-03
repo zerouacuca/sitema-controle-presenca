@@ -16,3 +16,8 @@ export interface UsuarioListDTO {
     email: string;
     dataNascimento: string;
 }
+
+export interface UsuarioTemplateDTO {
+  id: string;
+  template: string;
+}

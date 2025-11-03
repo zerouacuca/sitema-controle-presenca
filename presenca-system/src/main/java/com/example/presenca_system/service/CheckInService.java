@@ -5,8 +5,8 @@ import java.util.List;
 
 public interface CheckInService {
     
-    String registrarCheckInBiometrico(byte[] templateBiometrico, Long eventoId);
-    
+    String registrarCheckInPorMatricula(String matricula, Long eventoId);
+
     List<CheckInResponseDTO> findCheckInsPorEvento(Long eventoId);
     
     List<CheckInResponseDTO> findCheckInsPorEventoESuperusuario(Long eventoId, String emailSuperusuario);

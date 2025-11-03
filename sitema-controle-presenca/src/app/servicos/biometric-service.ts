@@ -4,6 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../environments/environment';
+import { Usuario, UsuarioListDTO, UsuarioTemplateDTO } from '../models/usuario.model';
+
 
 export interface CaptureHashResponse {
   "fingers-registered": number;
@@ -59,7 +61,7 @@ export interface JoinTemplatesResponse {
 }
 
 export interface TemplateWithId {
-  id: number;
+  id: number | string;
   template: string;
 }
 
@@ -219,7 +221,7 @@ export class BiometricService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     
     return this.http.post<any>(
-      `${this.backendApiUrl}/checkin/biometrico`,
+      `${this.backendApiUrl}/checkin/registrar`,
       checkinRequest,
       { headers }
     ).pipe(

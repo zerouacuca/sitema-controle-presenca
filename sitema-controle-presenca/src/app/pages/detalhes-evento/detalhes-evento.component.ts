@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { UsuarioService } from '../../servicos/usuario-service';
 
 import { Evento, StatusEvento } from '../../models/evento.model';
 import { CheckIn } from '../../models/checkin.model';
@@ -30,12 +31,15 @@ export class DetalhesEventoComponent implements OnInit {
 
   statusEvento = StatusEvento;
 
+  private templatesCarregados: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private eventoService: EventoService,
     private checkInService: CheckInService,
     private biometricService: BiometricService,
+    private usuarioService: UsuarioService, // Injeção adicionada
     private cd: ChangeDetectorRef
   ) { }
 
@@ -59,6 +63,11 @@ export class DetalhesEventoComponent implements OnInit {
       next: (evento) => {
         this.evento = evento;
         this.carregarCheckIns(evento.eventoId!);
+        
+        // Se o evento já estiver em andamento, carrega os templates
+        if (evento.status === this.statusEvento.EM_ANDAMENTO && !this.templatesCarregados) {
+          this.carregarTemplatesNaMemoria();
+        }
       },
       error: (error: any) => {
         console.error('Erro ao carregar evento:', error);
@@ -92,17 +101,63 @@ export class DetalhesEventoComponent implements OnInit {
       this.eventoService.atualizarStatus(this.evento.eventoId, StatusEvento.EM_ANDAMENTO).subscribe({
         next: () => {
           this.actionMessage = 'Evento iniciado com sucesso!';
-          this.carregarDetalhesEvento();
+          this.carregarDetalhesEvento(); // Recarrega o evento (que agora está EM_ANDAMENTO)
+          
+          // Carrega os templates na memória do leitor
+          this.carregarTemplatesNaMemoria();
         },
         error: (error: any) => {
-          console.error('Erro ao iniciar evento:', error);
-          this.actionMessage = 'Erro ao iniciar evento.';
-          this.isLoadingAction = false;
-          this.cd.detectChanges();
+          this.handleError(error, 'Erro ao iniciar evento.');
         }
       });
     }
   }
+
+  // NOVO MÉTODO: Carrega templates do Java-Backend e envia para o Biometric-Service
+  carregarTemplatesNaMemoria(): void {
+    if (this.templatesCarregados) {
+      console.log('Templates já carregados.');
+      return; 
+    }
+
+    this.isLoadingAction = true;
+    this.actionMessage = 'Preparando leitor: Carregando templates...';
+    this.biometryError = '';
+    this.cd.detectChanges();
+
+    this.usuarioService.buscarTodosTemplates().subscribe({
+      next: (templates) => {
+        if (!templates || templates.length === 0) {
+          this.handleError(new Error('Nenhum usuário com biometria cadastrado no sistema.'), 'Falha ao carregar templates');
+          return;
+        }
+
+        console.log(`Buscados ${templates.length} templates do backend.`);
+
+        // 1. Limpa a memória do leitor
+        this.biometricService.deleteAllFromMemory().subscribe({
+          next: () => {
+            console.log('Memória do leitor limpa.');
+            // 2. Carrega os novos templates
+            this.biometricService.loadToMemory(templates).subscribe({
+              next: (loadResponse) => {
+                this.templatesCarregados = true;
+                this.isLoadingAction = false;
+                this.actionMessage = 'Leitor pronto para check-in.';
+                console.log('Templates carregados no leitor:', loadResponse.message);
+                this.cd.detectChanges();
+                setTimeout(() => this.actionMessage = '', 3000);
+              },
+              error: (err) => this.handleError(err, 'Falha ao carregar templates no leitor.')
+            });
+          },
+          error: (err) => this.handleError(err, 'Falha ao limpar memória do leitor.')
+        });
+      },
+      error: (err) => this.handleError(err, 'Falha ao buscar templates do servidor backend.')
+    });
+  }
+
 
   encerrarEvento(): void {
     if (this.evento?.eventoId && confirm('Encerrar este evento?')) {
@@ -114,13 +169,11 @@ export class DetalhesEventoComponent implements OnInit {
           this.actionMessage = mensagem;
           this.carregarDetalhesEvento();
           this.isLoadingAction = false;
+          this.templatesCarregados = false; // Limpa o estado
           this.cd.detectChanges();
         },
         error: (error: any) => {
-          console.error('Erro ao encerrar evento:', error);
-          this.actionMessage = 'Erro ao encerrar evento.';
-          this.isLoadingAction = false;
-          this.cd.detectChanges();
+          this.handleError(error, 'Erro ao encerrar evento.');
         }
       });
     }
@@ -136,56 +189,100 @@ export class DetalhesEventoComponent implements OnInit {
           this.actionMessage = 'Evento cancelado com sucesso!';
           this.carregarDetalhesEvento();
           this.isLoadingAction = false;
+          this.templatesCarregados = false; // Limpa o estado
           this.cd.detectChanges();
         },
         error: (error: any) => {
-          console.error('Erro ao cancelar evento:', error);
-          this.actionMessage = 'Erro ao cancelar evento.';
-          this.isLoadingAction = false;
-          this.cd.detectChanges();
+          this.handleError(error, 'Erro ao cancelar evento.');
         }
       });
     }
   }
 
+  // MÉTODO ATUALIZADO: Lógica de check-in 1:N
   realizarCheckInBiometrico(): void {
     if (!this.evento?.eventoId) return;
+
+    if (!this.templatesCarregados) {
+        this.biometryError = "Templates ainda não foram carregados no leitor. Tente novamente em alguns segundos.";
+        this.actionMessage = '';
+        this.cd.detectChanges();
+        // Tenta carregar novamente
+        this.carregarTemplatesNaMemoria();
+        return;
+    }
 
     this.isCapturingBiometry = true;
     this.biometryError = '';
     this.actionMessage = 'Aguardando leitura biométrica...';
     this.cd.detectChanges();
 
-    this.biometricService.realizarCheckInBiometrico(this.evento.eventoId).subscribe({
-      next: (response: any) => {
+    // 1. CHAMA O MÉTODO DE IDENTIFICAÇÃO (1:N)
+    this.biometricService.identification().subscribe({
+      next: (identificationResponse) => {
         this.isCapturingBiometry = false;
 
-        if (response.success) {
-          this.actionMessage = 'Check-in realizado com sucesso!';
-          this.carregarCheckIns(this.evento!.eventoId!);
+        if (identificationResponse.success && identificationResponse.id) {
+          // 2. SUCESSO! PEGA A MATRÍCULA (ID)
+          const matricula = identificationResponse.id.toString();
+          this.actionMessage = `Digital identificada: ${matricula}. Registrando check-in...`;
+          
+          // 3. ENVIA A MATRÍCULA PARA O BACKEND JAVA
+          this.registrarCheckInNoBackend(matricula, this.evento!.eventoId!);
+
         } else {
-          this.biometryError = response.message || 'Digital não reconhecida';
+          this.biometryError = identificationResponse.message || 'Digital não reconhecida na base de dados.';
           this.actionMessage = '';
+          this.cd.detectChanges();
         }
-        this.cd.detectChanges();
       },
-      error: (error: any) => {
-        this.isCapturingBiometry = false;
-        this.biometryError = this.getErrorMessage(error);
-        this.actionMessage = '';
-        this.cd.detectChanges();
+      error: (error) => {
+        this.handleError(error, 'Erro na captura biométrica.');
       }
     });
   }
 
+  // NOVO MÉTODO: Envia o resultado para o backend
+  registrarCheckInNoBackend(matricula: string, eventoId: number): void {
+    this.isLoadingAction = true;
+    this.cd.detectChanges();
+
+    this.checkInService.registrarCheckIn(matricula, eventoId).subscribe({
+        next: (response: any) => {
+            this.actionMessage = response.toString(); // Resposta de sucesso
+            this.isLoadingAction = false;
+            this.carregarCheckIns(eventoId); // Recarrega a lista
+            this.cd.detectChanges();
+            setTimeout(() => this.actionMessage = '', 3000);
+        },
+        error: (error: any) => {
+             this.handleError(error, 'Erro ao registrar check-in no servidor.');
+        }
+    });
+  }
+
+  // MÉTODO ATUALIZADO para incluir mensagens de erro do backend
   private getErrorMessage(error: any): string {
+    if (error.error && typeof error.error === 'string') {
+      return error.error; // Erro do backend (string simples)
+    }
     if (error.error?.message) {
-      return error.error.message;
+      return error.error.message; // Erro do biometric-service (JSON)
     } else if (error.message) {
-      return error.message;
+      return error.message; // Erro geral do Angular
     } else {
       return 'Erro desconhecido na captura biométrica';
     }
+  }
+
+  // NOVO MÉTODO: Helper para centralizar erros
+  private handleError(error: any, defaultMessage: string): void {
+    this.isLoadingAction = false;
+    this.isCapturingBiometry = false;
+    this.biometryError = this.getErrorMessage(error) || defaultMessage;
+    this.actionMessage = '';
+    this.cd.detectChanges();
+    setTimeout(() => this.biometryError = '', 5000);
   }
 
   voltarParaLista(): void {

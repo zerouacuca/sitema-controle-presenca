@@ -20,10 +20,14 @@ export class CheckInService {
         return of([]);
         })
     );
-    }
+  }
 
-  registrarCheckIn(checkIn: CheckIn): Observable<CheckIn> {
-    return this.http.post<CheckIn>(this.apiUrl, checkIn);
+  registrarCheckIn(matricula: string, eventoId: number): Observable<string> {
+    const body = {
+      matricula: matricula,
+      eventoId: eventoId
+    };
+    return this.http.post(`${this.apiUrl}/registrar`, body, { responseType: 'text' });
   }
 
   atualizarStatusCheckIn(checkInId: number, status: StatusCheckIn): Observable<CheckIn> {

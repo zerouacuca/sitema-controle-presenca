@@ -32,9 +32,12 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/public/**").permitAll()
-                .requestMatchers("/admin/**", "/checkin/evento/**").authenticated()
-                .anyRequest().denyAll()
+                // Rotas públicas
+                .requestMatchers("/auth/**", "/public/**", "/checkin/registrar").permitAll() 
+                // Rotas autenticadas
+                .requestMatchers("/admin/**", "/checkin/evento/**").authenticated() 
+                // Nega todo o resto
+                .anyRequest().denyAll() 
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

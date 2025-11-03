@@ -31,26 +31,34 @@ public class CheckInServiceImpl implements CheckInService {
     private EventoRepository eventoRepository;
 
     @Override
-    public String registrarCheckInBiometrico(byte[] templateBiometrico, Long eventoId) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByTemplate(templateBiometrico);
+    @Transactional
+    public String registrarCheckInPorMatricula(String matricula, Long eventoId) {
+        // 1. Encontrar o usuário pela MATRÍCULA (PK)
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(matricula);
         if (usuarioOpt.isEmpty()) {
-            return "Usuário não encontrado. Biometria não corresponde a nenhum usuário cadastrado.";
+            return "Usuário não encontrado. Matrícula: " + matricula;
         }
         Usuario usuario = usuarioOpt.get();
 
+        // 2. Encontrar o evento
         Optional<Evento> eventoOpt = eventoRepository.findById(eventoId);
         if (eventoOpt.isEmpty()) {
             return "Evento não encontrado.";
         }
         Evento evento = eventoOpt.get();
+        
+        // 3. Verificar se o evento está em andamento (OPCIONAL, MAS RECOMENDADO)
+        // if (evento.getStatus() != StatusEvento.EM_ANDAMENTO) {
+        //     return "Check-in não pode ser realizado. Evento não está em andamento.";
+        // }
 
-        //   VERIFICAÇÃO SIMPLIFICADA - apenas se já existe check-in
+        // 4. Verificar se já existe check-in
         Optional<CheckIn> checkInExistente = checkInRepository.findByUsuarioAndEvento(usuario, evento);
         if (checkInExistente.isPresent()) {
             return "Usuário já realizou o check-in para este evento.";
         }
 
-        //   CHECKIN SIMPLIFICADO - sem status
+        // 5. Salvar o novo check-in
         CheckIn novoCheckIn = new CheckIn();
         novoCheckIn.setUsuario(usuario);
         novoCheckIn.setEvento(evento);
@@ -60,7 +68,7 @@ public class CheckInServiceImpl implements CheckInService {
 
         return "Check-in realizado com sucesso para: " + usuario.getNome();
     }
-
+    
     @Override
     public List<CheckInResponseDTO> findCheckInsPorEvento(Long eventoId) {
         List<CheckIn> checkIns = checkInRepository.findByEvento_EventoId(eventoId);
