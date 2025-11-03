@@ -8,9 +8,10 @@ import { UsuarioService } from '../../servicos/usuario-service';
 
 import { Evento, StatusEvento } from '../../models/evento.model';
 import { CheckIn } from '../../models/checkin.model';
+import { UsuarioTemplateDTO } from '../../models/usuario.model'; // Importe o DTO
 import { EventoService } from '../../servicos/evento-service';
 import { CheckInService } from '../../servicos/checkin-service';
-import { BiometricService } from '../../servicos/biometric-service';
+import { BiometricService, TemplateWithId } from '../../servicos/biometric-service'; // Importe TemplateWithId
 
 @Component({
   selector: 'app-detalhes-evento',
@@ -32,6 +33,8 @@ export class DetalhesEventoComponent implements OnInit {
   statusEvento = StatusEvento;
 
   private templatesCarregados: boolean = false;
+  // NOVO: Mapa para traduzir ID numérico (leitor) para Matrícula (backend)
+  private idParaMatriculaMap = new Map<number, string>();
 
   constructor(
     private route: ActivatedRoute,
@@ -113,7 +116,7 @@ export class DetalhesEventoComponent implements OnInit {
     }
   }
 
-  // NOVO MÉTODO: Carrega templates do Java-Backend e envia para o Biometric-Service
+  // ATUALIZADO: Carrega templates do Java-Backend e envia para o Biometric-Service
   carregarTemplatesNaMemoria(): void {
     if (this.templatesCarregados) {
       console.log('Templates já carregados.');
@@ -125,21 +128,38 @@ export class DetalhesEventoComponent implements OnInit {
     this.biometryError = '';
     this.cd.detectChanges();
 
+    // 1. Busca templates do backend Java (retorna DTO com `id: string` - matrícula)
     this.usuarioService.buscarTodosTemplates().subscribe({
-      next: (templates) => {
-        if (!templates || templates.length === 0) {
+      next: (templatesDTO: UsuarioTemplateDTO[]) => {
+        if (!templatesDTO || templatesDTO.length === 0) {
           this.handleError(new Error('Nenhum usuário com biometria cadastrado no sistema.'), 'Falha ao carregar templates');
           return;
         }
 
-        console.log(`Buscados ${templates.length} templates do backend.`);
+        console.log(`Buscados ${templatesDTO.length} templates do backend.`);
+        
+        // Limpa o mapa antigo
+        this.idParaMatriculaMap.clear();
 
-        // 1. Limpa a memória do leitor
+        // 2. Mapeia DTO (id: string) para o formato do leitor (id: number)
+        const templatesParaLeitor: TemplateWithId[] = templatesDTO.map((dto, index) => {
+            const idNumerico = index + 1; // ID numérico simples (1, 2, 3...)
+            
+            // 3. Salva a "tradução" no mapa: 1 -> "2023001"
+            this.idParaMatriculaMap.set(idNumerico, dto.id); 
+            
+            return {
+                id: idNumerico, // Envia o ID numérico para a API
+                template: dto.template // Envia o template (Base64 string)
+            };
+        });
+
+        // 4. Limpa a memória do leitor
         this.biometricService.deleteAllFromMemory().subscribe({
           next: () => {
             console.log('Memória do leitor limpa.');
-            // 2. Carrega os novos templates
-            this.biometricService.loadToMemory(templates).subscribe({
+            // 5. Carrega os novos templates (com ID numérico)
+            this.biometricService.loadToMemory(templatesParaLeitor).subscribe({
               next: (loadResponse) => {
                 this.templatesCarregados = true;
                 this.isLoadingAction = false;
@@ -148,7 +168,7 @@ export class DetalhesEventoComponent implements OnInit {
                 this.cd.detectChanges();
                 setTimeout(() => this.actionMessage = '', 3000);
               },
-              error: (err) => this.handleError(err, 'Falha ao carregar templates no leitor.')
+              error: (err) => this.handleError(err, 'Falha ao carregar templates no leitor (ERRO 500).')
             });
           },
           error: (err) => this.handleError(err, 'Falha ao limpar memória do leitor.')
@@ -199,7 +219,7 @@ export class DetalhesEventoComponent implements OnInit {
     }
   }
 
-  // MÉTODO ATUALIZADO: Lógica de check-in 1:N
+  // ATUALIZADO: Lógica de check-in 1:N com tradução de ID
   realizarCheckInBiometrico(): void {
     if (!this.evento?.eventoId) return;
 
@@ -223,12 +243,22 @@ export class DetalhesEventoComponent implements OnInit {
         this.isCapturingBiometry = false;
 
         if (identificationResponse.success && identificationResponse.id) {
-          // 2. SUCESSO! PEGA A MATRÍCULA (ID)
-          const matricula = identificationResponse.id.toString();
-          this.actionMessage = `Digital identificada: ${matricula}. Registrando check-in...`;
+          // 2. SUCESSO! O Leitor retorna um ID NUMÉRICO (ex: 1)
+          const idNumerico = identificationResponse.id; 
           
-          // 3. ENVIA A MATRÍCULA PARA O BACKEND JAVA
-          this.registrarCheckInNoBackend(matricula, this.evento!.eventoId!);
+          // 3. Traduz o ID numérico de volta para a MATRÍCULA (string)
+          const matricula = this.idParaMatriculaMap.get(idNumerico); // ex: "2023001"
+
+          if (matricula) {
+            this.actionMessage = `Digital identificada: ${matricula}. Registrando check-in...`;
+            // 4. ENVIA A MATRÍCULA (string) PARA O BACKEND JAVA
+            this.registrarCheckInNoBackend(matricula, this.evento!.eventoId!);
+          } else {
+            // Isso não deve acontecer se o mapa foi carregado corretamente
+            this.biometryError = `ID ${idNumerico} retornado pelo leitor, mas não encontrado no mapa de matrículas.`;
+            this.actionMessage = '';
+            this.cd.detectChanges();
+          }
 
         } else {
           this.biometryError = identificationResponse.message || 'Digital não reconhecida na base de dados.';
@@ -241,7 +271,7 @@ export class DetalhesEventoComponent implements OnInit {
       }
     });
   }
-
+  
   // NOVO MÉTODO: Envia o resultado para o backend
   registrarCheckInNoBackend(matricula: string, eventoId: number): void {
     this.isLoadingAction = true;
@@ -261,7 +291,7 @@ export class DetalhesEventoComponent implements OnInit {
     });
   }
 
-  // MÉTODO ATUALIZADO para incluir mensagens de erro do backend
+  // ATUALIZADO para incluir mensagens de erro do backend
   private getErrorMessage(error: any): string {
     if (error.error && typeof error.error === 'string') {
       return error.error; // Erro do backend (string simples)
@@ -393,3 +423,4 @@ export class DetalhesEventoComponent implements OnInit {
     URL.revokeObjectURL(url);
   }
 }
+

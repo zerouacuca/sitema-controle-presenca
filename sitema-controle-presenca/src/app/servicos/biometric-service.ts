@@ -4,8 +4,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../environments/environment';
-import { Usuario, UsuarioListDTO, UsuarioTemplateDTO } from '../models/usuario.model';
-
 
 export interface CaptureHashResponse {
   "fingers-registered": number;
@@ -30,7 +28,7 @@ export interface MatchOneOnOneResponse {
 
 export interface IdentificationResponse {
   message: string;
-  id: number;
+  id: number; // A API retorna um ID numérico
   success: boolean;
 }
 
@@ -61,7 +59,7 @@ export interface JoinTemplatesResponse {
 }
 
 export interface TemplateWithId {
-  id: number | string;
+  id: number; // <-- CORRIGIDO: A API espera um NÚMERO, não string.
   template: string;
 }
 
@@ -211,17 +209,18 @@ export class BiometricService {
     );
   }
 
-  // b) Comparar digital para check-in biométrico
+  // b) Comparar digital para check-in biométrico (MÉTODO ANTIGO, REMOVIDO NO SERVIÇO DE CHECK-IN)
+  // Este método não deve ser usado para check-in
   compararDigitalCheckin(template: string, eventoId: number): Observable<any> {
+    // ... (Este método está obsoleto pois o check-in agora é por matrícula)
+    // Vamos manter por enquanto para não quebrar o biometric-service.ts
     const checkinRequest = {
       template: template,
       eventoId: eventoId
     };
-
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    
     return this.http.post<any>(
-      `${this.backendApiUrl}/checkin/registrar`,
+      `${this.backendApiUrl}/checkin/biometrico`, // Este endpoint não existe mais no Java
       checkinRequest,
       { headers }
     ).pipe(
@@ -271,7 +270,8 @@ export class BiometricService {
     });
   }
 
-  // Método completo para check-in biométrico
+  // Método completo para check-in biométrico (MÉTODO ANTIGO, NÃO USADO MAIS EM DETALHES-EVENTO)
+  // A nova lógica está em detalhes-evento.component.ts
   realizarCheckInBiometrico(eventoId: number): Observable<any> {
     return new Observable(observer => {
       // Captura a biometria para verificação

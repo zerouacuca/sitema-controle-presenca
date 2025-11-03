@@ -41,11 +41,11 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         criarSuperusuarioPadrao();
-        criarSuperusuariosAdicionais();
-        criarUsuariosComuns();
+        //criarSuperusuariosAdicionais();
+        //criarUsuariosComuns();
         criarEventosParaAdmin();
-        criarCheckInsParaEventosAdmin();
-        criarCertificadosParaEventosFinalizados();
+        //criarCheckInsParaEventosAdmin();
+        //criarCertificadosParaEventosFinalizados();
     }
 
     private void criarSuperusuarioPadrao() {

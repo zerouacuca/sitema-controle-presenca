@@ -1,0 +1,11 @@
+{
+  "/api-bio": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "pathRewrite": {
+      "^/api-bio": "/apiservice"
+    },
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}
