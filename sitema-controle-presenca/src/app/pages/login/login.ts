@@ -6,11 +6,12 @@ import { Login as LoginModel, AuthResponse } from '../../models/login.model';
 import { AuthService } from '../../servicos/auth.service';
 import { RecuperarSenhaComponent } from '../recuperar-senha/recuperar-senha.component';
 import { RedefinirSenhaComponent } from '../redefinir-senha/redefinir-senha.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterModule ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })

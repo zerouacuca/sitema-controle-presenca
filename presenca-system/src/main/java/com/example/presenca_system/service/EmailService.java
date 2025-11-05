@@ -68,4 +68,9 @@ public class EmailService {
         message.setText(texto);
         mailSender.send(message);
     }
+
+    public void enviarEmailRecuperacaoSenha(String email, String link) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'enviarEmailRecuperacaoSenha'");
+    }
 }

@@ -11,6 +11,9 @@ import localePt from '@angular/common/locales/pt';
 import { provideHttpClient } from '@angular/common/http';
 import { authInterceptor } from './interceptors/auth.interceptor';
 
+import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha.component';
+import { RedefinirSenhaComponent } from './pages/redefinir-senha/redefinir-senha.component';
+
 registerLocaleData(localePt, 'pt-BR');
 
 export const appConfig: ApplicationConfig = {
