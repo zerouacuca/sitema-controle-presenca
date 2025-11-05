@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -68,29 +69,93 @@ public class RecuperacaoSenhaServiceImpl implements RecuperacaoSenhaService {
         // Não informamos se o email existe ou não por segurança
     }
 
-    @Override
-    @Transactional
-    public void redefinirSenha(RedefinirSenhaRequest request) {
-        if (!request.getNovaSenha().equals(request.getConfirmacaoSenha())) {
-            throw new RuntimeException("As senhas não coincidem");
-        }
+    // @Override
+    // @Transactional
+    // public void redefinirSenha(RedefinirSenhaRequest request) {
+    //     if (!request.getNovaSenha().equals(request.getConfirmacaoSenha())) {
+    //         throw new RuntimeException("As senhas não coincidem");
+    //     }
 
-        RecuperacaoSenha recuperacaoSenha = recuperacaoSenhaRepository
-                .findByTokenAndUtilizadoFalse(request.getToken())
-                .orElseThrow(() -> new RuntimeException("Token inválido ou expirado"));
+    //     RecuperacaoSenha recuperacaoSenha = recuperacaoSenhaRepository
+    //             .findByTokenAndUtilizadoFalse(request.getToken())
+    //             .orElseThrow(() -> new RuntimeException("Token inválido ou expirado"));
 
-        if (recuperacaoSenha.getDataExpiracao().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Token expirado");
-        }
+    //     if (recuperacaoSenha.getDataExpiracao().isBefore(LocalDateTime.now())) {
+    //         throw new RuntimeException("Token expirado");
+    //     }
 
-        Superusuario superusuario = superusuarioRepository
-                .findByEmail(recuperacaoSenha.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    //     Superusuario superusuario = superusuarioRepository
+    //             .findByEmail(recuperacaoSenha.getEmail())
+    //             .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        superusuario.setSenha(passwordEncoder.encode(request.getNovaSenha()));
-        superusuarioRepository.save(superusuario);
+    //     superusuario.setSenha(passwordEncoder.encode(request.getNovaSenha()));
+    //     superusuarioRepository.save(superusuario);
 
-        recuperacaoSenha.setUtilizado(true);
-        recuperacaoSenhaRepository.save(recuperacaoSenha);
+    //     recuperacaoSenha.setUtilizado(true);
+    //     recuperacaoSenhaRepository.save(recuperacaoSenha);
+    // }
+
+@Override
+@Transactional
+public void redefinirSenha(RedefinirSenhaRequest request) {
+    System.out.println("=== TENTANDO REDEFINIR SENHA ===");
+    System.out.println("Token recebido: " + request.getToken());
+    System.out.println("Nova senha: " + request.getNovaSenha());
+    System.out.println("Confirmação: " + request.getConfirmacaoSenha());
+    
+    if (!request.getNovaSenha().equals(request.getConfirmacaoSenha())) {
+        System.err.println(" Erro: Senhas não coincidem");
+        throw new RuntimeException("As senhas não coincidem");
     }
+
+    // Buscar token
+    Optional<RecuperacaoSenha> tokenOpt = recuperacaoSenhaRepository
+            .findByTokenAndUtilizadoFalse(request.getToken());
+    
+    System.out.println("Token encontrado no banco: " + tokenOpt.isPresent());
+    
+    if (tokenOpt.isEmpty()) {
+        System.err.println(" Token não encontrado ou já utilizado");
+        throw new RuntimeException("Token inválido ou expirado");
+    }
+
+    RecuperacaoSenha recuperacaoSenha = tokenOpt.get();
+    System.out.println("Token details:");
+    System.out.println(" - Email: " + recuperacaoSenha.getEmail());
+    System.out.println(" - Criado: " + recuperacaoSenha.getDataCriacao());
+    System.out.println(" - Expira: " + recuperacaoSenha.getDataExpiracao());
+    System.out.println(" - Utilizado: " + recuperacaoSenha.isUtilizado());
+    System.out.println(" - Agora: " + LocalDateTime.now());
+    System.out.println(" - Token expirado? " + recuperacaoSenha.getDataExpiracao().isBefore(LocalDateTime.now()));
+
+    if (recuperacaoSenha.getDataExpiracao().isBefore(LocalDateTime.now())) {
+        System.err.println(" Token expirado");
+        throw new RuntimeException("Token expirado");
+    }
+
+    // Buscar usuário
+    Optional<Superusuario> superusuarioOpt = superusuarioRepository
+            .findByEmail(recuperacaoSenha.getEmail());
+    
+    System.out.println("Usuário encontrado: " + superusuarioOpt.isPresent());
+    
+    if (superusuarioOpt.isEmpty()) {
+        System.err.println(" Usuário não encontrado para o email: " + recuperacaoSenha.getEmail());
+        throw new RuntimeException("Usuário não encontrado");
+    }
+
+    Superusuario superusuario = superusuarioOpt.get();
+    System.out.println("Atualizando senha para usuário: " + superusuario.getEmail());
+
+    // Atualizar senha
+    superusuario.setSenha(passwordEncoder.encode(request.getNovaSenha()));
+    superusuarioRepository.save(superusuario);
+
+    // Marcar token como utilizado
+    recuperacaoSenha.setUtilizado(true);
+    recuperacaoSenhaRepository.save(recuperacaoSenha);
+
+    System.out.println(" Senha redefinida com sucesso!");
+    System.out.println("=== FIM REDEFINIÇÃO ===");
+}
 }

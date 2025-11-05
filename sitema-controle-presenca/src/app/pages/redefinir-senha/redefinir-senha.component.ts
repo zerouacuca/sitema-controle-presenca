@@ -24,7 +24,9 @@ export class RedefinirSenhaComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private recuperacaoSenhaService: RecuperacaoSenhaService
+    private recuperacaoSenhaService: RecuperacaoSenhaService,
+    private success: boolean = false,
+    private mensagem: string = ''
   ) {
     this.form = this.fb.group({
       novaSenha: ['', [Validators.required, Validators.minLength(6)]],
@@ -45,28 +47,54 @@ export class RedefinirSenhaComponent implements OnInit {
     return pass === confirmPass ? null : { notSame: true };
   }
 
-  onSubmit() {
-    if (this.form.valid) {
-      this.loading = true;
-      this.error = '';
+  // redefinir-senha.component.ts
+onSubmit() {
+  if (this.form.valid) {
+    this.loading = true;
+    this.error = '';
+    
+    const data = {
+      token: this.token,
+      novaSenha: this.form.value.novaSenha,
+      confirmacaoSenha: this.form.value.confirmacaoSenha
+    };
 
-      const request = {
-        token: this.token,
-        novaSenha: this.form.value.novaSenha,
-        confirmacaoSenha: this.form.value.confirmacaoSenha
-      };
-
-      this.recuperacaoSenhaService.redefinirSenha(request).subscribe({
-        next: () => {
-          this.router.navigate(['/login'], { 
-            queryParams: { passwordReset: 'success' }
-          });
-        },
-        error: (error) => {
-          this.error = 'Erro ao redefinir senha. Verifique se o link ainda é válido.';
+    console.log('Enviando dados:', data);
+    
+    this.recuperacaoSenhaService.redefinirSenha(data).subscribe({
+      next: (response) => {
+        console.log('Resposta do servidor (sucesso):', response);
+        this.success = true;
+        this.loading = false;
+        this.mensagem = 'Senha redefinida com sucesso!';
+      },
+      error: (error) => {
+        console.error('Erro completo:', error);
+        
+        // ADICIONE APENAS ESTA VERIFICAÇÃO:
+        if (error.status === 200) {
+          // Se o backend retornou 200 mas o Angular interpretou como erro
+          // (problema comum com resposta String)
+          console.log('Status 200 interpretado como erro - provavel problema de parsing');
+          this.success = true;
           this.loading = false;
+          this.mensagem = 'Senha redefinida com sucesso!';
+          return;
         }
-      });
-    }
+        
+        // Mantenha o tratamento de erro original para outros casos
+        let errorMessage = 'Ocorreu um erro ao redefinir a senha';
+        
+        if (error.error && typeof error.error === 'string') {
+          errorMessage = error.error;
+        } else if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+        }
+        
+        this.error = errorMessage;
+        this.loading = false;
+      }
+    });
   }
+}
 }
