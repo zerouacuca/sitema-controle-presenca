@@ -70,7 +70,10 @@ public class EmailService {
     }
 
     public void enviarEmailRecuperacaoSenha(String email, String link) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'enviarEmailRecuperacaoSenha'");
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Recuperação de Senha");
+        message.setText("Para redefinir sua senha, clique no link abaixo:\n" + link);
+        mailSender.send(message);
     }
 }
