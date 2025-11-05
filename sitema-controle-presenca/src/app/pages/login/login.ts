@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Login as LoginModel, AuthResponse } from '../../models/login.model';
 import { AuthService } from '../../servicos/auth.service';
+import { RecuperarSenhaComponent } from '../recuperar-senha/recuperar-senha.component';
+import { RedefinirSenhaComponent } from '../redefinir-senha/redefinir-senha.component';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +23,11 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router
   ) {}
+
+  recuperarSenha() {
+    // Lógica para navegar para o componente de recuperação de senha
+    this.router.navigate(['/recuperar-senha']);
+  }
 
   onSubmit() {
     if (!this.login.email || !this.login.senha) {

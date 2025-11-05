@@ -9,11 +9,14 @@ import { DetalhesEventoComponent } from './pages/detalhes-evento/detalhes-evento
 import { PaginaPrincipal } from './pages/pagina-principal/pagina-principal';
 import { AuthGuard } from './guards/auth.guard';
 import { NovoSuperusuarioComponent } from './pages/novo-superusuario/novo-superusuario.component';
+import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha.component';
+import { RedefinirSenhaComponent } from './pages/redefinir-senha/redefinir-senha.component';
 
 export const routes: Routes = [
   // Rotas públicas - SEM AuthGuard
   { path: 'login', component: LoginComponent },
-  
+  { path: 'recuperar-senha', component: RecuperarSenhaComponent },
+  { path: 'redefinir-senha', component: RedefinirSenhaComponent },
   // Rotas protegidas - COM AuthGuard
   { 
     path: 'eventos', 
@@ -64,7 +67,7 @@ export const routes: Routes = [
     ]
   },
   { 
-    path: 'editar-usuario/:cpf', 
+    path: 'editar-usuario/:matricula', 
     component: PaginaPrincipal,
     canActivate: [AuthGuard],
     children: [

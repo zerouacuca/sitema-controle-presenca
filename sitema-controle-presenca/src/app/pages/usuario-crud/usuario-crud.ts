@@ -43,39 +43,95 @@ export class UsuarioCrud implements OnInit {
     private cd: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
-    const matricula = this.route.snapshot.paramMap.get('matricula');
+ngOnInit(): void {
+  // Opção 1: Usando snapshot (mais simples)
+  const matricula = this.route.snapshot.params['matricula'];
+  console.log('Matrícula da rota (snapshot):', matricula);
 
+  // Opção 2: Usando subscribe (mais robusto para mudanças de rota)
+  this.route.params.subscribe(params => {
+    const matricula = params['matricula'];
+    console.log('Matrícula da rota (subscribe):', matricula);
+    
     if (matricula) {
       this.isEditMode = true;
+      this.usuario.matricula = matricula;
       this.carregarUsuario(matricula);
+    } else {
+      this.isEditMode = false;
+      console.log('Modo de criação - não há matrícula na rota');
     }
-  }
+  });
+}
 
-  carregarUsuario(matricula: string): void {
-    this.isLoading = true;
-    this.usuarioService.buscarPorMatricula(matricula).subscribe({
-      next: (data) => {
-        this.usuario = {
-          nome: data.nome,
-          matricula: data.matricula,
-          setor: data.setor || '',
-          email: data.email || '',
-          template: data.template || '',
-          dataNascimento: data.dataNascimento
-        };
-        this.isLoading = false;
-        this.cd.detectChanges();
-      },
-      error: (err) => {
-        console.error('Erro ao buscar usuário:', err);
-        this.erro = 'Erro ao carregar usuário.';
-        this.isLoading = false;
-        this.cd.detectChanges();
-        setTimeout(() => this.navegarParaLista(), 2000);
-      }
-    });
+private formatarDataParaInput(data: string | Date): string {
+  if (!data) return '';
+  
+  try {
+    const date = new Date(data);
+    
+    // Verifica se a data é válida
+    if (isNaN(date.getTime())) {
+      return data.toString();
+    }
+    
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    
+    return `${year}-${month}-${day}`;
+  } catch (error) {
+    console.error('Erro ao formatar data:', error);
+    return data.toString();
   }
+}
+
+carregarUsuario(matricula: string): void {
+  this.isLoading = true;
+  console.log('Iniciando carregamento do usuário:', matricula);
+  
+  this.usuarioService.buscarPorMatricula(matricula).subscribe({
+    next: (data) => {
+      console.log('Dados recebidos com sucesso:', data);
+      
+      // Formata a data para o input type="date"
+      const dataNascimentoFormatada = this.formatarDataParaInput(data.dataNascimento);
+      
+      this.usuario = {
+        nome: data.nome || '',
+        matricula: data.matricula || matricula,
+        setor: data.setor || '',
+        email: data.email || '',
+        template: data.template || '',
+        dataNascimento: dataNascimentoFormatada
+      };
+      
+      console.log('Usuário carregado:', this.usuario);
+      this.isLoading = false;
+      this.cd.detectChanges();
+    },
+    error: (err) => {
+      console.error('Erro completo ao buscar usuário:', err);
+      
+      // Tenta extrair mais informações do erro
+      if (err.error && typeof err.error === 'string') {
+        try {
+          const errorObj = JSON.parse(err.error);
+          console.log('Erro parseado:', errorObj);
+        } catch (e) {
+          console.log('Erro como string:', err.error);
+        }
+      }
+      
+      this.erro = 'Erro ao carregar usuário: ' + (err.message || 'Erro desconhecido');
+      this.isLoading = false;
+      this.cd.detectChanges();
+      
+      // Não navega automaticamente, permite que o usuário tente novamente
+      // setTimeout(() => this.navegarParaLista(), 3000);
+    }
+  });
+}
 
   salvarUsuario(): void {
     if (!this.validarFormulario()) {

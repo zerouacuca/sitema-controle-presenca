@@ -33,6 +33,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**", "/public/**").permitAll()
+                .requestMatchers("/api/auth/recuperar-senha").permitAll()
+                .requestMatchers("/api/auth/redefinir-senha").permitAll()
                 .requestMatchers("/admin/**", "/checkin/evento/**").authenticated()
                 .anyRequest().denyAll()
             )
