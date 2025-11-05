@@ -3,6 +3,9 @@ package com.example.presenca_system.controller;
 import com.example.presenca_system.model.dto.RecuperarSenhaRequest;
 import com.example.presenca_system.model.dto.RedefinirSenhaRequest;
 import com.example.presenca_system.service.RecuperacaoSenhaService;
+
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,9 +34,16 @@ public class RecuperacaoSenhaController {
         }
     }
 
+    // RecuperacaoSenhaController.java
     @PostMapping("/redefinir-senha")
-    public ResponseEntity<String> redefinirSenha(@RequestBody RedefinirSenhaRequest request) {
+    public ResponseEntity<Map<String, String>> redefinirSenha(@RequestBody RedefinirSenhaRequest request) {
+    try {
         recuperacaoSenhaService.redefinirSenha(request);
-        return ResponseEntity.ok("Senha redefinida com sucesso");
+        // Retorne JSON em vez de String
+        return ResponseEntity.ok(Map.of("message", "Senha redefinida com sucesso"));
+    } catch (Exception e) {
+        // Mesmo em caso de erro, retorne JSON
+        return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+    }
     }
 }
