@@ -9,9 +9,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class UsuarioTemplateDTO {
 
-    /* Usado para tranferir lista com templates dos usuários */
-
 
     private String id;
-    private byte[] template;
+    private String template;
 }

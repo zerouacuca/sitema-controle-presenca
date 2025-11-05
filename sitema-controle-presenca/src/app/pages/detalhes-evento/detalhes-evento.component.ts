@@ -116,49 +116,27 @@ export class DetalhesEventoComponent implements OnInit {
     }
   }
 
-  // ATUALIZADO: Carrega templates do Java-Backend e envia para o Biometric-Service
   carregarTemplatesNaMemoria(): void {
-    if (this.templatesCarregados) {
-      console.log('Templates já carregados.');
-      return; 
-    }
-
-    this.isLoadingAction = true;
-    this.actionMessage = 'Preparando leitor: Carregando templates...';
-    this.biometryError = '';
-    this.cd.detectChanges();
-
-    // 1. Busca templates do backend Java (retorna DTO com `id: string` - matrícula)
+    // 1. Busca templates do backend Java
     this.usuarioService.buscarTodosTemplates().subscribe({
       next: (templatesDTO: UsuarioTemplateDTO[]) => {
-        if (!templatesDTO || templatesDTO.length === 0) {
-          this.handleError(new Error('Nenhum usuário com biometria cadastrado no sistema.'), 'Falha ao carregar templates');
-          return;
-        }
-
-        console.log(`Buscados ${templatesDTO.length} templates do backend.`);
-        
-        // Limpa o mapa antigo
-        this.idParaMatriculaMap.clear();
 
         // 2. Mapeia DTO (id: string) para o formato do leitor (id: number)
         const templatesParaLeitor: TemplateWithId[] = templatesDTO.map((dto, index) => {
-            const idNumerico = index + 1; // ID numérico simples (1, 2, 3...)
-            
-            // 3. Salva a "tradução" no mapa: 1 -> "2023001"
+            const idNumerico = index + 1; 
             this.idParaMatriculaMap.set(idNumerico, dto.id); 
             
             return {
-                id: idNumerico, // Envia o ID numérico para a API
-                template: dto.template // Envia o template (Base64 string)
+                id: idNumerico, 
+                template: dto.template 
             };
         });
 
-        // 4. Limpa a memória do leitor
+        // 5. Limpa a memória do leitor
         this.biometricService.deleteAllFromMemory().subscribe({
           next: () => {
             console.log('Memória do leitor limpa.');
-            // 5. Carrega os novos templates (com ID numérico)
+            // 6. Carrega os novos templates (com ID numérico)
             this.biometricService.loadToMemory(templatesParaLeitor).subscribe({
               next: (loadResponse) => {
                 this.templatesCarregados = true;
@@ -423,4 +401,3 @@ export class DetalhesEventoComponent implements OnInit {
     URL.revokeObjectURL(url);
   }
 }
-

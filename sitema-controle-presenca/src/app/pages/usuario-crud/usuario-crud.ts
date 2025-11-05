@@ -153,11 +153,7 @@ export class UsuarioCrud implements OnInit {
           
           const templateString = response.template as string;
 
-          const standardBase64String = templateString
-                                          .replace(/\*/g, '+')
-                                          .replace(/_/g, '/');
-          
-          this.usuario.template = standardBase64String;
+          this.usuario.template = templateString; 
           
           this.mensagem = 'Biometria capturada com sucesso!';
           this.erro = '';

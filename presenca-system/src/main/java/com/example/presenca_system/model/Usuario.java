@@ -26,9 +26,9 @@ public class Usuario {
 
     private String setor;
 
-    @Column(nullable = false)
-    private byte[] template;
-
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String template;
+    
     @OneToMany(mappedBy = "usuario")
     private List<CheckIn> checkIns;
 

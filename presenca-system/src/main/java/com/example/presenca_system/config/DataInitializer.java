@@ -25,11 +25,11 @@ public class DataInitializer implements CommandLineRunner {
     private final CertificadoRepository certificadoRepository;
 
     public DataInitializer(SuperusuarioService superusuarioService,
-                          SuperusuarioRepository superusuarioRepository,
-                          UsuarioRepository usuarioRepository,
-                          EventoRepository eventoRepository,
-                          CheckInRepository checkInRepository,
-                          CertificadoRepository certificadoRepository) {
+                           SuperusuarioRepository superusuarioRepository,
+                           UsuarioRepository usuarioRepository,
+                           EventoRepository eventoRepository,
+                           CheckInRepository checkInRepository,
+                           CertificadoRepository certificadoRepository) {
         this.superusuarioService = superusuarioService;
         this.superusuarioRepository = superusuarioRepository;
         this.usuarioRepository = usuarioRepository;
@@ -234,7 +234,9 @@ public class DataInitializer implements CommandLineRunner {
         usuario.setEmail(email);
         usuario.setSetor(setor);
         usuario.setDataNascimento(dataNascimento);
-        usuario.setTemplate(template.getBytes());
+        // ===== ALTERADO DE .getBytes() PARA ATRIBUIÇÃO DIRETA =====
+        usuario.setTemplate(template);
+        // ========================================================
         return usuario;
     }
 

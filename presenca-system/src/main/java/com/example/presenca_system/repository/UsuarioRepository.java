@@ -12,8 +12,8 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, String> {
 
-    Optional<Usuario> findByTemplate(byte[] templateBiometrico);
-
+    Optional<Usuario> findByTemplate(String templateBiometrico);
+    
     @Query("SELECT u FROM Usuario u WHERE u.email = :email")
     Optional<Usuario> findByEmail(@Param("email") String email);
 
