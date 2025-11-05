@@ -21,8 +21,14 @@ public class RecuperacaoSenhaController {
 
     @PostMapping("/recuperar-senha")
     public ResponseEntity<String> recuperarSenha(@RequestBody RecuperarSenhaRequest request) {
-        recuperacaoSenhaService.solicitarRecuperacao(request);
-        return ResponseEntity.ok("E-mail de recuperação enviado caso o endereço esteja cadastrado");
+        try {
+            recuperacaoSenhaService.solicitarRecuperacao(request);
+            return ResponseEntity.ok("E-mail de recuperação enviado caso o endereço esteja cadastrado");
+        } catch (Exception e) {
+            // Log do erro, mas retorna mesma mensagem por segurança
+            System.err.println("Erro no processo de recuperação: " + e.getMessage());
+            return ResponseEntity.ok("E-mail de recuperação enviado caso o endereço esteja cadastrado");
+        }
     }
 
     @PostMapping("/redefinir-senha")
