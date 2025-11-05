@@ -1,10 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RecuperacaoSenhaService } from '../../servicos/recuperacao-senha.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-redefinir-senha',
+  standalone: true,
+  imports: [ // ← Adicione estas importações
+    CommonModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './redefinir-senha.component.html',
   styleUrls: ['./redefinir-senha.component.css']
 })

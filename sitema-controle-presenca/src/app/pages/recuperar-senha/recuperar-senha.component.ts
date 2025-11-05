@@ -1,9 +1,15 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { RecuperacaoSenhaService } from '../../servicos/recuperacao-senha.service';
 
 @Component({
   selector: 'app-recuperar-senha',
+  standalone: true, // ← Seu componente é standalone
+  imports: [ // ← Adicione estas importações
+    CommonModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './recuperar-senha.component.html',
   styleUrls: ['./recuperar-senha.component.css']
 })
