@@ -1,0 +1,35 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class RecuperacaoSenhaService {
+  private apiUrl = `${environment.backendApiUrl}/api/auth`;
+
+  constructor(private http: HttpClient) { }
+
+  solicitarRecuperacao(data: { email: string }): Observable<any> {
+  const url = `${this.apiUrl}/api/auth/recuperar-senha`;
+  
+  console.log('Enviando requisição para:', url);
+  console.log('Dados:', data);
+
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json'
+  });
+
+  //return this.http.post(`${this.apiUrl}/recuperar-senha`, data);
+  // Adicione responseType: 'text' pois o backend retorna String
+  return this.http.post(`${this.apiUrl}/recuperar-senha`, data, { 
+    headers: headers,
+    responseType: 'text'  // ← ESTA LINHA É IMPORTANTE
+  });
+}
+
+  redefinirSenha(data: { token: string, novaSenha: string, confirmacaoSenha: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/redefinir-senha`, data);
+  }
+}

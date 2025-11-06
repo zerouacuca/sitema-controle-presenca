@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Recuperação de Senha</h2>
+        </div>
+        
+        <p>Olá,</p>
+        
+        <p>Recebemos uma solicitação para redefinir sua senha do Sistema de Controle de Presença.</p>
+        
+        <p>Para redefinir sua senha, clique no botão abaixo:</p>
+        
+        <p style="text-align: center;">
+            <a href="[[${link}]]" class="button">Redefinir Senha</a>
+        </p>
+        
+        <p>Este link expirará em 1 hora por motivos de segurança.</p>
+        
+        <p>Se você não solicitou a redefinição de senha, ignore este e-mail.</p>
+        
+        <div class="footer">
+            <p>Este é um e-mail automático. Por favor, não responda.</p>
+            <p>Sistema de Controle de Presença - Todos os direitos reservados</p>
+        </div>
+    </div>
+</body>
+</html>

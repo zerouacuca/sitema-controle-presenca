@@ -68,4 +68,30 @@ public class EmailService {
         message.setText(texto);
         mailSender.send(message);
     }
+
+    public void enviarEmailRecuperacaoSenha(String email, String link) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("noreply@presencasystem.com");
+            message.setTo(email);
+            message.setSubject("Recuperação de Senha - Sistema de Presença");
+            message.setText(
+                "Olá!\n\n" +
+                "Você solicitou a recuperação de senha para sua conta.\n\n" +
+                "Para redefinir sua senha, clique no link abaixo:\n" +
+                link + "\n\n" +
+                "Este link expira em 1 hora.\n\n" +
+                "Se você não solicitou esta recuperação, ignore este e-mail.\n\n" +
+                "Atenciosamente,\nSistema de Controle de Presença"
+            );
+            
+            mailSender.send(message);
+            System.out.println("Email de recuperação enviado para: " + email);
+            
+        } catch (Exception e) {
+            System.err.println("Erro ao enviar email: " + e.getMessage());
+            throw new RuntimeException("Falha ao enviar email de recuperação", e);
+        }
+    }
+
 }
