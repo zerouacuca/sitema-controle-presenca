@@ -7,12 +7,12 @@ import { environment } from '../environments/environment';
   providedIn: 'root'
 })
 export class RecuperacaoSenhaService {
-  private apiUrl = `${environment.backendApiUrl}/api/auth`;
+  private apiUrl = `${environment.backendApiUrl}/auth`;
 
   constructor(private http: HttpClient) { }
 
   solicitarRecuperacao(data: { email: string }): Observable<any> {
-  const url = `${this.apiUrl}/api/auth/recuperar-senha`;
+  const url = `${this.apiUrl}/auth/recuperar-senha`;
   
   console.log('Enviando requisição para:', url);
   console.log('Dados:', data);
