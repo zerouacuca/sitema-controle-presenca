@@ -43,31 +43,9 @@ export class UsuarioService {
     const url = `${this.backendApiUrl}/${matricula}`;
     console.log('URL da requisição:', url);
 
-    // FIX: map and catchError imported, response/error parameters explicitly typed
-    return this.http.get(url, { responseType: 'text' }).pipe(
-      map((response: string) => {
-        console.log('Resposta bruta do servidor:', response);
-
-        // Se a resposta estiver vazia
-        if (!response) {
-          throw new Error('Resposta vazia do servidor');
-        }
-
-        try {
-          // Tenta fazer parse da resposta como JSON
-          const data = JSON.parse(response);
-          console.log('JSON parseado com sucesso:', data);
-          return data;
-        } catch (e) {
-          console.error('Erro ao fazer parse do JSON:', e);
-          console.log('Conteúdo que falhou no parse:', response);
-          // Throwing an error in map() is acceptable, as it's caught by catchError
-          throw new Error('Resposta não é um JSON válido');
-        }
-      }),
+    return this.http.get<Usuario>(url).pipe(
       catchError((error: any) => {
-        console.error('Erro na requisição:', error);
-        // Using throwError() from rxjs to return an Observable error stream
+        console.error('Erro na requisição getPorMatricula:', error);
         return throwError(() => error);
       })
     );

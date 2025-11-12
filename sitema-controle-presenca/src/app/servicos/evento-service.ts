@@ -74,7 +74,20 @@ export class EventoService {
 
     return this.http.get(`${this.backendApiUrl}/exportar/csv`, {
       params: params,
-      responseType: 'blob'
+      responseType: 'blob' // Espera um ficheiro binário (Blob)
+    });
+  }
+
+  exportarEventosJSON(eventoIds: number[]): Observable<any> {
+    // Monta os parâmetros da URL
+    let params = new HttpParams();
+    eventoIds.forEach(id => {
+      params = params.append('eventoIds', id.toString());
+    });
+
+    return this.http.get(`${this.backendApiUrl}/exportar/json`, {
+      params: params
+      // responseType: 'json' (é o padrão)
     });
   }
 }

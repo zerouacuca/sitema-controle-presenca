@@ -47,26 +47,33 @@
           />
         </div>
 
-        <div class="col-md-2">
-          <label class="form-label">Descrição:</label>
+        <div class="col-md-1"> <label class="form-label">Descrição:</label>
           <input
             type="text"
             [(ngModel)]="descricaoFiltro"
             class="form-control"
-            placeholder="Filtrar por descrição"
+            placeholder="Descrição"
             (input)="onFiltroChange()"
           />
         </div>
 
-        <div class="col-md-2">
-          <label class="form-label">Categoria:</label>
+        <div class="col-md-1"> <label class="form-label">Categoria:</label>
           <input
             type="text"
             [(ngModel)]="categoriaFiltro"
             class="form-control"
-            placeholder="Filtrar por categoria"
+            placeholder="Categoria"
             (input)="onFiltroChange()"
           />
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+           <div class="form-check w-100 mb-1">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="mostrarFinalizados" (change)="onFiltroChange()" id="checkFinalizados">
+            <label class="form-check-label" for="checkFinalizados">
+              Mostrar Finalizados
+            </label>
+          </div>
         </div>
 
         <div class="col-md-2 d-flex align-items-end">

@@ -31,6 +31,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
   tituloFiltro: string = '';
   descricaoFiltro: string = '';
   categoriaFiltro: string = '';
+  mostrarFinalizados: boolean = false; // <-- NOVO
 
   mensagem: string = '';
   erro: string = '';
@@ -69,10 +70,15 @@ export class TabelaEventos implements OnInit, OnDestroy {
     this.eventosSelecionados.clear();
     this.eventoService.getAllEventos().subscribe({
       next: (eventos) => {
+        // ORDENA os eventos (mais recente primeiro)
+        eventos.sort((a, b) => new Date(b.dataHora).getTime() - new Date(a.dataHora).getTime());
+        
         this.eventos = eventos;
-        this.eventosFiltrados = [...this.eventos];
+        
+        // Aplica os filtros (incluindo o de 'mostrarFinalizados' por defeito)
+        this.aplicarFiltros(); 
+        
         this.isLoading = false;
-        this.filtroAtivo = false;
         this.cd.detectChanges();
       },
       error: (error) => {
@@ -140,11 +146,18 @@ export class TabelaEventos implements OnInit, OnDestroy {
       );
     }
 
+    // <-- NOVO FILTRO -->
+    // Se o checkbox 'mostrarFinalizados' NÃO estiver marcado, filtra para remover os finalizados
+    if (!this.mostrarFinalizados) {
+      eventosFiltrados = eventosFiltrados.filter(evento => evento.status !== this.StatusEvento.FINALIZADO);
+    }
+
     this.eventosFiltrados = eventosFiltrados;
 
+    // Lógica do 'badge' de filtro: ativo se qualquer filtro de texto estiver preenchido OU se o 'mostrarFinalizados' estiver LIGADO
     this.filtroAtivo = !!(this.dataInicioFiltro || this.dataFimFiltro ||
                           this.tituloFiltro.trim() || this.descricaoFiltro.trim() ||
-                          this.categoriaFiltro.trim());
+                          this.categoriaFiltro.trim() || this.mostrarFinalizados);
   }
 
   limparFiltros(): void {
@@ -153,11 +166,14 @@ export class TabelaEventos implements OnInit, OnDestroy {
     this.tituloFiltro = '';
     this.descricaoFiltro = '';
     this.categoriaFiltro = '';
-    this.eventosFiltrados = [...this.eventos];
-    this.filtroAtivo = false;
+    this.mostrarFinalizados = false; // <-- RESET
     this.eventosSelecionados.clear();
     this.erro = '';
-    this.mensagem = 'Filtros limpos. Mostrando todos os eventos.';
+    
+    // Re-aplica os filtros (isto irá esconder os finalizados por defeito)
+    this.aplicarFiltros(); 
+
+    this.mensagem = 'Filtros limpos. Mostrando eventos (exceto finalizados).';
     setTimeout(() => this.mensagem = '', 3000);
   }
 
@@ -209,7 +225,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
         this.eventoService.deleteEvento(evento.eventoId).subscribe({
           next: () => {
             this.eventos = this.eventos.filter(e => e.eventoId !== evento.eventoId);
-            this.eventosFiltrados = [...this.eventos];
+            this.aplicarFiltros(); // Re-aplica filtros
             if (evento.eventoId) {
               this.eventosSelecionados.delete(evento.eventoId);
             }
@@ -234,7 +250,7 @@ export class TabelaEventos implements OnInit, OnDestroy {
           next: (mensagem) => {
             this.mensagem = mensagem;
             setTimeout(() => this.mensagem = '', 3000);
-            this.carregarEventos();
+            this.carregarEventos(); // Recarrega tudo
           },
           error: (error) => {
             console.error('Erro ao encerrar evento:', error);
@@ -289,49 +305,27 @@ export class TabelaEventos implements OnInit, OnDestroy {
 
   exportarJSON(): void {
     this.isGerandoRelatorio = true;
+    this.fecharModalExportacao();
+    const idsParaExportar = Array.from(this.eventosSelecionados);
 
-    const modalElement = document.getElementById('modalExportacao');
-    if (modalElement) {
-      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
-      modal.hide();
-    }
-
-    const eventosParaExportar = this.eventos.filter(evento =>
-      evento.eventoId && this.eventosSelecionados.has(evento.eventoId)
-    );
-
-    const dadosExportacao = {
-      metadata: {
-        geradoEm: new Date().toISOString(),
-        totalEventos: eventosParaExportar.length,
-        formato: 'JSON',
-        versao: '1.0'
+    this.eventoService.exportarEventosJSON(idsParaExportar).subscribe({
+      next: (data) => {
+        this.downloadJSON(data, 'relatorio_eventos.json');
+        this.isGerandoRelatorio = false;
+        this.mensagem = `Relatório JSON exportado com sucesso! ${idsParaExportar.length} evento(s) exportado(s).`;
+        this.eventosSelecionados.clear();
+        setTimeout(() => this.mensagem = '', 5000);
+        this.cd.detectChanges();
       },
-      eventos: eventosParaExportar
-    };
-
-    setTimeout(() => {
-      this.downloadJSON(dadosExportacao, 'relatorio-eventos.json');
-
-      this.isGerandoRelatorio = false;
-      this.mensagem = `Relatório JSON exportado com sucesso! ${eventosParaExportar.length} evento(s) exportado(s).`;
-
-      this.eventosSelecionados.clear();
-
-      setTimeout(() => this.mensagem = '', 5000);
-      this.cd.detectChanges();
-    }, 1000);
+      error: (error) => {
+        this.handleExportError(error, 'Erro ao gerar relatório JSON.');
+      }
+    });
   }
 
   exportarCSV(): void {
     this.isGerandoRelatorio = true;
-
-    const modalElement = document.getElementById('modalExportacao');
-    if (modalElement) {
-      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
-      modal.hide();
-    }
-
+    this.fecharModalExportacao();
     const idsParaExportar = Array.from(this.eventosSelecionados);
 
     this.eventoService.exportarEventosCSV(idsParaExportar).subscribe({
@@ -346,14 +340,27 @@ export class TabelaEventos implements OnInit, OnDestroy {
         this.cd.detectChanges();
       },
       error: (error) => {
-        console.error('Erro ao exportar CSV:', error);
-        this.erro = 'Erro ao gerar relatório CSV.';
-        this.isGerandoRelatorio = false;
-        
-        setTimeout(() => this.erro = '', 5000);
-        this.cd.detectChanges();
+        this.handleExportError(error, 'Erro ao gerar relatório CSV.');
       }
     });
+  }
+
+  private fecharModalExportacao(): void {
+    const modalElement = document.getElementById('modalExportacao');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
+    }
+  }
+
+  private handleExportError(error: any, defaultMessage: string): void {
+    console.error(defaultMessage, error);
+    this.erro = defaultMessage;
+    this.isGerandoRelatorio = false;
+    setTimeout(() => this.erro = '', 5000);
+    this.cd.detectChanges();
   }
 
   private downloadJSON(data: any, filename: string): void {

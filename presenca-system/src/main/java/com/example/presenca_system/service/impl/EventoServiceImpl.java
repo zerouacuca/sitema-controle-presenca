@@ -1,6 +1,9 @@
 package com.example.presenca_system.service.impl;
 
 import com.example.presenca_system.model.dto.EventoDTO;
+import com.example.presenca_system.model.dto.RelatorioConsolidadoDTO;
+import com.example.presenca_system.model.dto.RelatorioEventoDTO;
+import com.example.presenca_system.model.dto.ResumoDTO;
 import com.example.presenca_system.model.enums.StatusEvento;
 import com.example.presenca_system.model.CheckIn;
 import com.example.presenca_system.model.Evento;
@@ -9,8 +12,10 @@ import com.example.presenca_system.repository.EventoRepository;
 import com.example.presenca_system.service.EventoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -40,8 +45,12 @@ public class EventoServiceImpl implements EventoService {
     }
 
     @Override
+    @Transactional(readOnly = true) // Adicionado Transactional para lazy loading
     public Optional<Evento> findByIdAndSuperusuarioEmailEntity(Long id, String emailSuperusuario) {
-        return eventoRepository.findByIdAndSuperusuarioEmail(id, emailSuperusuario);
+        Optional<Evento> eventoOpt = eventoRepository.findByIdAndSuperusuarioEmail(id, emailSuperusuario);
+        // Força o carregamento da lista de check-ins (agora funciona)
+        eventoOpt.ifPresent(evento -> evento.getCheckIns().size()); 
+        return eventoOpt;
     }
 
     // MÉTODOS EXISTENTES (mantidos conforme seu código)
@@ -125,6 +134,33 @@ public class EventoServiceImpl implements EventoService {
     }
 
     @Override
+    @Transactional(readOnly = true) // Garante que os check-ins sejam carregados
+    public RelatorioConsolidadoDTO gerarEventosJSON(List<Long> eventoIds, String emailSuperusuario) {
+        List<RelatorioEventoDTO> eventosDTO = new ArrayList<>();
+        double totalHoras = 0;
+        long totalParticipantes = 0;
+
+        for (Long eventoId : eventoIds) {
+            Optional<Evento> eventoOpt = eventoRepository.findByIdAndSuperusuarioEmail(eventoId, emailSuperusuario);
+            if (eventoOpt.isPresent()) {
+                Evento evento = eventoOpt.get();
+                // Força o carregamento dos check-ins (agora funciona)
+                evento.getCheckIns().size(); 
+                
+                eventosDTO.add(new RelatorioEventoDTO(evento));
+                
+                totalHoras += evento.getCargaHoraria();
+                totalParticipantes += evento.getCheckIns().size();
+            }
+        }
+
+        ResumoDTO resumo = new ResumoDTO(eventosDTO.size(), totalHoras, totalParticipantes);
+        return new RelatorioConsolidadoDTO(eventosDTO, resumo);
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
     public String gerarEventosCSV(List<Long> eventoIds, String emailSuperusuario) {
         StringBuilder csv = new StringBuilder();
         // Cabeçalho principal do CSV
@@ -141,7 +177,7 @@ public class EventoServiceImpl implements EventoService {
             Optional<Evento> eventoOpt = eventoRepository.findByIdAndSuperusuarioEmail(eventoId, emailSuperusuario);
             if (eventoOpt.isPresent()) {
                 Evento evento = eventoOpt.get();
-                List<CheckIn> checkIns = checkInRepository.findByEvento_EventoId(eventoId);
+                List<CheckIn> checkIns = evento.getCheckIns(); // Acessa os check-ins já carregados
 
                 // Acumula totais
                 totalEventosProcessados++;

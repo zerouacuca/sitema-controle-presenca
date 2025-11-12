@@ -1,5 +1,6 @@
 package com.example.presenca_system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore; // <-- ADICIONE ESTA IMPORTAÇÃO
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -29,9 +30,11 @@ public class Usuario {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String template;
     
+    @JsonIgnore
     @OneToMany(mappedBy = "usuario")
     private List<CheckIn> checkIns;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usuario")
     private List<Certificado> certificados;
 }

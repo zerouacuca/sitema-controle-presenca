@@ -1,6 +1,7 @@
 package com.example.presenca_system.controller;
 
 import com.example.presenca_system.model.dto.EventoDTO;
+import com.example.presenca_system.model.dto.RelatorioConsolidadoDTO;
 import com.example.presenca_system.model.enums.StatusEvento;
 import com.example.presenca_system.model.Evento;
 import com.example.presenca_system.model.Superusuario;
@@ -32,8 +33,7 @@ public class EventoController {
 
     @GetMapping
     public List<EventoDTO> getMeusEventos(Authentication authentication) {
-        String emailSuperusuario = authentication.getName();
-        return eventoService.findBySuperusuarioEmail(emailSuperusuario);
+        return eventoService.findAllDTO();
     }
 
     @GetMapping("/{id}")
@@ -153,6 +153,22 @@ public class EventoController {
                     
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Erro ao gerar CSV: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/exportar/json")
+    public ResponseEntity<?> exportarEventosJSON(
+            @RequestParam("eventoIds") List<Long> eventoIds,
+            Authentication authentication) {
+        
+        String emailSuperusuario = authentication.getName();
+        
+        try {
+            RelatorioConsolidadoDTO relatorio = eventoService.gerarEventosJSON(eventoIds, emailSuperusuario);
+            return ResponseEntity.ok(relatorio);
+                    
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erro ao gerar JSON: " + e.getMessage());
         }
     }
 }
