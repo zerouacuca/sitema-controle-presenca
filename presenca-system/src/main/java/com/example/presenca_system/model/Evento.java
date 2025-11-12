@@ -3,6 +3,7 @@ package com.example.presenca_system.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;
+import java.util.List;
 
 import com.example.presenca_system.model.enums.StatusEvento;
 
@@ -27,4 +28,7 @@ public class Evento {
     
     @Enumerated(EnumType.STRING)
     private StatusEvento status = StatusEvento.AGENDADO;
+
+    @OneToMany(mappedBy = "evento", fetch = FetchType.LAZY)
+    private List<CheckIn> checkIns;
 }

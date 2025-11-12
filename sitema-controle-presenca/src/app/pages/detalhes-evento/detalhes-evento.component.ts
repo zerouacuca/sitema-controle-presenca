@@ -351,7 +351,9 @@ export class DetalhesEventoComponent implements OnInit {
     const modalElement = document.getElementById('modalExportacaoDetalhes');
     if (modalElement) {
       const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
-      modal.hide();
+      if (modal) {
+        modal.hide();
+      }
     }
 
     const eventoId = this.evento.eventoId;
@@ -365,32 +367,16 @@ export class DetalhesEventoComponent implements OnInit {
   }
 
   private exportarJSONUnico(eventoId: number, eventoTitulo: string): void {
-    const dadosExportacao = {
-      metadata: {
-        geradoEm: new Date().toISOString(),
-        eventoId: eventoId,
-        formato: 'JSON',
-        versao: '1.0'
+    // Chama o novo endpoint JSON que já retorna o relatório consolidado
+    this.eventoService.exportarEventosJSON([eventoId]).subscribe({
+      next: (data) => {
+        this.downloadJSON(data, `evento-${eventoId}-relatorio.json`);
+        this.finalizarExportacao(`Relatório JSON do evento "${eventoTitulo}" exportado com sucesso!`);
       },
-      evento: {
-        ...this.evento,
-        statusDescricao: this.getStatusDescricao(this.evento?.status)
-      },
-      checkIns: this.checkIns.map(checkIn => ({
-        ...checkIn,
-        dataHoraFormatada: this.formatarDataHora(checkIn.dataHoraCheckin)
-      })),
-      resumo: {
-        totalCheckIns: this.checkIns.length,
-        cargaHoraria: this.evento?.cargaHoraria,
-        dataEvento: this.formatarDataHora(this.evento!.dataHora)
+      error: (error) => {
+        this.handleError(error, 'Erro ao gerar relatório JSON.');
       }
-    };
-
-    setTimeout(() => {
-      this.downloadJSON(dadosExportacao, `evento-${eventoId}-relatorio.json`);
-      this.finalizarExportacao(`Relatório JSON do evento "${eventoTitulo}" exportado com sucesso!`);
-    }, 1000);
+    });
   }
 
   private exportarCSVUnico(eventoId: number, eventoTitulo: string): void {

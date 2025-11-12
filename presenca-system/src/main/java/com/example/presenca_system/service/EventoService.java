@@ -1,6 +1,7 @@
 package com.example.presenca_system.service;
 
 import com.example.presenca_system.model.dto.EventoDTO;
+import com.example.presenca_system.model.dto.RelatorioConsolidadoDTO;
 import com.example.presenca_system.model.enums.StatusEvento;
 import com.example.presenca_system.model.Evento;
 
@@ -28,5 +29,9 @@ public interface EventoService {
     Optional<EventoDTO> findByIdAndSuperusuarioEmail(Long id, String emailSuperusuario);
     Optional<Evento> findByIdAndSuperusuarioEmailEntity(Long id, String emailSuperusuario);
 
+    // Método para exportação CSV
     String gerarEventosCSV(List<Long> eventoIds, String emailSuperusuario);
+
+    // Método para exportação JSON
+    RelatorioConsolidadoDTO gerarEventosJSON(List<Long> eventoIds, String emailSuperusuario);
 }
