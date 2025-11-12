@@ -15,7 +15,7 @@
     <div class="card-body">
       <div class="row g-3">
         <div class="col-md-5">
-          <label class="form-label">Pesquisar por Matrícula:</label>
+          <label class="form-label">Pesquisar por Usuario (matrícula ou nome):</label>
           <div class="input-group">
             <input type="text" class="form-control"
                    [(ngModel)]="matriculaPesquisa"
@@ -31,9 +31,9 @@
         <div class="col-md-5">
           <label class="form-label">Pesquisar por Evento (ID):</label>
           <div class="input-group">
-            <input type="number" class="form-control"
-                   [(ngModel)]="eventoIdPesquisa"
-                   placeholder="ID do Evento"
+            <input type="text" class="form-control"
+                   [(ngModel)]="eventoPesquisa"
+                   placeholder="Titulo, categoria ou data do evento"
                    (keyup.enter)="pesquisarPorEvento()">
             <button class="btn btn-outline-primary"
                     (click)="pesquisarPorEvento()">
@@ -92,14 +92,10 @@
                 (click)="baixarCertificadosSelecionados()">
           <i class="bi bi-download"></i> Baixar Selecionados
         </button>
-        <button class="btn btn-info btn-sm"
-                (click)="enviarPorEmail()">
-          <i class="bi bi-envelope"></i> Enviar Email
-        </button>
       </div>
       }
 
-      @if (filtroAtivo === 'evento' && eventoIdPesquisa) {
+      @if (filtroAtivo === 'evento' && eventoPesquisa) {
       <button class="btn btn-primary btn-sm"
               (click)="baixarTodosEvento()">
         <i class="bi bi-download"></i> Baixar Todos
