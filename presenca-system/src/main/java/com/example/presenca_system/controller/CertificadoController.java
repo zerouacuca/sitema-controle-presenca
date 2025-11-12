@@ -30,8 +30,7 @@ public class CertificadoController {
 
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> getCertificadoPDF(@PathVariable Long id, Authentication authentication) {
-        String emailSuperusuario = authentication.getName();
-        Optional<Certificado> certificadoOptional = certificadoService.findByIdAndSuperusuarioEmail(id, emailSuperusuario);
+        Optional<Certificado> certificadoOptional = certificadoService.findById(id);
 
         if (certificadoOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -53,42 +52,16 @@ public class CertificadoController {
 
     @GetMapping("/meus-certificados")
     public List<CertificadoDTO> getMeusCertificados(Authentication authentication) {
-        String emailSuperusuario = authentication.getName();
-        return certificadoService.findBySuperusuarioEmailDTO(emailSuperusuario);
+        return certificadoService.findAllDTO();
     }
 
     @GetMapping("/evento/{eventoId}")
     public ResponseEntity<List<CertificadoDTO>> getCertificadosPorEvento(@PathVariable Long eventoId, Authentication authentication) {
-        String emailSuperusuario = authentication.getName();
         try {
-            List<CertificadoDTO> certificados = certificadoService.findByEventoAndSuperusuarioEmailDTO(eventoId, emailSuperusuario);
+            List<CertificadoDTO> certificados = certificadoService.findByEventoEventoIdDTO(eventoId);
             return ResponseEntity.ok(certificados);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/enviar-email")
-    public ResponseEntity<String> enviarCertificadosPorEmail(@RequestBody Map<String, Object> request, Authentication authentication) {
-        try {
-            String emailSuperusuario = authentication.getName();
-            @SuppressWarnings("unchecked")
-            List<Long> certificadoIds = (List<Long>) request.get("certificadoIds");
-            String emailDestinatario = (String) request.get("email");
-
-            if (certificadoIds == null || certificadoIds.isEmpty() || emailDestinatario == null) {
-                return ResponseEntity.badRequest().body("Dados inválidos");
-            }
-
-            boolean permissoesValidas = certificadoService.verificarPermissoesCertificados(certificadoIds, emailSuperusuario);
-            if (!permissoesValidas) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acesso negado a um ou mais certificados");
-            }
-
-            emailService.enviarCertificadosPorEmail(certificadoIds, emailDestinatario);
-            return ResponseEntity.ok("Certificados enviados com sucesso para: " + emailDestinatario);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Erro: " + e.getMessage());
         }
     }
 

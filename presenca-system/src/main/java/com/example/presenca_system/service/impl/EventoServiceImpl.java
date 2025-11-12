@@ -45,10 +45,9 @@ public class EventoServiceImpl implements EventoService {
     }
 
     @Override
-    @Transactional(readOnly = true) // Adicionado Transactional para lazy loading
+    @Transactional(readOnly = true) 
     public Optional<Evento> findByIdAndSuperusuarioEmailEntity(Long id, String emailSuperusuario) {
-        Optional<Evento> eventoOpt = eventoRepository.findByIdAndSuperusuarioEmail(id, emailSuperusuario);
-        // Força o carregamento da lista de check-ins (agora funciona)
+        Optional<Evento> eventoOpt = eventoRepository.findById(id);
         eventoOpt.ifPresent(evento -> evento.getCheckIns().size()); 
         return eventoOpt;
     }
@@ -141,7 +140,7 @@ public class EventoServiceImpl implements EventoService {
         long totalParticipantes = 0;
 
         for (Long eventoId : eventoIds) {
-            Optional<Evento> eventoOpt = eventoRepository.findByIdAndSuperusuarioEmail(eventoId, emailSuperusuario);
+            Optional<Evento> eventoOpt = eventoRepository.findById(eventoId);
             if (eventoOpt.isPresent()) {
                 Evento evento = eventoOpt.get();
                 // Força o carregamento dos check-ins (agora funciona)
@@ -174,7 +173,7 @@ public class EventoServiceImpl implements EventoService {
 
         for (Long eventoId : eventoIds) {
             // Verifica se o evento pertence ao superusuário
-            Optional<Evento> eventoOpt = eventoRepository.findByIdAndSuperusuarioEmail(eventoId, emailSuperusuario);
+            Optional<Evento> eventoOpt = eventoRepository.findById(eventoId);
             if (eventoOpt.isPresent()) {
                 Evento evento = eventoOpt.get();
                 List<CheckIn> checkIns = evento.getCheckIns(); // Acessa os check-ins já carregados

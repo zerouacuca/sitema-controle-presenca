@@ -38,8 +38,7 @@ public class EventoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EventoDTO> getEventoById(@PathVariable Long id, Authentication authentication) {
-        String emailSuperusuario = authentication.getName();
-        Optional<EventoDTO> evento = eventoService.findByIdAndSuperusuarioEmail(id, emailSuperusuario);
+        Optional<EventoDTO> evento = eventoService.findByIdDTO(id);
         return evento.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 

@@ -39,8 +39,7 @@ public class CheckInController {
             @PathVariable Long eventoId, 
             Authentication authentication) {
         try {
-            String emailSuperusuario = authentication.getName();
-            List<CheckInResponseDTO> checkIns = checkInService.findCheckInsPorEventoESuperusuario(eventoId, emailSuperusuario);
+            List<CheckInResponseDTO> checkIns = checkInService.findCheckInsPorEvento(eventoId);
             return ResponseEntity.ok(checkIns);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
