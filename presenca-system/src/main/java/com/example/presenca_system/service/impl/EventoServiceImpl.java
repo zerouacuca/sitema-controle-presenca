@@ -2,12 +2,15 @@ package com.example.presenca_system.service.impl;
 
 import com.example.presenca_system.model.dto.EventoDTO;
 import com.example.presenca_system.model.enums.StatusEvento;
+import com.example.presenca_system.model.CheckIn;
 import com.example.presenca_system.model.Evento;
+import com.example.presenca_system.repository.CheckInRepository;
 import com.example.presenca_system.repository.EventoRepository;
 import com.example.presenca_system.service.EventoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +21,9 @@ public class EventoServiceImpl implements EventoService {
 
     @Autowired
     private EventoRepository eventoRepository;
+
+    @Autowired
+    private CheckInRepository checkInRepository;
 
     //   NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
     @Override
@@ -116,6 +122,75 @@ public class EventoServiceImpl implements EventoService {
             evento.setStatus(StatusEvento.CANCELADO);
             eventoRepository.save(evento);
         });
+    }
+
+    @Override
+    public String gerarEventosCSV(List<Long> eventoIds, String emailSuperusuario) {
+        StringBuilder csv = new StringBuilder();
+        // Cabeçalho principal do CSV
+        csv.append("ID_EVENTO;TITULO_EVENTO;DATA_EVENTO;CATEGORIA;CARGA_HORARIA;STATUS_EVENTO;MATRICULA_USUARIO;NOME_USUARIO;EMAIL_USUARIO;SETOR_USUARIO;DATA_CHECKIN\n");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        double totalHoras = 0;
+        long totalParticipantes = 0;
+        long totalEventosProcessados = 0;
+
+        for (Long eventoId : eventoIds) {
+            // Verifica se o evento pertence ao superusuário
+            Optional<Evento> eventoOpt = eventoRepository.findByIdAndSuperusuarioEmail(eventoId, emailSuperusuario);
+            if (eventoOpt.isPresent()) {
+                Evento evento = eventoOpt.get();
+                List<CheckIn> checkIns = checkInRepository.findByEvento_EventoId(eventoId);
+
+                // Acumula totais
+                totalEventosProcessados++;
+                totalHoras += evento.getCargaHoraria();
+                totalParticipantes += checkIns.size();
+
+                String dataEventoStr = (evento.getDataHora() != null) ? sdf.format(evento.getDataHora()) : "N/A";
+
+                if (checkIns.isEmpty()) {
+                    // Se não houver check-ins, lista o evento mesmo assim
+                    csv.append(String.format("\"%d\";\"%s\";\"%s\";\"%s\";\"%.1f\";\"%s\";\"%s\";\"%s\";\"%s\";\"%s\";\"%s\"\n",
+                            evento.getEventoId(),
+                            evento.getTitulo(),
+                            dataEventoStr,
+                            evento.getCategoria(),
+                            evento.getCargaHoraria(),
+                            evento.getStatus().name(),
+                            "N/A", "Nenhum check-in", "N/A", "N/A", "N/A"
+                    ));
+                } else {
+                    // Lista o evento para cada check-in
+                    for (CheckIn checkIn : checkIns) {
+                        String dataCheckinStr = (checkIn.getDataHoraCheckin() != null) ? sdf.format(checkIn.getDataHoraCheckin()) : "N/A";
+                        csv.append(String.format("\"%d\";\"%s\";\"%s\";\"%s\";\"%.1f\";\"%s\";\"%s\";\"%s\";\"%s\";\"%s\";\"%s\"\n",
+                                evento.getEventoId(),
+                                evento.getTitulo(),
+                                dataEventoStr,
+                                evento.getCategoria(),
+                                evento.getCargaHoraria(),
+                                evento.getStatus().name(),
+                                checkIn.getUsuario().getMatricula(),
+                                checkIn.getUsuario().getNome(),
+                                checkIn.getUsuario().getEmail(),
+                                checkIn.getUsuario().getSetor(),
+                                dataCheckinStr
+                        ));
+                    }
+                }
+            }
+        }
+
+        // Adiciona o sumário ao final
+        csv.append("\n\n");
+        csv.append("RESUMO DO RELATÓRIO\n");
+        csv.append(String.format("Total de Eventos:;%d\n", totalEventosProcessados));
+        csv.append(String.format("Total de Horas:;%.1f\n", totalHoras));
+        csv.append(String.format("Total de Participantes (Check-ins):;%d\n", totalParticipantes));
+
+        return csv.toString();
     }
 
     private EventoDTO convertToDTO(Evento evento) {

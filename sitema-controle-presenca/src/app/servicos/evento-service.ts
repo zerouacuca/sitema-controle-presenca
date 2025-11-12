@@ -64,4 +64,17 @@ export class EventoService {
       responseType: 'text'
     });
   }
+
+  exportarEventosCSV(eventoIds: number[]): Observable<Blob> {
+    // Monta os parâmetros da URL
+    let params = new HttpParams();
+    eventoIds.forEach(id => {
+      params = params.append('eventoIds', id.toString());
+    });
+
+    return this.http.get(`${this.backendApiUrl}/exportar/csv`, {
+      params: params,
+      responseType: 'blob'
+    });
+  }
 }

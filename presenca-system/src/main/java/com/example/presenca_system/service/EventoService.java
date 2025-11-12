@@ -27,4 +27,6 @@ public interface EventoService {
     List<EventoDTO> findBySuperusuarioEmail(String emailSuperusuario);
     Optional<EventoDTO> findByIdAndSuperusuarioEmail(Long id, String emailSuperusuario);
     Optional<Evento> findByIdAndSuperusuarioEmailEntity(Long id, String emailSuperusuario);
+
+    String gerarEventosCSV(List<Long> eventoIds, String emailSuperusuario);
 }

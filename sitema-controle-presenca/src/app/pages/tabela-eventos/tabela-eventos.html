@@ -261,16 +261,18 @@
           </div>
 
           <div class="col-md-6">
-            <div class="card h-100 border-secondary">
+            <div class="card h-100 border-success">
               <div class="card-body text-center">
-                <i class="bi bi-bar-chart-line display-4 text-secondary mb-3"></i>
-                <h5 class="card-title">Power BI</h5>
+                <i class="bi bi-filetype-csv display-4 text-success mb-3"></i>
+                <h5 class="card-title">CSV</h5>
                 <p class="card-text text-muted small">
-                  Formato otimizado para dashboards e relatórios visuais (em breve)
+                  Formato simples de planilha, compatível com Excel e Google Sheets
                 </p>
-                <button class="btn btn-outline-secondary w-100" disabled>
-                  <i class="bi bi-clock me-1"></i>
-                  Em Breve
+                <button class="btn btn-success w-100" 
+                        (click)="exportarCSV()"
+                        [disabled]="isGerandoRelatorio">
+                  <i class="bi bi-download me-1"></i>
+                  {{ isGerandoRelatorio ? 'Exportando...' : 'Exportar CSV' }}
                 </button>
               </div>
             </div>

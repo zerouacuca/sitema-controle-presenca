@@ -8,6 +8,8 @@ import com.example.presenca_system.repository.SuperusuarioRepository;
 import com.example.presenca_system.service.CertificadoService;
 import com.example.presenca_system.service.EventoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -129,5 +131,28 @@ public class EventoController {
         
         eventoService.cancelarEvento(eventoId);
         return ResponseEntity.ok("Evento cancelado com sucesso!");
+    }
+
+    @GetMapping("/exportar/csv")
+    public ResponseEntity<String> exportarEventosCSV(
+            @RequestParam("eventoIds") List<Long> eventoIds,
+            Authentication authentication) {
+        
+        String emailSuperusuario = authentication.getName();
+        
+        try {
+            String csvData = eventoService.gerarEventosCSV(eventoIds, emailSuperusuario);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("text/csv"));
+            headers.setContentDispositionFormData("attachment", "relatorio_eventos.csv");
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(csvData);
+                    
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erro ao gerar CSV: " + e.getMessage());
+        }
     }
 }

@@ -139,7 +139,6 @@
     </div>
   </div>
 
-  @if (evento.status !== statusEvento.FINALIZADO) {
   <div class="card">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
       <span>
@@ -179,55 +178,6 @@
       }
     </div>
   </div>
-  }
-
-  @if (evento.status === statusEvento.FINALIZADO) {
-  <div class="card">
-    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-      <span>
-        <i class="bi bi-award me-2"></i>Certificados Gerados
-      </span>
-      <span class="badge bg-success">{{ certificados.length }}</span>
-    </div>
-    <div class="card-body p-0">
-      @if (certificados.length > 0) {
-      <div class="table-responsive">
-        <table class="table table-hover table-striped mb-0">
-          <thead class="table-dark">
-            <tr>
-              <th>Nome</th>
-              <th>Matrícula</th>
-              <th class="text-center">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (certificado of certificados; track certificado.id) {
-            <tr>
-              <td>{{ certificado.nomeUsuario }}</td>
-              <td>{{ certificado.matriculaUsuario }}</td>
-              <td class="text-center">
-                <button class="btn btn-outline-primary btn-sm"
-                        (click)="baixarCertificado(certificado)"
-                        title="Baixar PDF"
-                        [disabled]="isLoadingAction">
-                  <i class="bi bi-download"></i> Baixar
-                </button>
-              </td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-      } @else {
-      <div class="text-center py-5">
-        <i class="bi bi-inbox display-4 text-muted"></i>
-        <p class="text-muted mt-3">Nenhum certificado gerado para este evento</p>
-        <p class="text-muted">Os certificados são gerados automaticamente ao encerrar o evento.</p>
-      </div>
-      }
-    </div>
-  </div>
-  }
 
   }
 
@@ -250,7 +200,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p class="text-muted">Exportar dados do evento "{{evento?.titulo}}" ({{checkIns.length}} check-in(s) e {{certificados.length}} certificado(s)):</p>
+        <p class="text-muted">Exportar dados do evento "{{evento?.titulo}}" e seus {{checkIns.length}} check-in(s):</p>
 
         <div class="row g-3">
           <div class="col-md-6">
@@ -262,7 +212,7 @@
                   Formato estruturado com dados completos do evento e participantes
                 </p>
                 <button class="btn btn-primary w-100"
-                        (click)="exportarJSON()"
+                        (click)="exportarRelatorio('json')"
                         [disabled]="isLoadingAction">
                   <i class="bi bi-download me-1"></i>
                   {{ isLoadingAction ? 'Exportando...' : 'Exportar JSON' }}
@@ -272,16 +222,18 @@
           </div>
 
           <div class="col-md-6">
-            <div class="card h-100 border-secondary">
+            <div class="card h-100 border-success">
               <div class="card-body text-center">
-                <i class="bi bi-bar-chart-line display-4 text-secondary mb-3"></i>
-                <h5 class="card-title">Power BI</h5>
+                <i class="bi bi-filetype-csv display-4 text-success mb-3"></i>
+                <h5 class="card-title">CSV</h5>
                 <p class="card-text text-muted small">
-                  Formato otimizado para dashboards e relatórios visuais (em breve)
+                  Formato simples de planilha, compatível com Excel e Google Sheets
                 </p>
-                <button class="btn btn-outline-secondary w-100" disabled>
-                  <i class="bi bi-clock me-1"></i>
-                  Em Breve
+                <button class="btn btn-success w-100"
+                        (click)="exportarRelatorio('csv')"
+                        [disabled]="isLoadingAction">
+                  <i class="bi bi-download me-1"></i>
+                  {{ isLoadingAction ? 'Exportando...' : 'Exportar CSV' }}
                 </button>
               </div>
             </div>

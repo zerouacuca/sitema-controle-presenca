@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { saveAs } from 'file-saver';
 
 import { Evento, StatusEvento } from '../../models/evento.model';
 import { EventoService } from '../../servicos/evento-service';
@@ -320,6 +321,39 @@ export class TabelaEventos implements OnInit, OnDestroy {
       setTimeout(() => this.mensagem = '', 5000);
       this.cd.detectChanges();
     }, 1000);
+  }
+
+  exportarCSV(): void {
+    this.isGerandoRelatorio = true;
+
+    const modalElement = document.getElementById('modalExportacao');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+    }
+
+    const idsParaExportar = Array.from(this.eventosSelecionados);
+
+    this.eventoService.exportarEventosCSV(idsParaExportar).subscribe({
+      next: (blob) => {
+        saveAs(blob, 'relatorio_eventos_checkins.csv');
+        
+        this.isGerandoRelatorio = false;
+        this.mensagem = `Relatório CSV exportado com sucesso! ${idsParaExportar.length} evento(s) exportado(s).`;
+        this.eventosSelecionados.clear();
+        
+        setTimeout(() => this.mensagem = '', 5000);
+        this.cd.detectChanges();
+      },
+      error: (error) => {
+        console.error('Erro ao exportar CSV:', error);
+        this.erro = 'Erro ao gerar relatório CSV.';
+        this.isGerandoRelatorio = false;
+        
+        setTimeout(() => this.erro = '', 5000);
+        this.cd.detectChanges();
+      }
+    });
   }
 
   private downloadJSON(data: any, filename: string): void {
