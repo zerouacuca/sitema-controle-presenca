@@ -5,13 +5,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../servicos/usuario-service';
+import { saveAs } from 'file-saver';
 
 import { Evento, StatusEvento } from '../../models/evento.model';
 import { CheckIn } from '../../models/checkin.model';
-import { UsuarioTemplateDTO } from '../../models/usuario.model'; // Importe o DTO
+import { Certificado } from '../../models/certificado.model';
+import { UsuarioTemplateDTO } from '../../models/usuario.model';
 import { EventoService } from '../../servicos/evento-service';
 import { CheckInService } from '../../servicos/checkin-service';
-import { BiometricService, TemplateWithId } from '../../servicos/biometric-service'; // Importe TemplateWithId
+import { CertificadoService } from '../../servicos/certificado-service';
+import { BiometricService, TemplateWithId } from '../../servicos/biometric-service';
 
 @Component({
   selector: 'app-detalhes-evento',
@@ -24,6 +27,7 @@ export class DetalhesEventoComponent implements OnInit {
 
   evento: Evento | null = null;
   checkIns: CheckIn[] = [];
+  certificados: Certificado[] = [];
   isLoading: boolean = true;
   isLoadingAction: boolean = false;
   isCapturingBiometry: boolean = false;
@@ -33,7 +37,6 @@ export class DetalhesEventoComponent implements OnInit {
   statusEvento = StatusEvento;
 
   private templatesCarregados: boolean = false;
-  // NOVO: Mapa para traduzir ID numérico (leitor) para Matrícula (backend)
   private idParaMatriculaMap = new Map<number, string>();
 
   constructor(
@@ -41,8 +44,9 @@ export class DetalhesEventoComponent implements OnInit {
     private router: Router,
     private eventoService: EventoService,
     private checkInService: CheckInService,
+    private certificadoService: CertificadoService,
     private biometricService: BiometricService,
-    private usuarioService: UsuarioService, // Injeção adicionada
+    private usuarioService: UsuarioService,
     private cd: ChangeDetectorRef
   ) { }
 
@@ -65,9 +69,13 @@ export class DetalhesEventoComponent implements OnInit {
     this.eventoService.getEventoById(Number(eventoId)).subscribe({
       next: (evento) => {
         this.evento = evento;
-        this.carregarCheckIns(evento.eventoId!);
+
+        if (evento.status === this.statusEvento.FINALIZADO) {
+          this.carregarCertificados(evento.eventoId!);
+        } else {
+          this.carregarCheckIns(evento.eventoId!);
+        }
         
-        // Se o evento já estiver em andamento, carrega os templates
         if (evento.status === this.statusEvento.EM_ANDAMENTO && !this.templatesCarregados) {
           this.carregarTemplatesNaMemoria();
         }
@@ -96,6 +104,42 @@ export class DetalhesEventoComponent implements OnInit {
     });
   }
 
+  carregarCertificados(eventoId: number): void {
+    this.certificadoService.getCertificadosPorEvento(eventoId).subscribe({
+      next: (certificados: Certificado[]) => {
+        this.certificados = certificados;
+        this.isLoading = false;
+        this.cd.detectChanges();
+      },
+      error: (error: any) => {
+        console.error('Erro ao carregar certificados:', error);
+        this.certificados = [];
+        this.isLoading = false;
+        this.cd.detectChanges();
+      }
+    });
+  }
+
+  baixarCertificado(certificado: Certificado): void {
+    this.isLoadingAction = true;
+    this.actionMessage = `Baixando certificado de ${certificado.nomeUsuario}...`;
+    this.cd.detectChanges();
+
+    this.certificadoService.downloadCertificadoPdf(certificado.id).subscribe({
+      next: (blob) => {
+        saveAs(blob, `certificado_${certificado.matriculaUsuario}_${certificado.eventoId}.pdf`);
+        this.actionMessage = 'Certificado baixado com sucesso!';
+        this.isLoadingAction = false;
+        this.cd.detectChanges();
+        setTimeout(() => this.actionMessage = '', 3000);
+      },
+      error: (error) => {
+        console.error('Erro ao baixar certificado:', error);
+        this.handleError(error, 'Erro ao baixar certificado.');
+      }
+    });
+  }
+
   iniciarEvento(): void {
     if (this.evento?.eventoId && confirm('Iniciar este evento?')) {
       this.isLoadingAction = true;
@@ -104,9 +148,8 @@ export class DetalhesEventoComponent implements OnInit {
       this.eventoService.atualizarStatus(this.evento.eventoId, StatusEvento.EM_ANDAMENTO).subscribe({
         next: () => {
           this.actionMessage = 'Evento iniciado com sucesso!';
-          this.carregarDetalhesEvento(); // Recarrega o evento (que agora está EM_ANDAMENTO)
+          this.carregarDetalhesEvento();
           
-          // Carrega os templates na memória do leitor
           this.carregarTemplatesNaMemoria();
         },
         error: (error: any) => {
@@ -117,11 +160,9 @@ export class DetalhesEventoComponent implements OnInit {
   }
 
   carregarTemplatesNaMemoria(): void {
-    // 1. Busca templates do backend Java
     this.usuarioService.buscarTodosTemplates().subscribe({
       next: (templatesDTO: UsuarioTemplateDTO[]) => {
 
-        // 2. Mapeia DTO (id: string) para o formato do leitor (id: number)
         const templatesParaLeitor: TemplateWithId[] = templatesDTO.map((dto, index) => {
             const idNumerico = index + 1; 
             this.idParaMatriculaMap.set(idNumerico, dto.id); 
@@ -132,11 +173,9 @@ export class DetalhesEventoComponent implements OnInit {
             };
         });
 
-        // 5. Limpa a memória do leitor
         this.biometricService.deleteAllFromMemory().subscribe({
           next: () => {
             console.log('Memória do leitor limpa.');
-            // 6. Carrega os novos templates (com ID numérico)
             this.biometricService.loadToMemory(templatesParaLeitor).subscribe({
               next: (loadResponse) => {
                 this.templatesCarregados = true;
@@ -167,7 +206,7 @@ export class DetalhesEventoComponent implements OnInit {
           this.actionMessage = mensagem;
           this.carregarDetalhesEvento();
           this.isLoadingAction = false;
-          this.templatesCarregados = false; // Limpa o estado
+          this.templatesCarregados = false;
           this.cd.detectChanges();
         },
         error: (error: any) => {
@@ -187,7 +226,7 @@ export class DetalhesEventoComponent implements OnInit {
           this.actionMessage = 'Evento cancelado com sucesso!';
           this.carregarDetalhesEvento();
           this.isLoadingAction = false;
-          this.templatesCarregados = false; // Limpa o estado
+          this.templatesCarregados = false;
           this.cd.detectChanges();
         },
         error: (error: any) => {
@@ -197,7 +236,6 @@ export class DetalhesEventoComponent implements OnInit {
     }
   }
 
-  // ATUALIZADO: Lógica de check-in 1:N com tradução de ID
   realizarCheckInBiometrico(): void {
     if (!this.evento?.eventoId) return;
 
@@ -205,7 +243,6 @@ export class DetalhesEventoComponent implements OnInit {
         this.biometryError = "Templates ainda não foram carregados no leitor. Tente novamente em alguns segundos.";
         this.actionMessage = '';
         this.cd.detectChanges();
-        // Tenta carregar novamente
         this.carregarTemplatesNaMemoria();
         return;
     }
@@ -215,24 +252,18 @@ export class DetalhesEventoComponent implements OnInit {
     this.actionMessage = 'Aguardando leitura biométrica...';
     this.cd.detectChanges();
 
-    // 1. CHAMA O MÉTODO DE IDENTIFICAÇÃO (1:N)
     this.biometricService.identification().subscribe({
       next: (identificationResponse) => {
         this.isCapturingBiometry = false;
 
         if (identificationResponse.success && identificationResponse.id) {
-          // 2. SUCESSO! O Leitor retorna um ID NUMÉRICO (ex: 1)
           const idNumerico = identificationResponse.id; 
-          
-          // 3. Traduz o ID numérico de volta para a MATRÍCULA (string)
-          const matricula = this.idParaMatriculaMap.get(idNumerico); // ex: "2023001"
+          const matricula = this.idParaMatriculaMap.get(idNumerico);
 
           if (matricula) {
             this.actionMessage = `Digital identificada: ${matricula}. Registrando check-in...`;
-            // 4. ENVIA A MATRÍCULA (string) PARA O BACKEND JAVA
             this.registrarCheckInNoBackend(matricula, this.evento!.eventoId!);
           } else {
-            // Isso não deve acontecer se o mapa foi carregado corretamente
             this.biometryError = `ID ${idNumerico} retornado pelo leitor, mas não encontrado no mapa de matrículas.`;
             this.actionMessage = '';
             this.cd.detectChanges();
@@ -250,16 +281,15 @@ export class DetalhesEventoComponent implements OnInit {
     });
   }
   
-  // NOVO MÉTODO: Envia o resultado para o backend
   registrarCheckInNoBackend(matricula: string, eventoId: number): void {
     this.isLoadingAction = true;
     this.cd.detectChanges();
 
     this.checkInService.registrarCheckIn(matricula, eventoId).subscribe({
         next: (response: any) => {
-            this.actionMessage = response.toString(); // Resposta de sucesso
+            this.actionMessage = response.toString();
             this.isLoadingAction = false;
-            this.carregarCheckIns(eventoId); // Recarrega a lista
+            this.carregarCheckIns(eventoId);
             this.cd.detectChanges();
             setTimeout(() => this.actionMessage = '', 3000);
         },
@@ -269,21 +299,19 @@ export class DetalhesEventoComponent implements OnInit {
     });
   }
 
-  // ATUALIZADO para incluir mensagens de erro do backend
   private getErrorMessage(error: any): string {
     if (error.error && typeof error.error === 'string') {
-      return error.error; // Erro do backend (string simples)
+      return error.error;
     }
     if (error.error?.message) {
-      return error.error.message; // Erro do biometric-service (JSON)
+      return error.error.message;
     } else if (error.message) {
-      return error.message; // Erro geral do Angular
+      return error.message;
     } else {
       return 'Erro desconhecido na captura biométrica';
     }
   }
 
-  // NOVO MÉTODO: Helper para centralizar erros
   private handleError(error: any, defaultMessage: string): void {
     this.isLoadingAction = false;
     this.isCapturingBiometry = false;
@@ -367,8 +395,16 @@ export class DetalhesEventoComponent implements OnInit {
         ...checkIn,
         dataHoraFormatada: this.formatarDataHora(checkIn.dataHoraCheckin)
       })),
+      certificados: this.certificados.map(cert => ({
+        id: cert.id,
+        nomeUsuario: cert.nomeUsuario,
+        matriculaUsuario: cert.matriculaUsuario,
+        codigoValidacao: cert.codigoValidacao,
+        dataEmissao: cert.dataEmissao
+      })),
       resumo: {
         totalCheckIns: this.checkIns.length,
+        totalCertificados: this.certificados.length,
         cargaHoraria: this.evento.cargaHoraria,
         dataEvento: this.formatarDataHora(this.evento.dataHora)
       }

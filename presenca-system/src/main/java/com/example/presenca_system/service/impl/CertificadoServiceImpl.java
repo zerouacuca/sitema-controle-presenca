@@ -3,11 +3,13 @@ package com.example.presenca_system.service.impl;
 import com.example.presenca_system.service.PDFService;
 import com.example.presenca_system.service.CertificadoService;
 import com.example.presenca_system.model.Certificado;
+import com.example.presenca_system.model.CheckIn;
 import com.example.presenca_system.model.Evento;
 import com.example.presenca_system.model.Usuario;
 import com.example.presenca_system.model.Superusuario;
 import com.example.presenca_system.model.dto.CertificadoDTO;
 import com.example.presenca_system.repository.CertificadoRepository;
+import com.example.presenca_system.repository.CheckInRepository;
 import com.example.presenca_system.repository.UsuarioRepository;
 import com.lowagie.text.DocumentException;
 
@@ -34,6 +36,9 @@ public class CertificadoServiceImpl implements CertificadoService {
 
     @Autowired
     private PDFService pdfService;
+
+    @Autowired
+    private CheckInRepository checkInRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -67,7 +72,33 @@ public class CertificadoServiceImpl implements CertificadoService {
 
     @Override
     public void gerarCertificadosParaEvento(Evento evento) {
-        System.out.println("Método gerarCertificadosParaEvento precisa ser implementado");
+        List<CheckIn> checkIns = checkInRepository.findByEvento_EventoId(evento.getEventoId());
+        
+        Superusuario emissor = Optional.ofNullable(evento.getSuperusuario())
+                .orElseThrow(() -> new RuntimeException("Evento está sem superusuário associado para emissão."));
+
+        for (CheckIn checkIn : checkIns) {
+            Usuario usuario = checkIn.getUsuario();
+            
+            boolean jaExiste = certificadoRepository.findByUsuarioMatriculaAndEventoEventoId(
+                usuario.getMatricula(), evento.getEventoId()
+            ).isPresent();
+
+            if (!jaExiste) {
+                Certificado novoCertificado = new Certificado();
+                novoCertificado.setUsuario(usuario);
+                novoCertificado.setEvento(evento);
+                novoCertificado.setSuperusuario(emissor);
+                novoCertificado.setCodigoValidacao(generateValidationCode());
+                novoCertificado.setDataEmissao(LocalDate.now());
+                
+                novoCertificado.setTexto("Certificado de participação no evento \"" + evento.getTitulo() +
+                                       "\" com carga horária de " + evento.getCargaHoraria() + " horas. " +
+                                       "Emitido por " + emissor.getNome() + ".");
+
+                certificadoRepository.save(novoCertificado);
+            }
+        }
     }
 
     private String generateValidationCode() {
