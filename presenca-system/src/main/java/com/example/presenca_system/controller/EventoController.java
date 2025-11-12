@@ -33,8 +33,7 @@ public class EventoController {
 
     @GetMapping
     public List<EventoDTO> getMeusEventos(Authentication authentication) {
-        String emailSuperusuario = authentication.getName();
-        return eventoService.findBySuperusuarioEmail(emailSuperusuario);
+        return eventoService.findAllDTO();
     }
 
     @GetMapping("/{id}")
