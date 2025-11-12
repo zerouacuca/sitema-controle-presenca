@@ -55,19 +55,60 @@ public class CertificadoServiceImpl implements CertificadoService {
     @Override
     @Transactional(readOnly = true)
     public Optional<Certificado> findByIdAndSuperusuarioEmail(Long id, String emailSuperusuario) {
-        return certificadoRepository.findByIdAndSuperusuarioEmail(id, emailSuperusuario);
+        // Lógica de restrição removida na etapa anterior
+        return certificadoRepository.findById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean verificarPermissoesCertificados(List<Long> certificadoIds, String emailSuperusuario) {
-        for (Long certificadoId : certificadoIds) {
-            Optional<Certificado> certificado = certificadoRepository.findByIdAndSuperusuarioEmail(certificadoId, emailSuperusuario);
-            if (certificado.isEmpty()) {
-                return false;
+        // Lógica de restrição removida na etapa anterior, todos os superusuários têm permissão
+        return true; 
+    }
+
+    /**
+     * Formata a carga horária de minutos para "X horas e Y minutos".
+     * Trata plurais e omite os minutos se for 0.
+     * Omite as horas se for 0.
+     */
+    private String formatarCargaHoraria(double totalMinutosDouble) {
+        long totalMinutos = (long) totalMinutosDouble;
+
+        // Se o total for 0, retorna "0 minutos"
+        if (totalMinutos <= 0) {
+            return "0 minutos";
+        }
+
+        long horas = totalMinutos / 60;
+        long minutos = totalMinutos % 60;
+
+        StringBuilder sb = new StringBuilder();
+
+        // Bloco das Horas
+        if (horas > 0) {
+            sb.append(horas);
+            if (horas == 1) {
+                sb.append(" hora");
+            } else {
+                sb.append(" horas");
             }
         }
-        return true;
+
+        // Bloco dos Minutos
+        if (minutos > 0) {
+            // Adiciona "e" apenas se já houver horas
+            if (horas > 0) {
+                sb.append(" e ");
+            }
+            sb.append(minutos);
+            if (minutos == 1) {
+                sb.append(" minuto");
+            } else {
+                sb.append(" minutos");
+            }
+        }
+
+        return sb.toString();
     }
 
     @Override
@@ -92,8 +133,11 @@ public class CertificadoServiceImpl implements CertificadoService {
                 novoCertificado.setCodigoValidacao(generateValidationCode());
                 novoCertificado.setDataEmissao(LocalDate.now());
                 
+                // ### LÓGICA DE FORMATAÇÃO APLICADA ###
+                String cargaHorariaFormatada = formatarCargaHoraria(evento.getCargaHoraria());
+                
                 novoCertificado.setTexto("Certificado de participação no evento \"" + evento.getTitulo() +
-                                       "\" com carga horária de " + evento.getCargaHoraria() + " horas. " +
+                                       "\" com carga horária de " + cargaHorariaFormatada + ". " + // Variável substituída
                                        "Emitido por " + emissor.getNome() + ".");
 
                 certificadoRepository.save(novoCertificado);
@@ -212,8 +256,11 @@ public class CertificadoServiceImpl implements CertificadoService {
         certificado.setCodigoValidacao(generateValidationCode());
         certificado.setDataEmissao(LocalDate.now());
 
+        // ### LÓGICA DE FORMATAÇÃO APLICADA ###
+        String cargaHorariaFormatada = formatarCargaHoraria(evento.getCargaHoraria());
+
         certificado.setTexto("Certificado de participação no evento \"" + evento.getTitulo() +
-                        "\" com carga horária de " + evento.getCargaHoraria() + " horas. " +
+                        "\" com carga horária de " + cargaHorariaFormatada + ". " + // Variável substituída
                         "Emitido por " + superusuario.getNome() + ".");
 
         return certificadoRepository.save(certificado);
