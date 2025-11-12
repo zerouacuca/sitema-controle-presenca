@@ -54,7 +54,7 @@ public class DataInitializer implements CommandLineRunner {
                 System.out.println("  Criando superusuário padrão...");
 
                 Superusuario admin = new Superusuario();
-                admin.setCpf("00000000000");
+                admin.setMatricula("ADMIN001");
                 admin.setNome("Administrador do Sistema");
                 admin.setEmail("admin@admin.com");
                 admin.setSenha("admin");
@@ -81,7 +81,7 @@ public class DataInitializer implements CommandLineRunner {
 
             int criados = 0;
             for (Superusuario superusuario : superusuarios) {
-                if (!superusuarioRepository.existsById(superusuario.getCpf())) {
+                if (!superusuarioRepository.existsById(superusuario.getMatricula())) {
                     superusuarioService.criarPrimeiroSuperusuario(superusuario);
                     criados++;
                 }
@@ -132,22 +132,22 @@ public class DataInitializer implements CommandLineRunner {
 
             List<Evento> eventos = Arrays.asList(
                 criarEvento("Workshop Spring Boot Avançado", "Workshop completo sobre desenvolvimento com Spring Boot, Security e JPA",
-                           LocalDateTime.of(2024, 1, 10, 14, 0), "Tecnologia", 6.0, StatusEvento.FINALIZADO, "00000000000"),
+                           LocalDateTime.of(2024, 1, 10, 14, 0), "Tecnologia", 6.0, StatusEvento.FINALIZADO, "ADMIN001"),
 
                 criarEvento("Treinamento Angular & TypeScript", "Desenvolvimento de aplicações web modernas com Angular e TypeScript",
-                           LocalDateTime.of(2024, 1, 25, 9, 0), "Tecnologia", 8.0, StatusEvento.EM_ANDAMENTO, "00000000000"),
+                           LocalDateTime.of(2024, 1, 25, 9, 0), "Tecnologia", 8.0, StatusEvento.EM_ANDAMENTO, "ADMIN001"),
 
                 criarEvento("Palestra Cloud Computing AWS", "Introdução aos serviços AWS e computação em nuvem",
-                           LocalDateTime.of(2024, 2, 15, 16, 0), "Tecnologia", 4.0, StatusEvento.AGENDADO, "00000000000"),
+                           LocalDateTime.of(2024, 2, 15, 16, 0), "Tecnologia", 4.0, StatusEvento.AGENDADO, "ADMIN001"),
 
                 criarEvento("Workshop DevOps CI/CD", "Pipeline de integração e deploy contínuo com Jenkins e Docker",
-                           LocalDateTime.of(2024, 2, 28, 13, 0), "Tecnologia", 5.0, StatusEvento.AGENDADO, "00000000000"),
+                           LocalDateTime.of(2024, 2, 28, 13, 0), "Tecnologia", 5.0, StatusEvento.AGENDADO, "ADMIN001"),
 
                 criarEvento("Curso React Native", "Desenvolvimento de aplicativos móveis com React Native",
-                           LocalDateTime.of(2024, 3, 10, 10, 0), "Tecnologia", 12.0, StatusEvento.AGENDADO, "00000000000"),
+                           LocalDateTime.of(2024, 3, 10, 10, 0), "Tecnologia", 12.0, StatusEvento.AGENDADO, "ADMIN001"),
 
                 criarEvento("Seminário Segurança da Informação", "Melhores práticas e ferramentas de segurança digital",
-                           LocalDateTime.of(2024, 3, 20, 8, 30), "Segurança", 6.0, StatusEvento.AGENDADO, "00000000000")
+                           LocalDateTime.of(2024, 3, 20, 8, 30), "Segurança", 6.0, StatusEvento.AGENDADO, "ADMIN001")
             );
 
             int criados = 0;
@@ -201,14 +201,14 @@ public class DataInitializer implements CommandLineRunner {
         try {
             System.out.println("  Criando certificados para eventos finalizados...");
 
-            criarCertificado("2023001", 1L, "00000000000", "CERT-SPRING-001", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023002", 1L, "00000000000", "CERT-SPRING-002", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023003", 1L, "00000000000", "CERT-SPRING-003", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023004", 1L, "00000000000", "CERT-SPRING-004", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023005", 1L, "00000000000", "CERT-SPRING-005", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023006", 1L, "00000000000", "CERT-SPRING-006", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023007", 1L, "00000000000", "CERT-SPRING-007", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023008", 1L, "00000000000", "CERT-SPRING-008", LocalDate.of(2024, 1, 11));
+            criarCertificado("2023001", 1L, "ADMIN001", "CERT-SPRING-001", LocalDate.of(2024, 1, 11));
+            criarCertificado("2023002", 1L, "ADMIN001", "CERT-SPRING-002", LocalDate.of(2024, 1, 11));
+            criarCertificado("2023003", 1L, "ADMIN001", "CERT-SPRING-003", LocalDate.of(2024, 1, 11));
+            criarCertificado("2023004", 1L, "ADMIN001", "CERT-SPRING-004", LocalDate.of(2024, 1, 11));
+            criarCertificado("2023005", 1L, "ADMIN001", "CERT-SPRING-005", LocalDate.of(2024, 1, 11));
+            criarCertificado("2023006", 1L, "ADMIN001", "CERT-SPRING-006", LocalDate.of(2024, 1, 11));
+            criarCertificado("2023007", 1L, "ADMIN001", "CERT-SPRING-007", LocalDate.of(2024, 1, 11));
+            criarCertificado("2023008", 1L, "ADMIN001", "CERT-SPRING-008", LocalDate.of(2024, 1, 11));
 
             System.out.println("  Certificados criados com sucesso para eventos finalizados!");
         } catch (Exception e) {
@@ -219,7 +219,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private Superusuario criarSuperusuario(String cpf, String nome, String email, String senha) {
         Superusuario superusuario = new Superusuario();
-        superusuario.setCpf(cpf);
+        // superusuario.setCpf(cpf); // Removido
         superusuario.setNome(nome);
         superusuario.setEmail(email);
         superusuario.setSenha(senha);
@@ -242,7 +242,7 @@ public class DataInitializer implements CommandLineRunner {
 
 
      private Evento criarEvento(String titulo, String descricao, LocalDateTime dataHora,
-                              String categoria, double cargaHoraria, StatusEvento status, String superusuarioCpf) {
+                              String categoria, double cargaHoraria, StatusEvento status, String superusuarioMatricula) {
         Evento evento = new Evento();
         evento.setTitulo(titulo);
         evento.setDescricao(descricao);
@@ -251,11 +251,11 @@ public class DataInitializer implements CommandLineRunner {
         evento.setCargaHoraria(cargaHoraria);
         evento.setStatus(status);
 
-        Optional<Superusuario> superusuarioOpt = superusuarioRepository.findById(superusuarioCpf);
+        Optional<Superusuario> superusuarioOpt = superusuarioRepository.findById(superusuarioMatricula);
         if (superusuarioOpt.isPresent()) {
             evento.setSuperusuario(superusuarioOpt.get());
         } else {
-            Optional<Superusuario> adminOpt = superusuarioRepository.findById("00000000000");
+            Optional<Superusuario> adminOpt = superusuarioRepository.findById("ADMIN001");
             adminOpt.ifPresent(evento::setSuperusuario);
         }
 
@@ -283,12 +283,12 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void criarCertificado(String usuarioMatricula, Long eventoId, String superusuarioCpf,
+    private void criarCertificado(String usuarioMatricula, Long eventoId, String superusuarioMatricula,
                                 String codigoValidacao, LocalDate dataEmissao) {
         try {
             Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioMatricula);
             Optional<Evento> eventoOpt = eventoRepository.findById(eventoId);
-            Optional<Superusuario> superusuarioOpt = superusuarioRepository.findById(superusuarioCpf);
+            Optional<Superusuario> superusuarioOpt = superusuarioRepository.findById(superusuarioMatricula);
 
             if (usuarioOpt.isPresent() && eventoOpt.isPresent() && superusuarioOpt.isPresent()) {
                 Optional<Certificado> certificadoExistente = certificadoRepository.findByUsuarioMatriculaAndEventoEventoId(usuarioMatricula, eventoId);

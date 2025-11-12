@@ -8,9 +8,12 @@ import { CertificadosComponent } from './pages/certificados/certificados.compone
 import { DetalhesEventoComponent } from './pages/detalhes-evento/detalhes-evento.component';
 import { PaginaPrincipal } from './pages/pagina-principal/pagina-principal';
 import { AuthGuard } from './guards/auth.guard';
-import { NovoSuperusuarioComponent } from './pages/novo-superusuario/novo-superusuario.component';
 import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha.component';
 import { RedefinirSenhaComponent } from './pages/redefinir-senha/redefinir-senha.component';
+
+// CAMINHOS DE IMPORTAÇÃO CORRIGIDOS
+import { SuperusuarioCrudComponent } from './pages/novo-superusuario/superusuario-crud.component';
+import { TabelaSuperusuariosComponent } from './pages/tabela-superusuarios/tabela-superusuarios'; // Removido .component do nome
 
 export const routes: Routes = [
   // Rotas públicas - SEM AuthGuard
@@ -82,12 +85,30 @@ export const routes: Routes = [
       { path: '', component: CertificadosComponent }
     ]
   },
+  
+  // Rota de Superusuários (Simplificada)
   { 
-    path: 'novo-superusuario', 
+    path: 'superusuarios', 
     component: PaginaPrincipal,
     canActivate: [AuthGuard],
     children: [
-      { path: '', component: NovoSuperusuarioComponent }
+      { path: '', component: TabelaSuperusuariosComponent } // Rota direta para a tabela
+    ]
+  },
+  { 
+    path: 'cadastrar-superusuario', 
+    component: PaginaPrincipal,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: SuperusuarioCrudComponent }
+    ]
+  },
+  { 
+    path: 'editar-superusuario/:matricula', 
+    component: PaginaPrincipal,
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', component: SuperusuarioCrudComponent }
     ]
   },
   

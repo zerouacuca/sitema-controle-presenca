@@ -43,12 +43,20 @@ public class SuperusuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    //   Buscar superusuário por matrícula (para edição)
+    @GetMapping("/{matricula}")
+    public ResponseEntity<Superusuario> getSuperusuarioPorMatricula(@PathVariable String matricula, Authentication authentication) {
+        return superusuarioService.buscarPorMatricula(matricula)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     //   Atualizar superusuário
-    @PutMapping("/{cpf}")
-    public ResponseEntity<Superusuario> alterarSuperusuario(@PathVariable String cpf, @RequestBody Superusuario superusuario, Authentication authentication) {
+    @PutMapping("/{matricula}")
+    public ResponseEntity<Superusuario> alterarSuperusuario(@PathVariable String matricula, @RequestBody Superusuario superusuario, Authentication authentication) {
         try {
             String emailAutenticado = authentication.getName();
-            Superusuario superusuarioAtualizado = superusuarioService.alterarSuperusuario(cpf, superusuario, emailAutenticado);
+            Superusuario superusuarioAtualizado = superusuarioService.alterarSuperusuario(matricula, superusuario, emailAutenticado);
             return ResponseEntity.ok(superusuarioAtualizado);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -56,10 +64,10 @@ public class SuperusuarioController {
     }
 
     //   Excluir superusuário
-    @DeleteMapping("/{cpf}")
-    public ResponseEntity<Void> excluirSuperusuario(@PathVariable String cpf, Authentication authentication) {
+    @DeleteMapping("/{matricula}")
+    public ResponseEntity<Void> excluirSuperusuario(@PathVariable String matricula, Authentication authentication) {
         String emailAutenticado = authentication.getName();
-        superusuarioService.excluirSuperusuario(cpf, emailAutenticado);
+        superusuarioService.excluirSuperusuario(matricula, emailAutenticado);
         return ResponseEntity.noContent().build();
     }
 }

@@ -37,7 +37,7 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
     }
 
     @Override
-    public Superusuario alterarSuperusuario(String cpf, Superusuario superusuarioAtualizado, String emailSuperusuarioAutenticado) {
+    public Superusuario alterarSuperusuario(String matricula, Superusuario superusuarioAtualizado, String emailSuperusuarioAutenticado) {
         // Verificar permissões
         Optional<Superusuario> autenticado = superusuarioRepository.findByEmail(emailSuperusuarioAutenticado);
         if (autenticado.isEmpty()) {
@@ -45,15 +45,15 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
         }
         
         // Impedir que um superusuário altere seus próprios dados sem verificação adicional
-        if (autenticado.get().getCpf().equals(cpf)) {
+        if (autenticado.get().getMatricula().equals(matricula)) {
             throw new RuntimeException("Não é permitido alterar o próprio usuário por esta operação");
         }
         
-        return alterarSuperusuario(cpf, superusuarioAtualizado);
+        return alterarSuperusuario(matricula, superusuarioAtualizado);
     }
 
     @Override
-    public void excluirSuperusuario(String cpf, String emailSuperusuarioAutenticado) {
+    public void excluirSuperusuario(String matricula, String emailSuperusuarioAutenticado) {
         // Verificar permissões
         Optional<Superusuario> autenticado = superusuarioRepository.findByEmail(emailSuperusuarioAutenticado);
         if (autenticado.isEmpty()) {
@@ -61,11 +61,11 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
         }
         
         // Impedir auto-exclusão
-        if (autenticado.get().getCpf().equals(cpf)) {
+        if (autenticado.get().getMatricula().equals(matricula)) {
             throw new RuntimeException("Não é permitido excluir o próprio usuário");
         }
         
-        excluirSuperusuario(cpf);
+        excluirSuperusuario(matricula);
     }
 
     @Override
@@ -91,21 +91,28 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
     }
 
     @Override
-    public Superusuario alterarSuperusuario(String cpf, Superusuario superusuarioAtualizado) {
-        return superusuarioRepository.findById(cpf)
+    public Optional<Superusuario> buscarPorMatricula(String matricula) {
+        return superusuarioRepository.findById(matricula);
+    }
+
+    @Override
+    public Superusuario alterarSuperusuario(String matricula, Superusuario superusuarioAtualizado) {
+        return superusuarioRepository.findById(matricula)
                 .map(superusuarioExistente -> {
                     superusuarioExistente.setEmail(superusuarioAtualizado.getEmail());
+                    superusuarioExistente.setNome(superusuarioAtualizado.getNome());
+                    
                     if (superusuarioAtualizado.getSenha() != null && !superusuarioAtualizado.getSenha().isEmpty()) {
                         superusuarioExistente.setSenha(passwordEncoder.encode(superusuarioAtualizado.getSenha()));
                     }
                     return superusuarioRepository.save(superusuarioExistente);
                 })
-                .orElseThrow(() -> new RuntimeException("Superusuário não encontrado com o CPF: " + cpf));
+                .orElseThrow(() -> new RuntimeException("Superusuário não encontrado com a Matrícula: " + matricula));
     }
 
     @Override
-    public void excluirSuperusuario(String cpf) {
-        superusuarioRepository.deleteById(cpf);
+    public void excluirSuperusuario(String matricula) {
+        superusuarioRepository.deleteById(matricula);
     }
     
     @Override
@@ -138,8 +145,8 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
      */
     public Superusuario criarPrimeiroSuperusuario(Superusuario superusuario) {
         // Validações básicas
-        if (superusuario.getEmail() == null || superusuario.getSenha() == null) {
-            throw new RuntimeException("Email e senha são obrigatórios");
+        if (superusuario.getEmail() == null || superusuario.getSenha() == null || superusuario.getMatricula() == null) {
+            throw new RuntimeException("Matrícula, Email e senha são obrigatórios");
         }
         
         // Verifica se já existe um usuário com este email

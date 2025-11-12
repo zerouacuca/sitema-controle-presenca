@@ -1,5 +1,5 @@
 export class Superusuario {
-  cpf: string = '';
+  matricula: string = '';
   nome: string = '';
   email: string = '';
   senha: string = '';
@@ -13,13 +13,13 @@ export class Superusuario {
 }
 
 export interface SuperusuarioResponse {
-  cpf: string;
+  matricula: string;
   nome: string;
   email: string;
 }
 
 export interface CriarSuperusuarioRequest {
-  cpf: string;
+  matricula: string;
   nome: string;
   email: string;
   senha: string;

@@ -1,15 +1,14 @@
 <div class="container mt-4">
 
-  <!-- Cabeçalho -->
   <div class="row mb-4">
     <div class="col-12">
       <h2 class="text-center mb-4">
-        <i class="bi bi-person-plus-fill me-2"></i>Cadastro de Superusuário
+        <i class="bi {{ isEditMode ? 'bi-person-gear' : 'bi-person-plus-fill' }} me-2"></i>
+        {{ isEditMode ? 'Editar Superusuário' : 'Cadastro de Superusuário' }}
       </h2>
     </div>
   </div>
 
-  <!-- Mensagens -->
   @if (errorMessage) {
   <div class="alert alert-danger alert-dismissible fade show">
     {{ errorMessage }}
@@ -24,17 +23,15 @@
   </div>
   }
 
-  <!-- Loading -->
   @if (isLoading) {
   <div class="text-center my-4">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Carregando...</span>
     </div>
-    <p class="mt-2">Criando superusuário...</p>
+    <p class="mt-2">{{ isEditMode ? 'Salvando...' : 'Criando...' }}</p>
   </div>
   }
 
-  <!-- Formulário -->
   @if (!isLoading) {
   <div class="row justify-content-center">
     <div class="col-12 col-md-8 col-lg-6">
@@ -45,33 +42,30 @@
         <div class="card-body">
           <form #formSuperusuario="ngForm">
             
-            <!-- CPF -->
             <div class="mb-3">
-              <label for="cpf" class="form-label">CPF <span class="text-danger">*</span></label>
+              <label for="matricula" class="form-label">Matrícula <span class="text-danger">*</span></label>
               <input
                 type="text"
-                id="cpf"
-                name="cpf"
+                id="matricula"
+                name="matricula"
                 class="form-control"
-                [(ngModel)]="superusuario.cpf"
-                #cpf="ngModel"
-                (input)="onCpfInput(); onInputChange()"
+                [(ngModel)]="superusuario.matricula"
+                #matricula="ngModel"
+                (input)="onInputChange()"
                 required
-                [disabled]="isLoading"
-                placeholder="000.000.000-00"
-                maxlength="14"
-                [class.is-invalid]="cpf.invalid && (cpf.dirty || cpf.touched)"
+                [disabled]="isLoading || isEditMode"
+                placeholder="Matrícula do superusuário"
+                [class.is-invalid]="matricula.invalid && (matricula.dirty || matricula.touched)"
               />
-              @if (cpf.invalid && (cpf.dirty || cpf.touched)) {
+              @if (matricula.invalid && (matricula.dirty || matricula.touched)) {
               <div class="invalid-feedback">
-                @if (cpf.errors?.['required']) {
-                <small>CPF é obrigatório.</small>
+                @if (matricula.errors?.['required']) {
+                <small>Matrícula é obrigatória.</small>
                 }
               </div>
               }
             </div>
 
-            <!-- Nome -->
             <div class="mb-3">
               <label for="nome" class="form-label">Nome Completo <span class="text-danger">*</span></label>
               <input
@@ -96,7 +90,6 @@
               }
             </div>
 
-            <!-- Email -->
             <div class="mb-3">
               <label for="email" class="form-label">E-mail <span class="text-danger">*</span></label>
               <input
@@ -125,9 +118,11 @@
               }
             </div>
 
-            <!-- Senha -->
             <div class="mb-3">
-              <label for="senha" class="form-label">Senha <span class="text-danger">*</span></label>
+              <label for="senha" class="form-label">Senha 
+                @if (!isEditMode) { <span class="text-danger">*</span> }
+                @if (isEditMode) { <small class="text-muted">(Deixe em branco para não alterar)</small> }
+              </label>
               <input
                 type="password"
                 id="senha"
@@ -136,7 +131,7 @@
                 [(ngModel)]="superusuario.senha"
                 #senha="ngModel"
                 (input)="onInputChange()"
-                required
+                [required]="!isEditMode"
                 [disabled]="isLoading"
                 placeholder="Mínimo 3 caracteres"
                 minlength="3"
@@ -154,9 +149,10 @@
               }
             </div>
 
-            <!-- Confirmar Senha -->
             <div class="mb-4">
-              <label for="confirmarSenha" class="form-label">Confirmar Senha <span class="text-danger">*</span></label>
+              <label for="confirmarSenha" class="form-label">Confirmar Senha
+                @if (!isEditMode) { <span class="text-danger">*</span> }
+              </label>
               <input
                 type="password"
                 id="confirmarSenha"
@@ -165,7 +161,7 @@
                 [(ngModel)]="superusuario.confirmarSenha"
                 #confirmarSenha="ngModel"
                 (input)="onInputChange()"
-                required
+                [required]="!isEditMode || superusuario.senha"
                 [disabled]="isLoading"
                 placeholder="Digite a senha novamente"
                 [class.is-invalid]="confirmarSenha.invalid && (confirmarSenha.dirty || confirmarSenha.touched)"
@@ -179,7 +175,6 @@
               }
             </div>
 
-            <!-- Botões -->
             <div class="d-flex gap-2 justify-content-end">
               <button
                 type="button"
@@ -189,16 +184,16 @@
                 <i class="bi bi-x-circle me-1"></i> Cancelar
               </button>
               <button
-                class="btn btn-success"
+                class="btn"
+                [ngClass]="isEditMode ? 'btn-primary' : 'btn-success'"
                 type="submit"
                 (click)="onSubmit()"
                 [disabled]="isLoading || !formSuperusuario.valid">
-                <i class="bi bi-person-plus me-1"></i>
-                {{ isLoading ? 'Criando...' : 'Criar Superusuário' }}
+                <i class="bi {{ isEditMode ? 'bi-check-circle' : 'bi-person-plus' }} me-1"></i>
+                {{ isLoading ? (isEditMode ? 'Salvando...' : 'Criando...') : (isEditMode ? 'Salvar Alterações' : 'Criar Superusuário') }}
               </button>
             </div>
 
-            <!-- Campos obrigatórios -->
             <div class="mt-3">
               <small class="text-muted">* Campos obrigatórios</small>
             </div>

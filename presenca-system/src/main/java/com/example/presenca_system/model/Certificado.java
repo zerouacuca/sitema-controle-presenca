@@ -26,7 +26,7 @@ public class Certificado {
     private Evento evento;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "superusuario_cpf", nullable = false)
+    @JoinColumn(name = "superusuario_matricula", nullable = false)
     private Superusuario superusuario;
 
     @Column(name = "codigo_validacao", unique = true, nullable = false)

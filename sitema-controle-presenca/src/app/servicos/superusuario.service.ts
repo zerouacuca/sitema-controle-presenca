@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
 export interface Superusuario {
-  cpf: string;
+  matricula: string;
   nome: string;
   email: string;
   senha: string;
@@ -37,10 +37,34 @@ export class SuperusuarioService {
     });
   }
 
-  validarCPF(cpf: string): boolean {
-    // Sua lógica de validação de CPF
-    return cpf.length === 11 && /^\d+$/.test(cpf);
+  /**
+   * Atualiza um superusuário existente
+   */
+  atualizarSuperusuario(matricula: string, superusuario: Superusuario): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${matricula}`, superusuario);
   }
+
+  /**
+   * Busca um superusuário pela matrícula
+   */
+  getSuperusuario(matricula: string): Observable<Superusuario> {
+    return this.http.get<Superusuario>(`${this.apiUrl}/${matricula}`);
+  }
+
+  /**
+   * Lista todos os superusuários
+   */
+  listarSuperusuarios(): Observable<Superusuario[]> {
+    return this.http.get<Superusuario[]>(this.apiUrl);
+  }
+
+  /**
+   * Exclui um superusuário
+   */
+  excluirSuperusuario(matricula: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${matricula}`);
+  }
+
 
   validarEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -52,22 +76,5 @@ export class SuperusuarioService {
       return { valido: false, mensagem: 'A senha deve ter pelo menos 3 caracteres.' };
     }
     return { valido: true, mensagem: '' };
-  }
-
-  removerFormatacaoCPF(cpf: string): string {
-    return cpf.replace(/\D/g, '');
-  }
-
-  formatarCPF(cpf: string): string {
-    cpf = cpf.replace(/\D/g, '');
-    if (cpf.length <= 3) {
-      return cpf;
-    } else if (cpf.length <= 6) {
-      return cpf.replace(/(\d{3})(\d{0,3})/, '$1.$2');
-    } else if (cpf.length <= 9) {
-      return cpf.replace(/(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
-    } else {
-      return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
-    }
   }
 }

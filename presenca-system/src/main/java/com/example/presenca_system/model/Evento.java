@@ -23,7 +23,7 @@ public class Evento {
     private String categoria;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "superusuario_cpf")
+    @JoinColumn(name = "superusuario_matricula")
     private Superusuario superusuario;
     
     @Enumerated(EnumType.STRING)
