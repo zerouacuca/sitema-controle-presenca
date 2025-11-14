@@ -8,7 +8,7 @@ import { Login, AuthResponse } from '../models/login.model';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/auth';
+  private apiUrl = 'https://localhost:8443/auth';
   private tokenKey = 'auth_token';
   private currentUserSubject = new BehaviorSubject<string | null>(this.getCurrentUserEmail());
   public currentUser$ = this.currentUserSubject.asObservable();
