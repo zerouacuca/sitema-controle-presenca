@@ -277,6 +277,34 @@ export class TabelaEventos implements OnInit, OnDestroy {
     return date.toLocaleDateString('pt-BR');
   }
 
+  // === INÍCIO DA NOVA FUNÇÃO ===
+  formatarCargaHoraria(totalMinutosDouble: number): string {
+    const totalMinutos = Math.floor(totalMinutosDouble);
+
+    if (totalMinutos <= 0) {
+      return "0 minutos";
+    }
+
+    const horas = Math.floor(totalMinutos / 60);
+    const minutos = totalMinutos % 60;
+
+    let sb = '';
+
+    if (horas > 0) {
+      sb += `${horas} hora${horas === 1 ? '' : 's'}`;
+    }
+
+    if (minutos > 0) {
+      if (horas > 0) {
+        sb += " e ";
+      }
+      sb += `${minutos} minuto${minutos === 1 ? '' : 's'}`;
+    }
+
+    return sb;
+  }
+  // === FIM DA NOVA FUNÇÃO ===
+
   getStatusDescricao(status: StatusEvento | undefined): string {
     if (!status) return 'Não definido';
 

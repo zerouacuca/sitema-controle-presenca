@@ -181,7 +181,7 @@
               <td>{{ evento.titulo }}</td>
               <td>{{ evento.descricao }}</td>
               <td>{{ evento.categoria }}</td>
-              <td class="text-center">{{ evento.cargaHoraria }}h</td>
+              <td class="text-center">{{ formatarCargaHoraria(evento.cargaHoraria) }}</td>
               <td>
                 <span class="badge"
                       [ngClass]="{
