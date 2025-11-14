@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # --- Banco de Dados PostgreSQL ---
+  db:
+    image: postgres:15-alpine
+    container_name: presenca_db
+    environment:
+      POSTGRES_DB: sistema_presenca
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      # Expõe a porta do PostgreSQL no seu PC (opcional, para depuração)
+      - "5432:5432"
+    volumes:
+      # Persiste os dados do banco
+      - postgres_data:/var/lib/postgresql/data
+
+  # --- Backend (Spring Boot) ---
+  backend:
+    build:
+      context: ./presenca-system  # Pasta do backend
+    container_name: presenca_backend
+    # Não expomos a porta 8080 publicamente, só o Nginx a acede
+    environment:
+      # Aponta o backend para o contentor do banco 'db'
+      - spring.datasource.url=jdbc:postgresql://db:5432/sistema_presenca
+      # (AVISO: Isto apaga os seus dados a cada reinício!)
+      - spring.jpa.hibernate.ddl-auto=create-drop 
+      # URL para os emails de recuperação de senha (agora no Nginx)
+      - app.frontend.url=http://localhost:8080
+    depends_on:
+      - db
+
+  # --- Frontend (Angular + Nginx) ---
+  frontend:
+    build:
+      context: ./sitema-controle-presenca # Pasta do frontend
+    container_name: presenca_frontend
+    ports:
+      # Acede à aplicação completa através desta porta
+      - "8080:80"
+    extra_hosts:
+      # Permite ao Nginx (dentro do Docker) encontrar o seu PC
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - backend
+
+# Volume para persistir os dados do banco
+volumes:
+  postgres_data:
