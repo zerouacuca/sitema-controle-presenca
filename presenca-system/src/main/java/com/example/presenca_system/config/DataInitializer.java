@@ -45,7 +45,7 @@ public class DataInitializer implements CommandLineRunner {
         //criarUsuariosComuns();
         //criarEventosParaAdmin();
         //criarCheckInsParaEventosAdmin();
-        //criarCertificadosParaEventosFinalizados();
+        criarCertificadosParaEventosFinalizados();
     }
 
     private void criarSuperusuarioPadrao() {
