@@ -156,6 +156,7 @@
               <th>Nome</th>
               <th>Matrícula</th>
               <th>Data/Hora</th>
+              <th width="120px">Certificado</th>
             </tr>
           </thead>
           <tbody>
@@ -164,6 +165,23 @@
               <td>{{ checkIn.usuarioNome }}</td>
               <td>{{ checkIn.usuarioMatricula }}</td>
               <td>{{ formatarDataHora(checkIn.dataHoraCheckin) }}</td>
+              
+              <td>
+                @if (evento.status === statusEvento.FINALIZADO) {
+                  @if (getCertificadoId(checkIn.usuarioMatricula); as certId) {
+                    <button class="btn btn-outline-success btn-sm"
+                            (click)="baixarCertificado(certId, checkIn.usuarioMatricula)"
+                            title="Baixar Certificado"
+                            [disabled]="isLoadingAction">
+                      <i class="bi bi-file-earmark-arrow-down"></i> Baixar
+                    </button>
+                  } @else {
+                    <span class="text-muted small">Não emitido</span>
+                  }
+                } @else {
+                  <span class="text-muted small">Evento não finalizado</span>
+                }
+              </td>
             </tr>
             }
           </tbody>
