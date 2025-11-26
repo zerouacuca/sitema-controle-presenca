@@ -233,18 +233,20 @@ carregarUsuario(matricula: string): void {
     this.erro = '';
     this.matriculaInvalida = false;
 
-    if (!this.usuario.matricula || !this.usuario.nome || !this.usuario.email || !this.usuario.dataNascimento) {
+    if (!this.usuario.matricula || !this.usuario.nome || !this.usuario.dataNascimento) {
        this.erro = 'Preencha todos os campos obrigatórios (*)';
        this.cd.detectChanges();
        return false;
     }
 
-     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-     if (!emailRegex.test(this.usuario.email)) {
-       this.erro = 'Formato de e-mail inválido.';
-       this.cd.detectChanges();
-       return false;
-     }
+    if (this.usuario.email && this.usuario.email.trim() !== '') {
+       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+       if (!emailRegex.test(this.usuario.email)) {
+         this.erro = 'Formato de e-mail inválido.';
+         this.cd.detectChanges();
+         return false;
+       }
+    }
 
     if (!this.isEditMode && !this.usuario.template) {
       this.erro = 'É necessário capturar a biometria antes de salvar!';

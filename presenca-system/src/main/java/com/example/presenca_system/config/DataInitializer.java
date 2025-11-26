@@ -98,19 +98,9 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("  Criando usuários comuns...");
 
             List<Usuario> usuarios = Arrays.asList(
-                criarUsuario("João Silva", "joao.silva@email.com", "2023001", "TI", LocalDate.of(1990, 5, 15), "TemplateBiometrico1"),
-                criarUsuario("Maria Santos", "maria.santos@email.com", "2023002", "RH", LocalDate.of(1985, 8, 22), "TemplateBiometrico2"),
-                criarUsuario("Pedro Oliveira", "pedro.oliveira@email.com", "2023003", "Financeiro", LocalDate.of(1992, 12, 10), "TemplateBiometrico3"),
-                criarUsuario("Ana Costa", "ana.costa@email.com", "2023004", "Marketing", LocalDate.of(1988, 3, 25), "TemplateBiometrico4"),
-                criarUsuario("Carlos Rodrigues", "carlos.rodrigues@email.com", "2023005", "Operações", LocalDate.of(1995, 7, 12), "TemplateBiometrico5"),
-                criarUsuario("Fernanda Lima", "fernanda.lima@email.com", "2023006", "TI", LocalDate.of(1991, 9, 18), "TemplateBiometrico6"),
-                criarUsuario("Ricardo Alves", "ricardo.alves@email.com", "2023007", "RH", LocalDate.of(1987, 11, 30), "TemplateBiometrico7"),
-                criarUsuario("Juliana Martins", "juliana.martins@email.com", "2023008", "Financeiro", LocalDate.of(1993, 4, 5), "TemplateBiometrico8"),
-                criarUsuario("Roberto Ferreira", "roberto.ferreira@email.com", "2023009", "Marketing", LocalDate.of(1989, 6, 20), "TemplateBiometrico9"),
-                criarUsuario("Patrícia Almeida", "patricia.almeida@email.com", "2023010", "Operações", LocalDate.of(1994, 2, 14), "TemplateBiometrico10"),
-                criarUsuario("Lucas Santos", "lucas.santos@email.com", "2023011", "TI", LocalDate.of(1990, 11, 8), "TemplateBiometrico11"),
-                criarUsuario("Camila Oliveira", "camila.oliveira@email.com", "2023012", "RH", LocalDate.of(1986, 7, 3), "TemplateBiometrico12")
-            );
+                criarUsuario("João Silva", "joao.silva@email.com", "2023001", "TI", LocalDate.of(1990, 5, 15), "AQAAABQAAACkAQAAAQASAAMAZAAAAAAAoAEAAGVpUlQLyKMNGYtmV9YgPandN4py3guH6/Y36*cpZbUU2flJ9k6iDtdZI5uczb3MTu08Pw04s7OWC4VNAHzlzkxcdDS/BGLucDIl/vOz35/VVm8yASLDYuvymjUoh6CpyYAhAyjAdg6nfxXT8W*X/Hb77qLYkxwyAYIYheb2JGJd1gG53DrqObOOkMVeUdanLDt7ZHdRohJcAi/gWpF6TCjCuZ8wgW24bTF62xFTdMxJQHSmVJOvaAS/VacVSDe2KLQdzwxiYAJgvsHOnAlvDZMr8R*i4FlPA/Nzlq2ddKUg72q0cdKvJgw6a67zg8MCZkQR7DYBx2A4GdU2DpYQkhNvX7eZJTwvo8uzjwUvd67dTuwTbqM9jQ7y4TkfJ6hBJ5byGqsswbbgzfVHRBbJ2c*Q/gjkQEaPJJFrpZBvjh6VZLNCbiy3dmo3JOZJnzHy0v/asrCbzpnB0aQ37ilDiUvt645yLuTfSan2LJULw5Gkx8dXPpZ4QXeeN*eWw2o1IRR1co*bUir*rT3n1lGxZjk81c1R0yQEqQMHW13duKJq"),
+                criarUsuario("Maria Santos", "maria.santos@email.com", "2023002", "RH", LocalDate.of(1985, 8, 22), "AQAAABQAAAC0AQAAAQASAAMAZAAAAAAApAEAADRgoEWeE07G8ZsrVC8r9cgAHpNZe3/smL3lhFuMaul5VgLkBEld82V/WHi8dPqQKRy8I4/41YUnCKuknTZsgLH2aKImFVjCsyHrG5fdShZ9QlRc54bp0liyWTxr0EZRnZimqD1LN81keAvI10TXFVfmfzYVrfm6MxjABZC00lnJMtcBCtdANeA0gm2S0oRHi8lzuFP2oCb//UdsRelVVUAk*hFWnXpZH4BRTyDNJU/kDsir4I9BQjBfaWV0ZkaWz3Z2TTx/iz9D9C4wHYnRQ6SkNqvjnzCBpKFeLyUTQgxoVC4Gpbv/q4ptJ2BpCymwmQ0MaaS8pSQXx8SSl9EfSZs9uRJXNVXM61TUlH71yzHxsxt25mOur0W9W*Iknl3qYtCJYnmqSjaJsoAjoaTTwrc4PqyTs76ZXeZDYa9bks4kQKqJNdLvGGhxrX31pKl/P13i6BsZPwkwJYYkp5zvF06P*KCSIbrCu34rYn6spMgdYnLji/85dDuskKlTNpjybUPBqjq3CiFZNs*USEzcjUY7eYhC1KGHFB4EryuteSDwCznWLqYibl2hgE6XB46tfw")
+                );
 
             int criados = 0;
             for (Usuario usuario : usuarios) {
@@ -174,23 +164,10 @@ public class DataInitializer implements CommandLineRunner {
 
             criarCheckIn(1L, "2023001", LocalDateTime.of(2024, 1, 10, 13, 55));
             criarCheckIn(1L, "2023002", LocalDateTime.of(2024, 1, 10, 13, 58));
-            criarCheckIn(1L, "2023003", LocalDateTime.of(2024, 1, 10, 14, 2));
-            criarCheckIn(1L, "2023004", LocalDateTime.of(2024, 1, 10, 14, 5));
-            criarCheckIn(1L, "2023005", LocalDateTime.of(2024, 1, 10, 14, 7));
-            criarCheckIn(1L, "2023006", LocalDateTime.of(2024, 1, 10, 14, 10));
-            criarCheckIn(1L, "2023007", LocalDateTime.of(2024, 1, 10, 14, 12));
-            criarCheckIn(1L, "2023008", LocalDateTime.of(2024, 1, 10, 14, 15));
-
+            
             criarCheckIn(2L, "2023001", LocalDateTime.of(2024, 1, 25, 8, 55));
             criarCheckIn(2L, "2023002", LocalDateTime.of(2024, 1, 25, 8, 58));
-            criarCheckIn(2L, "2023003", LocalDateTime.of(2024, 1, 25, 9, 2));
-            criarCheckIn(2L, "2023004", LocalDateTime.of(2024, 1, 25, 9, 5));
-            criarCheckIn(2L, "2023005", LocalDateTime.of(2024, 1, 25, 9, 7));
-            criarCheckIn(2L, "2023009", LocalDateTime.of(2024, 1, 25, 9, 10));
-            criarCheckIn(2L, "2023010", LocalDateTime.of(2024, 1, 25, 9, 12));
-            criarCheckIn(2L, "2023011", LocalDateTime.of(2024, 1, 25, 9, 15));
-            criarCheckIn(2L, "2023012", LocalDateTime.of(2024, 1, 25, 9, 18));
-
+            
             System.out.println("  Check-ins criados com sucesso para eventos do admin!");
         } catch (Exception e) {
             System.err.println("❌ Erro ao criar check-ins para admin: " + e.getMessage());
@@ -203,13 +180,7 @@ public class DataInitializer implements CommandLineRunner {
 
             criarCertificado("2023001", 1L, "ADMIN001", "CERT-SPRING-001", LocalDate.of(2024, 1, 11));
             criarCertificado("2023002", 1L, "ADMIN001", "CERT-SPRING-002", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023003", 1L, "ADMIN001", "CERT-SPRING-003", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023004", 1L, "ADMIN001", "CERT-SPRING-004", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023005", 1L, "ADMIN001", "CERT-SPRING-005", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023006", 1L, "ADMIN001", "CERT-SPRING-006", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023007", 1L, "ADMIN001", "CERT-SPRING-007", LocalDate.of(2024, 1, 11));
-            criarCertificado("2023008", 1L, "ADMIN001", "CERT-SPRING-008", LocalDate.of(2024, 1, 11));
-
+           
             System.out.println("  Certificados criados com sucesso para eventos finalizados!");
         } catch (Exception e) {
             System.err.println("❌ Erro ao criar certificados: " + e.getMessage());

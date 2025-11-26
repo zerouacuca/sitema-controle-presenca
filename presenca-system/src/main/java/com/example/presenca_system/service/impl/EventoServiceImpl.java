@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Map; 
+import java.util.HashMap;
 
 @Service
 public class EventoServiceImpl implements EventoService {
@@ -30,7 +32,6 @@ public class EventoServiceImpl implements EventoService {
     @Autowired
     private CheckInRepository checkInRepository;
 
-    //   NOVOS MÉTODOS PARA VALIDAÇÃO POR SUPERUSUÁRIO
     @Override
     public List<EventoDTO> findBySuperusuarioEmail(String emailSuperusuario) {
         return eventoRepository.findBySuperusuarioEmail(emailSuperusuario).stream()
@@ -52,7 +53,6 @@ public class EventoServiceImpl implements EventoService {
         return eventoOpt;
     }
 
-    // MÉTODOS EXISTENTES (mantidos conforme seu código)
     @Override
     public List<EventoDTO> findAllDTO() {
         return eventoRepository.findAll().stream()
@@ -138,22 +138,34 @@ public class EventoServiceImpl implements EventoService {
         List<RelatorioEventoDTO> eventosDTO = new ArrayList<>();
         double totalHoras = 0;
         long totalParticipantes = 0;
+        Map<String, Long> checkinsPorSetor = new HashMap<>(); // Inicializa o mapa
 
         for (Long eventoId : eventoIds) {
             Optional<Evento> eventoOpt = eventoRepository.findById(eventoId);
             if (eventoOpt.isPresent()) {
                 Evento evento = eventoOpt.get();
-                // Força o carregamento dos check-ins (agora funciona)
+                // Força o carregamento dos check-ins
                 evento.getCheckIns().size(); 
                 
                 eventosDTO.add(new RelatorioEventoDTO(evento));
                 
                 totalHoras += evento.getCargaHoraria();
-                totalParticipantes += evento.getCheckIns().size();
+                
+                // NOVO CÁLCULO POR SETOR
+                for (CheckIn checkIn : evento.getCheckIns()) {
+                    String setor = checkIn.getUsuario().getSetor();
+                    // Garante que setores nulos ou vazios sejam agrupados como "Não Informado"
+                    if (setor == null || setor.trim().isEmpty()) {
+                        setor = "Não Informado";
+                    }
+                    checkinsPorSetor.put(setor, checkinsPorSetor.getOrDefault(setor, 0L) + 1);
+                    totalParticipantes++;
+                }
             }
         }
 
-        ResumoDTO resumo = new ResumoDTO(eventosDTO.size(), totalHoras, totalParticipantes);
+        // Utiliza o novo construtor com o mapa de setores
+        ResumoDTO resumo = new ResumoDTO(eventosDTO.size(), totalHoras, totalParticipantes, checkinsPorSetor);
         return new RelatorioConsolidadoDTO(eventosDTO, resumo);
     }
 
@@ -170,18 +182,19 @@ public class EventoServiceImpl implements EventoService {
         double totalHoras = 0;
         long totalParticipantes = 0;
         long totalEventosProcessados = 0;
+        Map<String, Long> checkinsPorSetor = new HashMap<>(); // NOVO MAPA
 
         for (Long eventoId : eventoIds) {
             // Verifica se o evento pertence ao superusuário
             Optional<Evento> eventoOpt = eventoRepository.findById(eventoId);
             if (eventoOpt.isPresent()) {
                 Evento evento = eventoOpt.get();
-                List<CheckIn> checkIns = evento.getCheckIns(); // Acessa os check-ins já carregados
+                List<CheckIn> checkIns = evento.getCheckIns(); 
 
                 // Acumula totais
                 totalEventosProcessados++;
                 totalHoras += evento.getCargaHoraria();
-                totalParticipantes += checkIns.size();
+                // O totalParticipantes e o checkinsPorSetor serão preenchidos no loop de checkIns
 
                 String dataEventoStr = (evento.getDataHora() != null) ? sdf.format(evento.getDataHora()) : "N/A";
 
@@ -200,6 +213,16 @@ public class EventoServiceImpl implements EventoService {
                     // Lista o evento para cada check-in
                     for (CheckIn checkIn : checkIns) {
                         String dataCheckinStr = (checkIn.getDataHoraCheckin() != null) ? sdf.format(checkIn.getDataHoraCheckin()) : "N/A";
+                        String setor = checkIn.getUsuario().getSetor(); 
+                        
+                        // NOVO CÁLCULO POR SETOR
+                        String setorParaContagem = setor;
+                        if (setorParaContagem == null || setorParaContagem.trim().isEmpty()) {
+                             setorParaContagem = "Não Informado";
+                        }
+                        checkinsPorSetor.put(setorParaContagem, checkinsPorSetor.getOrDefault(setorParaContagem, 0L) + 1);
+                        totalParticipantes++; // Conta o total de check-ins
+                        
                         csv.append(String.format("\"%d\";\"%s\";\"%s\";\"%s\";\"%.1f\";\"%s\";\"%s\";\"%s\";\"%s\";\"%s\";\"%s\"\n",
                                 evento.getEventoId(),
                                 evento.getTitulo(),
@@ -223,7 +246,13 @@ public class EventoServiceImpl implements EventoService {
         csv.append("RESUMO DO RELATÓRIO\n");
         csv.append(String.format("Total de Eventos:;%d\n", totalEventosProcessados));
         csv.append(String.format("Total de Horas:;%.1f\n", totalHoras));
-        csv.append(String.format("Total de Participantes (Check-ins):;%d\n", totalParticipantes));
+        csv.append(String.format("Total de Check-ins:;%d\n", totalParticipantes)); 
+        
+        // NOVO: Detalhe por setor
+        csv.append("\nCHECK-INS POR SETOR\n");
+        checkinsPorSetor.forEach((setor, contagem) -> {
+            csv.append(String.format("Setor %s:;%d\n", setor, contagem));
+        });
 
         return csv.toString();
     }

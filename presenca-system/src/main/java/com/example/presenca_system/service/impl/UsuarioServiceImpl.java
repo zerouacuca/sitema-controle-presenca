@@ -41,10 +41,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (usuarioRepository.existsById(usuarioDto.getMatricula())) {
             throw new RuntimeException("Matrícula já cadastrada no sistema.");
         }
-        if (usuarioRepository.existsByEmail(usuarioDto.getEmail())) {
-            throw new RuntimeException("Email já cadastrado no sistema.");
-        }
-
+        
         Usuario novoUsuario = new Usuario();
         novoUsuario.setMatricula(usuarioDto.getMatricula());
         novoUsuario.setNome(usuarioDto.getNome());
