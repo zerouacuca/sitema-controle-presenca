@@ -13,7 +13,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.util.Base64;
 import java.util.List;
 
@@ -25,11 +25,28 @@ public class PDFServiceImpl implements PDFService {
 
     @Autowired
     private CertificadoRepository certificadoRepository;
+    
+    private byte[] readAllBytesFromStream(InputStream inputStream) throws IOException {
+        final int BUFFER_SIZE = 4096;
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int bytesRead;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+        return outputStream.toByteArray();
+    }
 
     private String getImageBase64() throws IOException {
         ClassPathResource imgFile = new ClassPathResource("static/images/plano_de_fundo_certificado.png");
-        byte[] imageBytes = Files.readAllBytes(imgFile.getFile().toPath());
-        return Base64.getEncoder().encodeToString(imageBytes);
+        
+        try (InputStream inputStream = imgFile.getInputStream()) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: static/images/plano_de_fundo_certificado.png");
+            }
+            byte[] imageBytes = readAllBytesFromStream(inputStream);
+            return Base64.getEncoder().encodeToString(imageBytes);
+        }
     }
 
     @Override
@@ -37,7 +54,6 @@ public class PDFServiceImpl implements PDFService {
         Context context = new Context();
         context.setVariable("certificado", certificado);
 
-        // Adiciona a imagem como base64
         String imageBase64 = getImageBase64();
         context.setVariable("backgroundImageBase64", imageBase64);
 
@@ -59,6 +75,8 @@ public class PDFServiceImpl implements PDFService {
         if (certificados.isEmpty()) {
             return new byte[0];
         }
+        
+        String imageBase64 = getImageBase64();
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             ITextRenderer renderer = new ITextRenderer();
@@ -68,8 +86,7 @@ public class PDFServiceImpl implements PDFService {
                 Context context = new Context();
                 context.setVariable("certificado", certificado);
                 
-                String imagePath = new ClassPathResource("static/images/plano_de_fundo_certificado.png").getFile().getAbsolutePath();
-                context.setVariable("backgroundImagePath", "file:" + imagePath);
+                context.setVariable("backgroundImageBase64", imageBase64);
                 
                 String htmlContent = templateEngine.process("certificado-template", context);
                 
