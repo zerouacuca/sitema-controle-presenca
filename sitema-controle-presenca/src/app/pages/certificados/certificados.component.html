@@ -134,7 +134,7 @@
               <td>{{ certificado.nomeUsuario }}</td>
               <td>{{ certificado.matriculaUsuario }}</td>
               <td>{{ certificado.eventoTitulo }}</td>
-              <td>{{ certificado.eventoCargaHoraria }}h</td>
+              <td>{{ formatarCargaHoraria(certificado.eventoCargaHoraria) }}</td>
               <td>{{ formatarData(certificado.dataEmissao) }}</td>
               <td>
                 <span class="badge bg-secondary">{{ certificado.codigoValidacao }}</span>

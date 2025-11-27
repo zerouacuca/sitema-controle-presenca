@@ -272,6 +272,33 @@ export class CertificadosComponent implements OnInit, OnDestroy {
     return new Date(data).toLocaleDateString('pt-BR');
   }
 
+  // Novo: Função de formatação de carga horária (minutos para horas e minutos)
+  formatarCargaHoraria(totalMinutosDouble: number): string {
+    const totalMinutos = Math.floor(totalMinutosDouble);
+
+    if (totalMinutos <= 0) {
+      return "0 minutos";
+    }
+
+    const horas = Math.floor(totalMinutos / 60);
+    const minutos = totalMinutos % 60;
+
+    let sb = '';
+
+    if (horas > 0) {
+      sb += `${horas} hora${horas === 1 ? '' : 's'}`;
+    }
+
+    if (minutos > 0) {
+      if (horas > 0) {
+        sb += " e ";
+      }
+      sb += `${minutos} minuto${minutos === 1 ? '' : 's'}`;
+    }
+
+    return sb;
+  }
+  
   // Método auxiliar para formatar a data do evento para exibição
   formatarDataEvento(dataHora: string): string {
     if (!dataHora) return 'Data não informada';
