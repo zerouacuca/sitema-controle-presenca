@@ -1,4 +1,13 @@
 {
+  "/api-backend": {
+    "target": "http://localhost:8080",
+    "secure": false,
+    "pathRewrite": {
+      "^/api-backend": ""
+    },
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
   "/api-bio": {
     "target": "http://localhost:5000",
     "secure": false,
