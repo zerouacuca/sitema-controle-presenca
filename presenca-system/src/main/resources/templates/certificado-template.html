@@ -19,7 +19,8 @@
             overflow: hidden;
             font-family: 'Arial', sans-serif;
             background-image: url('data:image/png;base64,[[${backgroundImageBase64}]]');
-            background-size: 1200px auto; 
+            /* CORREÇÃO: Usar 'cover' para preencher todo o fundo */
+            background-size: cover; 
             background-repeat: no-repeat;
             background-position: center center; 
             background-attachment: fixed; 
@@ -107,6 +108,8 @@
             max-width: 600px;
             text-align: center;
             page-break-inside: avoid;
+            position: relative;
+            left: 200px;
         }
 
         .footer {
@@ -171,7 +174,8 @@
                 width: 297mm !important;
                 overflow: hidden !important;
                 background-image: url('data:image/png;base64,[[${backgroundImageBase64}]]') !important;
-                background-size: 400px auto !important;
+                /* CORREÇÃO: Usar 'cover' também na impressão */
+                background-size: cover !important;
                 background-repeat: no-repeat !important;
                 background-position: center center !important;
             }
@@ -185,7 +189,7 @@
 
     <div class="container page-break-avoid">
         <div class="content-overlay page-break-avoid">
-            <h1 class="title page-break-avoid">CERTIFICADO DE TREINAMENTO</h1>
+            <h1 class="title page-break-avoid">CERTIFICADO</h1>
             
             <p class="subtitle page-break-avoid">Concedido a</p>
             
@@ -194,7 +198,7 @@
             <p class="completion-text page-break-avoid">
                 Por completar com sucesso 
                 <span th:text="${#numbers.formatInteger(certificado.cargaHorariaEvento, 0)}">0</span> 
-                horas de
+                minutos de
             </p>
             
             <h3 class="event-name page-break-avoid" th:text="${certificado.tituloEvento}">Nome do Evento</h3>
