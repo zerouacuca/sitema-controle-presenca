@@ -59,7 +59,7 @@ export interface JoinTemplatesResponse {
 }
 
 export interface TemplateWithId {
-  id: number; // <-- CORRIGIDO: A API espera um NÚMERO, não string.
+  id: number;
   template: string;
 }
 

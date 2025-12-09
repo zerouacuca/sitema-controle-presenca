@@ -277,9 +277,6 @@ public class EventoServiceImpl implements EventoService {
             return StatusEvento.AGENDADO;
         }
         
-        // --- LINHA CORRIGIDA ---
-        // Antes: (long) (evento.getCargaHoraria() * 60 * 60 * 1000)
-        // Agora: (long) (evento.getCargaHoraria() * 60 * 1000)
         Date fimEvento = new Date(dataEvento.getTime() + (long) (evento.getCargaHoraria() * 60 * 1000));
         
         if (agora.after(dataEvento) && agora.before(fimEvento)) {

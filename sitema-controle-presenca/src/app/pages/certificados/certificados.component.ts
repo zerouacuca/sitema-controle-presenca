@@ -261,7 +261,7 @@ export class CertificadosComponent implements OnInit, OnDestroy {
 
   limparFiltros(): void {
     this.matriculaPesquisa = '';
-    this.eventoPesquisa = ''; // ← Atualizei para o novo nome
+    this.eventoPesquisa = '';
     this.carregarTodosCertificados();
     this.erro = '';
     this.mensagem = '';

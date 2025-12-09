@@ -22,10 +22,9 @@ export class RecuperacaoSenhaService {
   });
 
   //return this.http.post(`${this.apiUrl}/recuperar-senha`, data);
-  // Adicione responseType: 'text' pois o backend retorna String
   return this.http.post(`${this.apiUrl}/recuperar-senha`, data, { 
     headers: headers,
-    responseType: 'text'  // ← ESTA LINHA É IMPORTANTE
+    responseType: 'text'
   });
 }
 

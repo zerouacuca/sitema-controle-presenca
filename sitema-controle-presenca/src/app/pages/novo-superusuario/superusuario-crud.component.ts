@@ -37,11 +37,11 @@ export class SuperusuarioCrudComponent implements OnInit {
       this.isEditMode = true;
       this.isLoading = true;
       this.superusuarioService.getSuperusuario(matricula).subscribe({
-        next: (data: any) => { // <-- TIPO ADICIONADO
+        next: (data: any) => { 
           this.superusuario = data;
           this.isLoading = false;
         },
-        error: (err: any) => { // <-- TIPO ADICIONADO
+        error: (err: any) => { 
           this.errorMessage = 'Erro ao carregar dados do superusuário.';
           this.isLoading = false;
         }

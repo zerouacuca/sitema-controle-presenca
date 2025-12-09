@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-redefinir-senha',
   standalone: true,
-  imports: [ // ← Adicione estas importações
+  imports: [
     CommonModule,
     ReactiveFormsModule
   ],

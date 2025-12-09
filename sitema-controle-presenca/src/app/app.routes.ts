@@ -10,8 +10,6 @@ import { PaginaPrincipal } from './pages/pagina-principal/pagina-principal';
 import { AuthGuard } from './guards/auth.guard';
 import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha.component';
 import { RedefinirSenhaComponent } from './pages/redefinir-senha/redefinir-senha.component';
-
-// CAMINHOS DE IMPORTAÇÃO CORRIGIDOS
 import { SuperusuarioCrudComponent } from './pages/novo-superusuario/superusuario-crud.component';
 import { TabelaSuperusuariosComponent } from './pages/tabela-superusuarios/tabela-superusuarios'; // Removido .component do nome
 

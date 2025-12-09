@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators'; // <-- FIX: Imported required RxJS operators
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { Usuario, UsuarioListDTO, UsuarioTemplateDTO } from '../models/usuario.model';
 

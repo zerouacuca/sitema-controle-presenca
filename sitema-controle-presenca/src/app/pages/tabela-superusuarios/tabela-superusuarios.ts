@@ -57,7 +57,7 @@ export class TabelaSuperusuariosComponent implements OnInit, OnDestroy {
   carregarSuperusuarios(): void {
     this.isLoading = true;
     this.superusuarioService.listarSuperusuarios().subscribe({
-      next: (data: any) => { // <-- TIPO ADICIONADO
+      next: (data: any) => { 
         this.superusuarios = data;
         this.aplicarFiltros();
         this.isLoading = false;

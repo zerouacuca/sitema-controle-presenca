@@ -5,8 +5,8 @@ import { RecuperacaoSenhaService } from '../../servicos/recuperacao-senha.servic
 
 @Component({
   selector: 'app-recuperar-senha',
-  standalone: true, // ← Seu componente é standalone
-  imports: [ // ← Adicione estas importações
+  standalone: true,
+  imports: [ 
     CommonModule,
     ReactiveFormsModule
   ],

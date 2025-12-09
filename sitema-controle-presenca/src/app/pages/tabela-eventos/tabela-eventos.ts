@@ -146,7 +146,6 @@ export class TabelaEventos implements OnInit, OnDestroy {
       );
     }
 
-    // <-- NOVO FILTRO -->
     // Se o checkbox 'mostrarFinalizados' NÃO estiver marcado, filtra para remover os finalizados
     if (!this.mostrarFinalizados) {
       eventosFiltrados = eventosFiltrados.filter(evento => evento.status !== this.StatusEvento.FINALIZADO);

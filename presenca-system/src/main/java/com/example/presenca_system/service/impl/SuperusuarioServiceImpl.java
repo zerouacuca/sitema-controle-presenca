@@ -32,7 +32,6 @@ public class SuperusuarioServiceImpl implements SuperusuarioService {
             throw new RuntimeException("Superusuário autenticado não encontrado");
         }
         
-        // Aqui você pode adicionar lógica de autorização (ex: apenas admin pode criar)
         return cadastrarSuperusuario(superusuario);
     }
 

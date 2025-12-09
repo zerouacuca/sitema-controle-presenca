@@ -23,6 +23,5 @@ public interface SuperusuarioService {
     void excluirSuperusuario(String matricula, String emailSuperusuarioAutenticado);
     List<Superusuario> listarTodos(String emailSuperusuarioAutenticado);
 
-    //   ADICIONADO PARA FORM DE EDIÇÃO
     Optional<Superusuario> buscarPorMatricula(String matricula);
 }

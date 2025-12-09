@@ -19,7 +19,6 @@ services:
     build:
       context: ./presenca-system  # Pasta do backend
     container_name: presenca_backend
-    # Não expomos a porta 8080 publicamente, só o Nginx a acede
     environment:
       # Aponta o backend para o contentor do banco 'db'
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/sistema_presenca

@@ -1,6 +1,6 @@
 package com.example.presenca_system.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore; // <-- ADICIONE ESTA IMPORTAÇÃO
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
