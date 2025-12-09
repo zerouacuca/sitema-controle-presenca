@@ -23,7 +23,9 @@ services:
     environment:
       # Aponta o backend para o contentor do banco 'db'
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/sistema_presenca
-      #
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       # URL para os emails de recuperação de senha (agora no Nginx)
       - APP_FRONTEND_URL=http://localhost:8080

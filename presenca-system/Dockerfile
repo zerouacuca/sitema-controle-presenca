@@ -18,7 +18,7 @@ FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 # Copiar o JAR construído da stage anterior
-COPY --from=builder /app/target/presenca-system-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder /app/target/Pontu.jar app.jar
 
 # A porta padrão do Spring Boot é 8080 (agora que removemos o SSL)
 EXPOSE 8080

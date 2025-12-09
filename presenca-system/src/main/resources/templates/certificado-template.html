@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html>
 <head>
     <meta charset="UTF-8" />
     <title>Certificado</title>
@@ -13,201 +13,100 @@
         body {
             margin: 0;
             padding: 0;
-            height: 210mm;
-            width: 297mm;
-            position: relative;
-            overflow: hidden;
             font-family: 'Arial', sans-serif;
-            background-image: url('data:image/png;base64,[[${backgroundImageBase64}]]');
-            /* CORREÇÃO: Usar 'cover' para preencher todo o fundo */
-            background-size: cover; 
-            background-repeat: no-repeat;
-            background-position: center center; 
-            background-attachment: fixed; 
+            /* O corpo é mantido limpo */
         }
 
         .container {
-            width: 100%;
-            height: 100%;
+            /* Definimos o tamanho exato da folha para controle de fluxo */
+            width: 297mm; 
+            min-height: 210mm;
             text-align: center;
             padding: 40px;
-            position: relative;
-            z-index: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0 auto; /* Centraliza (para navegadores, mas não afeta o PDF) */
+            box-sizing: border-box;
+            /* CORREÇÃO CHAVE: Removido display: flex e align-items */
+        }
+        
+        /* NOVO: Classe para aplicar o fundo APENAS na primeira página */
+        .page-one {
+            background-image: url('data:image/png;base64,[[${backgroundImageBase64}]]');
+            background-size: cover; 
+            background-repeat: no-repeat;
+            background-position: center center; 
+        }
+
+        .page-break-before {
+            page-break-before: always;
         }
 
         .content-overlay {
-            background: rgba(255, 255, 255, 0.95);
             padding: 40px;
             border-radius: 0;
             border: 1px solid #000000;
             max-width: 1000px;
             width: 100%;
-            position: relative;
-            z-index: 2;
-            max-height: 190mm;
-            margin: 0 auto;
-            overflow: hidden;
-            /* fundo branco cobre a logo */
+            margin: 0 auto; 
             background: rgba(255, 255, 255, 0.95);
             box-shadow: 0 0 0 100px rgba(255, 255, 255, 0.95); 
         }
-
-        .title {
-            font-size: 36pt;
-            font-weight: bold;
-            color: #000000;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            page-break-inside: avoid;
-        }
-
-        .subtitle {
-            font-size: 16pt;
-            color: #000000;
-            margin-bottom: 10px;
-            page-break-inside: avoid;
-        }
-
-        .participant-name {
-            font-family: 'Georgia', serif;
-            font-size: 28pt;
-            font-weight: bold;
-            color: #000000;
-            margin: 20px 0;
-            padding: 15px 40px;
-            border-bottom: 2px solid #000000;
-            page-break-inside: avoid;
-        }
-
-        .completion-text {
-            font-size: 14pt;
-            color: #000000;
-            margin: 15px 0;
-            line-height: 1.5;
-            page-break-inside: avoid;
-        }
-
-        .event-name {
-            font-size: 22pt;
-            font-weight: bold;
-            color: #000000;
-            margin: 15px 0;
-            text-transform: uppercase;
-            page-break-inside: avoid;
-        }
-
-        .certificate-text {
-            font-size: 12pt;
-            color: #000000;
-            font-style: italic;
-            margin: 20px auto;
-            line-height: 1.4;
-            max-width: 600px;
-            text-align: center;
-            page-break-inside: avoid;
-            position: relative;
-            left: 200px;
-        }
-
-        .footer {
-            margin-top: 30px;
+        
+        .description-overlay {
+            /* Estilo para a página 2 */
+            background: white;
+            padding: 40px;
+            border-radius: 0;
+            border: 1px solid #ccc;
+            max-width: 1000px;
             width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            page-break-inside: avoid;
-        }
-
-        .signature {
+            margin: 0 auto;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
             text-align: left;
         }
 
-        .signature-line {
-            border-top: 1px solid #000000;
-            padding-top: 5px;
-            margin-top: 20px;
-            width: 200px;
-        }
-
-        .signature-name {
-            font-weight: bold;
-            color: #000000;
-            font-size: 12pt;
-        }
-
-        .signature-role {
-            color: #000000;
-            font-size: 11pt;
-        }
-
-        .details {
-            text-align: right;
-        }
-
-        .detail-item {
-            margin-bottom: 5px;
-        }
-
-        .detail-label {
-            font-weight: bold;
-            color: #000000;
-            font-size: 11pt;
-        }
-
-        .detail-value {
-            color: #0000FF;
-            font-size: 11pt;
-        }
-
-        .page-break-avoid {
-            page-break-inside: avoid;
-            page-break-after: avoid;
-            page-break-before: avoid;
-        }
-
-        @media print {
-            body {
-                height: 210mm !important;
-                width: 297mm !important;
-                overflow: hidden !important;
-                background-image: url('data:image/png;base64,[[${backgroundImageBase64}]]') !important;
-                /* CORREÇÃO: Usar 'cover' também na impressão */
-                background-size: cover !important;
-                background-repeat: no-repeat !important;
-                background-position: center center !important;
-            }
-            .container {
-                page-break-inside: avoid !important;
-            }
-        }
+        /* --- Estilos de Conteúdo (Reduzidos para a resposta) --- */
+        .title { font-size: 36pt; font-weight: bold; color: #000000; margin-bottom: 20px; text-transform: uppercase; page-break-inside: avoid; }
+        .subtitle { font-size: 16pt; color: #000000; margin-bottom: 10px; page-break-inside: avoid; }
+        .participant-name { font-family: 'Georgia', serif; font-size: 28pt; font-weight: bold; color: #000000; margin: 20px 0; padding: 15px 40px; border-bottom: 2px solid #000000; page-break-inside: avoid; }
+        .completion-text { font-size: 14pt; color: #000000; margin: 15px 0; line-height: 1.5; page-break-inside: avoid; }
+        .event-name { font-size: 22pt; font-weight: bold; color: #000000; margin: 15px 0; text-transform: uppercase; page-break-inside: avoid; }
+        .certificate-text { font-size: 12pt; color: #000000; font-style: italic; margin: 20px auto; line-height: 1.4; max-width: 600px; text-align: center; page-break-inside: avoid; }
+        .footer { margin-top: 30px; width: 100%; display: flex; justify-content: space-between; align-items: flex-end; page-break-inside: avoid; }
+        .signature { text-align: left; }
+        .signature-line { border-top: 1px solid #000000; padding-top: 5px; margin-top: 20px; width: 200px; }
+        .signature-name { font-weight: bold; color: #000000; font-size: 12pt; }
+        .signature-role { color: #000000; font-size: 11pt; }
+        .details { text-align: right; }
+        .detail-item { margin-bottom: 5px; }
+        .detail-label { font-weight: bold; color: #000000; font-size: 11pt; }
+        .detail-value { color: #0000FF; font-size: 11pt; }
+        .description-content { font-size: 12pt; text-align: justify; line-height: 1.6; white-space: pre-wrap; }
+        .page-footer-text { font-size: 10pt; color: #666; text-align: right; padding-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="container page-break-avoid">
-        <div class="content-overlay page-break-avoid">
-            <h1 class="title page-break-avoid">CERTIFICADO</h1>
+    <div class="container page-one"> 
+        <div class="content-overlay">
+            <h1 class="title">CERTIFICADO</h1>
             
-            <p class="subtitle page-break-avoid">Concedido a</p>
+            <p class="subtitle">Concedido a</p>
             
-            <h2 class="participant-name page-break-avoid" th:text="${certificado.nomeUsuario}">Nome do Participante</h2>
+            <h2 class="participant-name" th:text="${certificado.nomeUsuario}">Nome do Participante</h2>
             
-            <p class="completion-text page-break-avoid">
+            <p class="completion-text">
                 Por completar com sucesso 
                 <span th:text="${#numbers.formatInteger(certificado.cargaHorariaEvento, 0)}">0</span> 
                 minutos de
             </p>
             
-            <h3 class="event-name page-break-avoid" th:text="${certificado.tituloEvento}">Nome do Evento</h3>
+            <h3 class="event-name" th:text="${certificado.tituloEvento}">Nome do Evento</h3>
             
-            <p class="certificate-text page-break-avoid" th:text="${certificado.texto}">
+            <p class="certificate-text" th:text="${certificado.texto}">
                 Certificado de participação com carga horária total de horas.
             </p>
 
-            <div class="footer page-break-avoid">
+            <div class="footer">
                 <div class="signature">
                     <div class="signature-line">
                         <p class="signature-name" th:text="${certificado.nomeSuperusuario}">Nome do Instrutor</p>
@@ -228,5 +127,33 @@
             </div>
         </div>
     </div>
+    
+    <div class="container page-break-before"> 
+        <div class="description-overlay"> 
+            
+            <h2 class="title" style="font-size: 20pt; margin-bottom: 10px; color: #007bff; text-align: center;">
+                Detalhes do Evento
+            </h2>
+            <h3 class="event-name" th:text="${certificado.tituloEvento}" style="font-size: 18pt;">Nome do Evento</h3>
+            
+            <hr style="margin: 20px 0; border: 1px solid #ccc;"/>
+            
+            <div style="text-align: left;">
+                <h4 style="font-size: 14pt; font-weight: bold; margin-bottom: 15px; color: #333;">
+                    Descrição Completa:
+                </h4>
+                
+                <p class="description-content" th:text="${certificado.descricaoEvento}">
+                    Descrição detalhada do evento.
+                </p>
+            </div>
+            
+            <div class="page-footer-text" style="width: 100%;">
+                Página 2 de 2 - Documento de Apoio
+            </div>
+            
+        </div>
+    </div>
+    
 </body>
 </html>

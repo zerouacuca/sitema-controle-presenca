@@ -58,4 +58,8 @@ public class Certificado {
     public Double getCargaHorariaEvento() {
         return this.evento != null ? this.evento.getCargaHoraria() : 0.0;
     }
+
+    public String getDescricaoEvento() {
+        return this.evento != null ? this.evento.getDescricao() : "Descrição não disponível";
+    }
 }
